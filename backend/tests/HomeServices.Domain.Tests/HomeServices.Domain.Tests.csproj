@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HomeServices.Domain\HomeServices.Domain.csproj" />
+  </ItemGroup>
+</Project>

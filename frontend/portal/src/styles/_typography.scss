@@ -1,0 +1,36 @@
+@use 'tokens' as *;
+@use 'breakpoints' as *;
+
+@mixin heading-1 {
+  margin: 0;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+
+  @include up(md) {
+    font-size: $font-size-3xl;
+  }
+}
+
+@mixin heading-2 {
+  margin: 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+}
+
+@mixin heading-3 {
+  margin: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+}
+
+@mixin text-small {
+  font-size: $font-size-sm;
+  line-height: 1.45;
+}
+
+@mixin text-muted {
+  color: $color-text-muted;
+}

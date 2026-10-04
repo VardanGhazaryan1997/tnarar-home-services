@@ -1,0 +1,580 @@
+@use 'styles/mixins' as *;
+
+.order-page {
+  display: grid;
+  gap: space(4);
+  align-items: start;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  }
+
+  &__main,
+  &__side {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__price {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+  }
+
+  &__name {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__phone {
+    @include focus-ring;
+
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-tuff-deep;
+  }
+
+
+  &__note {
+    @include text-small;
+
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    padding: space(2) space(3);
+    margin-bottom: space(3);
+    color: $color-info;
+    background: $color-info-soft;
+    border-radius: $radius;
+  }
+
+  &__manage {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__cancel {
+    color: $color-danger;
+  }
+}
+
+.order-status {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__text {
+    color: $color-text-muted;
+  }
+
+  &__title {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__quote {
+    padding-left: space(3);
+    margin-top: space(2);
+    white-space: pre-line;
+    border-left: 3px solid $color-border-strong;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    justify-content: flex-end;
+  }
+
+  &__cancelled {
+    display: flex;
+    gap: space(3);
+    align-items: flex-start;
+    color: $color-text;
+  }
+}
+
+// Phones: four dots on a line with the current step named; desktop: every step named.
+.order-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    align-items: center;
+    text-align: center;
+
+    // The line to the previous step.
+    &::before {
+      position: absolute;
+      top: 13px;
+      right: 50%;
+      left: -50%;
+      height: 2px;
+      content: '';
+      background: $color-border;
+    }
+
+    &:first-child::before {
+      display: none;
+    }
+
+    &--done::before,
+    &--current::before {
+      background: $color-tuff;
+    }
+  }
+
+  &__dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    color: $color-text-muted;
+    background: $color-surface-sunken;
+    border: 2px solid $color-white;
+    border-radius: 50%;
+
+    .order-progress__step--done & {
+      color: $color-white;
+      background: $color-tuff-deep;
+    }
+
+    .order-progress__step--current & {
+      color: $color-white;
+      background: $color-night;
+      box-shadow: 0 0 0 3px rgb(29 51 70 / 15%);
+    }
+  }
+
+  &__label {
+    @include text-small;
+
+    color: $color-text-muted;
+
+    .order-progress__step--next & {
+      @include up(md) {
+        color: $color-text-faint;
+      }
+    }
+
+    .order-progress__step--current & {
+      font-weight: $font-weight-semibold;
+      color: $color-text;
+    }
+
+    @include down(md) {
+      @include visually-hidden;
+
+      .order-progress__step--current & {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        clip-path: none;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.order-change {
+  border-color: rgb(200 100 59 / 45%);
+  box-shadow: 0 0 0 3px rgb(200 100 59 / 10%);
+
+  &__who {
+    @include text-small;
+    @include text-muted;
+
+    margin-bottom: space(3);
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__what {
+    display: flex;
+    gap: space(3);
+    justify-content: space-between;
+    font-weight: $font-weight-medium;
+  }
+
+  &__facts {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    padding: 0;
+    margin: 0;
+    font-weight: $font-weight-medium;
+    list-style: none;
+  }
+
+  &__description {
+    @include text-muted;
+
+    white-space: pre-line;
+  }
+
+  &__hint {
+    @include text-small;
+
+    padding: space(2) space(3);
+    margin-top: space(3);
+    background: $color-mist;
+    border-radius: $radius;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    justify-content: flex-end;
+    margin-top: space(4);
+  }
+}
+
+.order-changes {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: space(3) 0;
+    border-bottom: 1px solid $color-border;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  &__head {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__kind {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__meta {
+    @include text-small;
+    @include text-muted;
+  }
+}
+
+.payment-plan {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__stage {
+    display: flex;
+    gap: space(3);
+    align-items: center;
+  }
+
+  &__number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    color: $color-text-muted;
+    background: $color-surface-sunken;
+    border-radius: 50%;
+  }
+
+  &__name {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__purpose {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__amount {
+    font-weight: $font-weight-semibold;
+    white-space: nowrap;
+  }
+
+  &__total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: space(3);
+    font-weight: $font-weight-bold;
+    border-top: 1px solid $color-border;
+  }
+}
+
+.order-history {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__event {
+    position: relative;
+    display: flex;
+    gap: space(3);
+    padding-bottom: space(4);
+
+    // The line down to the next event.
+    &::before {
+      position: absolute;
+      top: 14px;
+      bottom: 0;
+      left: 5px;
+      width: 2px;
+      content: '';
+      background: $color-border;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  &__dot {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    margin-top: 5px;
+    background: $color-tuff;
+    border-radius: 50%;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: $font-weight-medium;
+  }
+
+  &__meta {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__note {
+    @include text-small;
+
+    padding: space(1) space(2);
+    margin-top: space(1);
+    white-space: pre-line;
+    background: $color-surface-sunken;
+    border-radius: $radius-sm;
+  }
+}
+
+.change-form {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__intro {
+    @include text-muted;
+  }
+
+  &__row {
+    display: grid;
+    gap: space(4);
+
+    @include up(sm) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+// Payments made between the two sides: confirmed share, the plan and each record.
+.payments {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__summary {
+    margin-bottom: space(2);
+    font-weight: $font-weight-semibold;
+  }
+
+  &__bar {
+    height: 8px;
+    overflow: hidden;
+    background: $color-surface-sunken;
+    border-radius: 999px;
+  }
+
+  &__fill {
+    display: block;
+    height: 100%;
+    background: $color-success;
+    border-radius: inherit;
+    transition: width $transition;
+  }
+
+  &__subheading {
+    @include text-small;
+    @include text-muted;
+
+    margin-bottom: space(2);
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__empty {
+    @include text-small;
+    @include text-muted;
+  }
+}
+
+.payment-record {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+  padding: space(3);
+  border: 1px solid $color-border;
+  border-radius: $radius;
+
+  &__head {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__amount {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+  }
+
+  &__meta,
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__note {
+    @include text-small;
+
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    margin-top: space(1);
+  }
+}
+
+// The customer's review of a completed order and the partner's reply.
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+
+  &__intro {
+    @include text-muted;
+  }
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+
+  &__head {
+    display: flex;
+    gap: space(3);
+    align-items: center;
+  }
+
+  &__date {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__text {
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+
+  &__reply {
+    padding: space(3);
+    margin-top: space(1);
+    background: $color-surface-sunken;
+    border-left: 3px solid $color-tuff;
+    border-radius: $radius-sm;
+  }
+
+  &__reply-title {
+    @include text-small;
+
+    margin-bottom: space(1);
+    font-weight: $font-weight-semibold;
+  }
+}

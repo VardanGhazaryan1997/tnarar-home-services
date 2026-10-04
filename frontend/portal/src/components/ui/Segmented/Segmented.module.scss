@@ -1,0 +1,36 @@
+@use 'styles/mixins' as *;
+
+.segmented {
+  display: flex;
+  gap: space(1);
+  max-width: 100%;
+  padding: space(1);
+  overflow-x: auto;
+  background: $color-surface-sunken;
+  border-radius: $radius;
+  scrollbar-width: none;
+
+  &__option {
+    @include reset-button;
+    @include focus-ring;
+
+    flex: none;
+    min-height: 36px;
+    padding: 0 space(3);
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+    white-space: nowrap;
+    border-radius: $radius-sm;
+
+    &:hover {
+      color: $color-night;
+    }
+
+    &--selected {
+      color: $color-night;
+      background: $color-white;
+      box-shadow: $shadow-sm;
+    }
+  }
+}

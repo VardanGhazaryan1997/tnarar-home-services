@@ -1,0 +1,136 @@
+@use 'styles/mixins' as *;
+
+.request-list {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.request-card {
+  @include surface;
+
+  transition:
+    border-color $transition,
+    box-shadow $transition;
+
+  &:hover {
+    border-color: $color-border-strong;
+    box-shadow: $shadow;
+  }
+
+  &--highlight {
+    border-left: 4px solid $color-tuff;
+  }
+
+  &__link {
+    @include focus-ring;
+
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: space(4);
+    color: inherit;
+    text-decoration: none;
+    border-radius: $radius-lg;
+  }
+
+  &__top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1);
+  }
+
+  &__excerpt {
+    @include line-clamp(2);
+
+    color: $color-text-muted;
+  }
+
+  &__meta {
+    @include text-small;
+
+    color: $color-text-faint;
+  }
+}
+
+.request-facts {
+  display: grid;
+  gap: space(3);
+  margin: 0;
+
+  @include up(md) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    dt {
+      @include text-small;
+
+      display: flex;
+      gap: space(1);
+      align-items: center;
+      color: $color-text-muted;
+    }
+
+    dd {
+      margin: 0;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+.media-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: space(2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__link {
+    @include focus-ring;
+
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border-radius: $radius;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__video {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: $color-white;
+    background: $color-night;
+  }
+}
+
+.request-text {
+  white-space: pre-line;
+}

@@ -1,0 +1,29 @@
+@use 'styles/mixins' as *;
+
+// A white bar on the dark hero: fields stacked on phones, side by side from tablets.
+.service-search {
+  display: grid;
+  gap: space(3);
+  padding: space(4);
+  color: $color-text;
+  background: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+
+  @include up(md) {
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+  }
+
+  &__field {
+    min-width: 0;
+  }
+
+  &__submit {
+    width: 100%;
+
+    @include up(md) {
+      width: auto;
+    }
+  }
+}

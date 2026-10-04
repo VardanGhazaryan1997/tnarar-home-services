@@ -1,0 +1,12 @@
+.not-found-page {
+  padding: 48px 0;
+  text-align: center;
+
+  &__title {
+    margin: 0 0 16px;
+  }
+
+  &__link {
+    color: inherit;
+  }
+}

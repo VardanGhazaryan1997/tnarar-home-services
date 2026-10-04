@@ -1,0 +1,54 @@
+@use 'styles/mixins' as *;
+
+.account-page {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+  max-width: $narrow-width;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+  }
+
+  &__partner {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+    align-items: flex-start;
+    background: rgb(200 100 59 / 6%);
+    border-color: rgb(200 100 59 / 25%);
+
+    @include up(md) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__partner-text {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__partner-title {
+    @include heading-3;
+  }
+
+  &__partner-body {
+    @include text-muted;
+  }
+}

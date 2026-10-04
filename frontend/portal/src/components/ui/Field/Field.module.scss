@@ -1,0 +1,84 @@
+@use 'styles/mixins' as *;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__optional {
+    font-weight: $font-weight-regular;
+    color: $color-text-muted;
+  }
+
+  &__control {
+    @include focus-ring;
+
+    width: 100%;
+    min-height: $touch-target;
+    padding: space(2) space(3);
+    color: $color-text;
+    background: $color-white;
+    border: 1px solid $color-border-strong;
+    border-radius: $radius;
+    transition: border-color $transition;
+
+    &:hover {
+      border-color: $color-night-soft;
+    }
+
+    &::placeholder {
+      color: $color-text-faint;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      background: $color-surface-sunken;
+    }
+
+    &--multiline {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    &--select {
+      cursor: pointer;
+    }
+  }
+
+  &--invalid &__control {
+    border-color: $color-danger;
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__error {
+    @include text-small;
+
+    color: $color-danger;
+  }
+
+  &__check {
+    display: inline-flex;
+    gap: space(2);
+    align-items: center;
+    min-height: $touch-target;
+    cursor: pointer;
+  }
+
+  &__checkbox {
+    @include focus-ring;
+
+    flex: none;
+    width: 20px;
+    height: 20px;
+    accent-color: $color-night;
+  }
+}

@@ -1,0 +1,120 @@
+@use 'styles/mixins' as *;
+
+.how-page {
+  display: flex;
+  flex-direction: column;
+  gap: space(5);
+  max-width: 960px;
+
+  &__switch {
+    align-self: flex-start;
+  }
+
+  &__steps {
+    display: grid;
+    gap: space(3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__step {
+    @include surface;
+
+    display: flex;
+    gap: space(4);
+    align-items: flex-start;
+    padding: space(5);
+  }
+
+  &__number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    font-weight: $font-weight-bold;
+    color: $color-white;
+    background: $color-tuff-deep;
+    border-radius: 50%;
+  }
+
+  &__step-title {
+    @include heading-3;
+
+    margin-bottom: space(1);
+  }
+
+  &__text {
+    @include text-muted;
+  }
+
+  &__benefits {
+    display: grid;
+    gap: space(4);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__benefit {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__benefit-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: $color-tuff-deep;
+    background: rgb(200 100 59 / 10%);
+    border-radius: $radius;
+  }
+
+  &__benefit-title {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__cta {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+    align-items: flex-start;
+    padding: space(5);
+    color: $color-white;
+    background: linear-gradient(135deg, $color-night 0%, $color-night-soft 100%);
+    border-radius: $radius-lg;
+
+    @include up(md) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: space(6);
+    }
+  }
+
+  &__cta-text {
+    max-width: 520px;
+    font-size: $font-size-lg;
+  }
+
+  &__faq {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+  }
+
+  &__faq-title {
+    @include heading-2;
+  }
+}

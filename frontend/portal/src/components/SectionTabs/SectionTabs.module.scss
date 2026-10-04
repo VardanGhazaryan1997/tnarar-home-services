@@ -1,0 +1,31 @@
+@use 'styles/mixins' as *;
+
+.section-tabs {
+  display: flex;
+  gap: space(4);
+  margin-bottom: space(4);
+  overflow-x: auto;
+  border-bottom: 1px solid $color-border;
+  scrollbar-width: none;
+
+  &__link {
+    @include focus-ring;
+
+    flex: none;
+    padding: space(2) 0;
+    margin-bottom: -1px;
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: $color-night;
+    }
+
+    &--active {
+      color: $color-night;
+      border-bottom-color: $color-tuff;
+    }
+  }
+}

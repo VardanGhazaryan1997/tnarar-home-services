@@ -1,0 +1,146 @@
+# Runs on every pull request and every push to main. All jobs must pass before merging.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (build, tests, coverage)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      # Coverage gate for Domain, Application, Infrastructure and Api (migrations excluded).
+      MIN_LINE_COVERAGE: 90
+      MIN_BRANCH_COVERAGE: 85
+      EXPECTED_ASSEMBLIES: 4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/Directory.Packages.props', 'backend/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore
+
+      # Warnings are errors, and code style (naming, braces, unused usings) is checked during the build.
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # Integration tests start PostgreSQL in Docker (Testcontainers); the runner has Docker.
+      - name: Test
+        run: >
+          dotnet test --no-build --configuration Release
+          --settings coverlet.runsettings
+          --collect "XPlat Code Coverage"
+          --results-directory TestResults
+          --logger "trx;LogFilePrefix=results"
+
+      - name: Coverage report
+        if: always()
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:TestResults/coverage \
+            -reporttypes:"Html;MarkdownSummaryGithub;JsonSummary"
+          cat TestResults/coverage/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Coverage gate
+        run: python3 ../.github/scripts/coverage_gate.py TestResults/coverage/Summary.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            backend/TestResults/**/*.trx
+            backend/TestResults/coverage/
+          retention-days: 14
+
+  portal:
+    name: Portal (lint, tests, coverage, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend/portal
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/portal/package-lock.json
+
+      - run: npm ci
+
+      # Lint, Stylelint (BEM), tests with the 90% coverage gate, production build.
+      - run: npm run check
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portal-coverage
+          path: frontend/portal/coverage/
+          retention-days: 14
+
+  backoffice:
+    name: Back Office (lint, tests, coverage, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend/backoffice
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/backoffice/package-lock.json
+
+      - run: npm ci
+
+      # Lint, tests with the 90% coverage gate, production build.
+      - run: npm run check
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backoffice-coverage
+          path: frontend/backoffice/coverage/
+          retention-days: 14
+
+  images:
+    name: Docker images (build only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # The images Railway deploys: checks the Dockerfiles still build. Nothing is pushed.
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f backend/Dockerfile -t home-services-api .
+      - run: docker build -t home-services-portal frontend/portal
+      - run: docker build -t home-services-backoffice frontend/backoffice

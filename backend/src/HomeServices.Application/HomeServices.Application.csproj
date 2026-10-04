@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Use cases, DTOs, validators and the interfaces Infrastructure implements. -->
+  <ItemGroup>
+    <!-- For Microsoft.Extensions.* abstractions (DI, logging, options). Architecture tests forbid using Microsoft.AspNetCore here. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <!-- EF Core abstractions only (DbSet, LINQ). The PostgreSQL provider stays in Infrastructure. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HomeServices.Domain\HomeServices.Domain.csproj" />
+  </ItemGroup>
+</Project>

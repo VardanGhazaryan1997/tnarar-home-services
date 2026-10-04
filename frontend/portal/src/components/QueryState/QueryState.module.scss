@@ -1,0 +1,7 @@
+@use 'styles/mixins' as *;
+
+.query-state {
+  display: grid;
+  place-items: center;
+  min-height: 200px;
+}

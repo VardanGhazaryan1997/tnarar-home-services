@@ -1,0 +1,153 @@
+using HomeServices.Api.Authorization;
+using HomeServices.Application.Catalog;
+using HomeServices.Application.Messaging;
+using HomeServices.Domain.Staff;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HomeServices.Api.Controllers.Admin;
+
+/// <summary>
+/// Back Office management of service categories, cities and districts (needs <c>catalog.manage</c>).
+/// Names are sent per language: <c>{ "hy": "…", "ru": "…", "en": "…" }</c>; the default language is required.
+/// </summary>
+[ApiController]
+[Route("api/v1/admin/catalog")]
+[HasPermission(Permissions.CatalogManage)]
+public sealed class AdminCatalogController : ControllerBase
+{
+    public sealed record CategoryRequest(string Slug, Dictionary<string, string> Name, string? Icon, Guid? ParentId, int SortOrder);
+
+    public sealed record PlaceRequest(string Slug, Dictionary<string, string> Name, int SortOrder);
+
+    // ---------- Categories ----------
+
+    /// <summary>All categories as a tree, inactive ones included.</summary>
+    [HttpGet("categories")]
+    public Task<IReadOnlyList<AdminCategoryNodeDto>> GetCategories(
+        [FromServices] IQueryHandler<GetAdminCategories, IReadOnlyList<AdminCategoryNodeDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminCategories(), cancellationToken);
+
+    [HttpPost("categories")]
+    public async Task<ActionResult<AdminCategoryDto>> CreateCategoryAsync(
+        CategoryRequest request,
+        [FromServices] ICommandHandler<CreateCategory, AdminCategoryDto> handler,
+        CancellationToken cancellationToken) =>
+        StatusCode(
+            StatusCodes.Status201Created,
+            await handler.HandleAsync(
+                new CreateCategory(request.Slug, request.Name, request.Icon, request.ParentId, request.SortOrder),
+                cancellationToken));
+
+    [HttpPut("categories/{id:guid}")]
+    public Task<AdminCategoryDto> UpdateCategory(
+        Guid id,
+        CategoryRequest request,
+        [FromServices] ICommandHandler<UpdateCategory, AdminCategoryDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(
+            new UpdateCategory(id, request.Slug, request.Name, request.Icon, request.ParentId, request.SortOrder),
+            cancellationToken);
+
+    /// <summary>Shows the category on the Portal again.</summary>
+    [HttpPost("categories/{id:guid}/activate")]
+    public Task<AdminCategoryDto> ActivateCategory(
+        Guid id,
+        [FromServices] ICommandHandler<SetCategoryActive, AdminCategoryDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetCategoryActive(id, IsActive: true), cancellationToken);
+
+    /// <summary>Hides the category (and its subcategories) on the Portal.</summary>
+    [HttpPost("categories/{id:guid}/deactivate")]
+    public Task<AdminCategoryDto> DeactivateCategory(
+        Guid id,
+        [FromServices] ICommandHandler<SetCategoryActive, AdminCategoryDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetCategoryActive(id, IsActive: false), cancellationToken);
+
+    /// <summary>Deletes a category without subcategories.</summary>
+    [HttpDelete("categories/{id:guid}")]
+    public async Task<IActionResult> DeleteCategoryAsync(
+        Guid id,
+        [FromServices] ICommandHandler<DeleteCategory, bool> handler,
+        CancellationToken cancellationToken)
+    {
+        await handler.HandleAsync(new DeleteCategory(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ---------- Cities and districts ----------
+
+    /// <summary>All cities with their districts, inactive ones included.</summary>
+    [HttpGet("cities")]
+    public Task<IReadOnlyList<AdminCityDto>> GetCities(
+        [FromServices] IQueryHandler<GetAdminCities, IReadOnlyList<AdminCityDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminCities(), cancellationToken);
+
+    [HttpPost("cities")]
+    public async Task<ActionResult<AdminCityDto>> CreateCityAsync(
+        PlaceRequest request,
+        [FromServices] ICommandHandler<CreateCity, AdminCityDto> handler,
+        CancellationToken cancellationToken) =>
+        StatusCode(
+            StatusCodes.Status201Created,
+            await handler.HandleAsync(new CreateCity(request.Slug, request.Name, request.SortOrder), cancellationToken));
+
+    [HttpPut("cities/{id:guid}")]
+    public Task<AdminCityDto> UpdateCity(
+        Guid id,
+        PlaceRequest request,
+        [FromServices] ICommandHandler<UpdateCity, AdminCityDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new UpdateCity(id, request.Slug, request.Name, request.SortOrder), cancellationToken);
+
+    [HttpPost("cities/{id:guid}/activate")]
+    public Task<AdminCityDto> ActivateCity(
+        Guid id,
+        [FromServices] ICommandHandler<SetCityActive, AdminCityDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetCityActive(id, IsActive: true), cancellationToken);
+
+    [HttpPost("cities/{id:guid}/deactivate")]
+    public Task<AdminCityDto> DeactivateCity(
+        Guid id,
+        [FromServices] ICommandHandler<SetCityActive, AdminCityDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetCityActive(id, IsActive: false), cancellationToken);
+
+    [HttpPost("cities/{cityId:guid}/districts")]
+    public async Task<ActionResult<AdminDistrictDto>> AddDistrictAsync(
+        Guid cityId,
+        PlaceRequest request,
+        [FromServices] ICommandHandler<AddDistrict, AdminDistrictDto> handler,
+        CancellationToken cancellationToken) =>
+        StatusCode(
+            StatusCodes.Status201Created,
+            await handler.HandleAsync(new AddDistrict(cityId, request.Slug, request.Name, request.SortOrder), cancellationToken));
+
+    [HttpPut("cities/{cityId:guid}/districts/{districtId:guid}")]
+    public Task<AdminDistrictDto> UpdateDistrict(
+        Guid cityId,
+        Guid districtId,
+        PlaceRequest request,
+        [FromServices] ICommandHandler<UpdateDistrict, AdminDistrictDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new UpdateDistrict(cityId, districtId, request.Slug, request.Name, request.SortOrder), cancellationToken);
+
+    [HttpPost("cities/{cityId:guid}/districts/{districtId:guid}/activate")]
+    public Task<AdminDistrictDto> ActivateDistrict(
+        Guid cityId,
+        Guid districtId,
+        [FromServices] ICommandHandler<SetDistrictActive, AdminDistrictDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetDistrictActive(cityId, districtId, IsActive: true), cancellationToken);
+
+    [HttpPost("cities/{cityId:guid}/districts/{districtId:guid}/deactivate")]
+    public Task<AdminDistrictDto> DeactivateDistrict(
+        Guid cityId,
+        Guid districtId,
+        [FromServices] ICommandHandler<SetDistrictActive, AdminDistrictDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetDistrictActive(cityId, districtId, IsActive: false), cancellationToken);
+}

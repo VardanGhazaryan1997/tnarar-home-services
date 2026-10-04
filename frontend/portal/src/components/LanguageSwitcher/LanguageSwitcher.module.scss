@@ -1,0 +1,23 @@
+@use 'styles/mixins' as *;
+
+// The label stays for screen readers; the select shows the language names.
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+
+  &__label {
+    @include visually-hidden;
+  }
+
+  &__select {
+    @include focus-ring;
+
+    min-height: 36px;
+    padding: 0 space(2);
+    color: $color-night;
+    cursor: pointer;
+    background: $color-white;
+    border: 1px solid $color-border;
+    border-radius: $radius;
+  }
+}

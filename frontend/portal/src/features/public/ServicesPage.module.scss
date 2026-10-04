@@ -1,0 +1,91 @@
+@use 'styles/mixins' as *;
+
+.services-page {
+  display: flex;
+  flex-direction: column;
+  gap: space(5);
+
+  &__list {
+    display: grid;
+    gap: space(3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__group {
+    @include surface;
+
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    padding: space(4);
+  }
+
+  &__parent {
+    @include focus-ring;
+
+    display: flex;
+    gap: space(3);
+    align-items: center;
+    color: $color-text;
+    text-decoration: none;
+    border-radius: $radius;
+
+    &:hover .services-page__name {
+      color: $color-tuff-deep;
+    }
+  }
+
+  &__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    color: $color-tuff-deep;
+    background: rgb(200 100 59 / 10%);
+    border-radius: $radius;
+  }
+
+  &__name {
+    @include heading-3;
+
+    flex: 1;
+  }
+
+  &__chevron {
+    color: $color-text-faint;
+  }
+
+  &__children {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__child {
+    @include focus-ring;
+    @include text-small;
+
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 space(3);
+    color: $color-text;
+    text-decoration: none;
+    background: $color-surface-sunken;
+    border-radius: $radius-pill;
+
+    &:hover {
+      color: $color-tuff-deep;
+    }
+  }
+}

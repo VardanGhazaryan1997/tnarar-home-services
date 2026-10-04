@@ -1,0 +1,41 @@
+@use 'styles/mixins' as *;
+
+.avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-white;
+  background: $color-night-soft;
+  border-radius: 50%;
+
+  &--sm {
+    width: 32px;
+    height: 32px;
+    font-size: $font-size-xs;
+  }
+
+  &--lg {
+    width: 56px;
+    height: 56px;
+    font-size: $font-size-lg;
+  }
+
+  &--xl {
+    width: 96px;
+    height: 96px;
+    font-size: $font-size-2xl;
+    border: 4px solid $color-white;
+    box-shadow: $shadow;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

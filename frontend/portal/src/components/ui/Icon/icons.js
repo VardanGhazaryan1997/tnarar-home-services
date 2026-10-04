@@ -1,0 +1,45 @@
+export const ICON_PATHS = {
+  home: 'M3 11.5 12 4l9 7.5M5.5 9.5V20h13V9.5M9.5 20v-6h5v6',
+  requests: 'M9 4h6l1 2h3v14H5V6h3l1-2ZM9 11h6M9 15h4',
+  orders: 'M4 8h16v11H4zM9 8V5h6v3M4 13h16',
+  messages: 'M4 5h16v11H9l-5 4V5ZM8 9.5h8M8 12.5h5',
+  account: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 20a7.5 7.5 0 0 1 15 0',
+  inbox: 'M4 13h4l1.5 3h5L16 13h4M4 13l2.5-8h11L20 13v6H4v-6Z',
+  plus: 'M12 5v14M5 12h14',
+  close: 'M6 6l12 12M18 6 6 18',
+  check: 'M5 12.5 10 17l9-10',
+  chevronLeft: 'M15 5l-7 7 7 7',
+  chevronRight: 'M9 5l7 7-7 7',
+  camera: 'M4 8h3l2-3h6l2 3h3v11H4V8ZM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z',
+  calendar: 'M5 6h14v14H5zM5 10h14M9 3v4M15 3v4',
+  pin: 'M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21ZM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
+  money: 'M3 7h18v10H3zM12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM6 10v4M18 10v4',
+  send: 'M4 12 20 4l-6 16-3-7-7-1Z',
+  logout: 'M10 5H5v14h5M14 8l4 4-4 4M18 12H9',
+  trash: 'M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13',
+  clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2',
+  search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4',
+  filter: 'M4 5h16l-6 7.5V19l-4 2v-8.5L4 5Z',
+  bell: 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
+  star: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z',
+  edit: 'M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4',
+  info: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 11v6M12 7.5v.5',
+  image: 'M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15.5 9.5h.01',
+  file: 'M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6',
+  shield: 'M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3ZM9 12l2 2 4-4',
+  users: 'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM3 20a6 6 0 0 1 12 0M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14a5 5 0 0 1 3 6',
+  tools: 'M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5 2.5-2.5Z',
+  // Service categories (the icon names the catalog uses)
+  pipe: 'M3 7h6v6H3M9 9h5a4 4 0 0 1 4 4v8M15 21h6',
+  flame: 'M12 21a6 6 0 0 0 6-6c0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-3-2 2-3 4-3 7a6 6 0 0 0 6 6Z',
+  bolt: 'M13 3 5 14h6l-1 7 8-11h-6l1-7Z',
+  brick: 'M3 6h18v12H3zM3 10h18M3 14h18M9 6v4M15 10v4M9 14v4',
+  roller: 'M4 4h13v5H4zM17 6.5h3V12h-8v3M11 15h2v6h-2z',
+  facade: 'M4 21V7l8-4 8 4v14M4 21h16M8 10h2M14 10h2M8 14h2M14 14h2M10 21v-3h4v3',
+  sparkle: 'M12 3l2 5.5L19.5 10 14 12l-2 6-2-6-5.5-2L10 8.5 12 3ZM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z',
+}
+
+export const ICON_NAMES = Object.keys(ICON_PATHS)
+
+/** A category's icon name from the catalog, or a generic one for icons the Portal doesn't draw. */
+export const categoryIcon = (name) => (name && ICON_PATHS[name] ? name : 'tools')

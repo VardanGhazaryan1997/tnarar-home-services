@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HomeServices.Domain\HomeServices.Domain.csproj" />
+    <ProjectReference Include="..\..\src\HomeServices.Application\HomeServices.Application.csproj" />
+    <ProjectReference Include="..\..\src\HomeServices.Infrastructure\HomeServices.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\HomeServices.Api\HomeServices.Api.csproj" />
+  </ItemGroup>
+</Project>

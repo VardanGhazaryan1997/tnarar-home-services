@@ -1,0 +1,34 @@
+@use 'styles/mixins' as *;
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+  align-items: center;
+  padding: space(7) space(4);
+  text-align: center;
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    color: $color-tuff-deep;
+    background: $color-surface-sunken;
+    border-radius: 50%;
+  }
+
+  &__title {
+    @include heading-3;
+  }
+
+  &__description {
+    @include text-muted;
+
+    max-width: 420px;
+  }
+
+  &__action {
+    margin-top: space(2);
+  }
+}

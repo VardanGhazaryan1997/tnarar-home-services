@@ -1,0 +1,24 @@
+@use 'styles/mixins' as *;
+
+.brand-logo {
+  display: inline-flex;
+  gap: space(2);
+  align-items: center;
+  line-height: 1;
+
+  &__mark {
+    flex: none;
+  }
+
+  &__word {
+    font-family: 'Noto Sans Armenian', sans-serif;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-night;
+    letter-spacing: 0.2px;
+  }
+
+  &__accent {
+    color: $color-tuff;
+  }
+}

@@ -1,0 +1,698 @@
+@use 'styles/mixins' as *;
+
+// Partner onboarding: the wizard (steps on the left on desktop, a progress line on phones), its step
+// controls, the media grids and the status screen.
+.partner-wizard {
+  display: grid;
+  gap: space(4);
+  align-items: start;
+
+  @include up(lg) {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: space(5);
+  }
+
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+
+    @include up(lg) {
+      @include surface;
+
+      position: sticky;
+      top: calc(#{$header-height} + #{space(4)});
+      padding: space(3);
+    }
+  }
+
+  &__step-of {
+    @include text-small;
+    @include text-muted;
+
+    @include up(lg) {
+      padding: space(1) space(2);
+    }
+  }
+
+  // Phones: a row of short bars with the current step named above; desktop: the full list.
+  &__step-list {
+    display: flex;
+    gap: space(1);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    > li {
+      flex: 1;
+    }
+
+    @include up(lg) {
+      flex-direction: column;
+    }
+  }
+
+  &__step {
+    @include reset-button;
+    @include focus-ring;
+
+    display: flex;
+    gap: space(3);
+    align-items: center;
+    width: 100%;
+    height: 6px;
+    overflow: hidden;
+    background: $color-border;
+    border-radius: $radius-pill;
+
+    &--done,
+    &--current {
+      background: $color-tuff;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+
+    @include up(lg) {
+      height: auto;
+      min-height: $touch-target;
+      padding: space(2);
+      text-align: left;
+      background: none;
+      border-radius: $radius;
+
+      &:hover:not(:disabled) {
+        background: $color-surface-sunken;
+      }
+
+      &--done,
+      &--current {
+        background: none;
+      }
+
+      &--current {
+        font-weight: $font-weight-semibold;
+        background: $color-mist;
+      }
+    }
+  }
+
+  &__step-number {
+    display: none;
+
+    @include up(lg) {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $color-text-muted;
+      background: $color-surface-sunken;
+      border-radius: 50%;
+
+      .partner-wizard__step--current & {
+        color: $color-white;
+        background: $color-night;
+      }
+
+      .partner-wizard__step--done & {
+        color: $color-white;
+        background: $color-tuff-deep;
+      }
+    }
+  }
+
+  &__step-name {
+    @include visually-hidden;
+
+    @include up(lg) {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip-path: none;
+      white-space: normal;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+    min-width: 0;
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__row {
+    display: grid;
+    gap: space(4);
+
+    @include up(sm) {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  &__intro {
+    @include text-muted;
+  }
+
+  &__count {
+    @include text-small;
+
+    font-weight: $font-weight-medium;
+  }
+
+  &__comment {
+    white-space: pre-line;
+  }
+
+  &__missing {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    padding: 0;
+    margin: space(2) 0 0;
+    list-style: none;
+  }
+
+  &__missing-link {
+    @include reset-button;
+    @include focus-ring;
+
+    display: inline-flex;
+    gap: space(1);
+    align-items: center;
+    font-weight: $font-weight-medium;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &__nav {
+    display: flex;
+    gap: space(2);
+    justify-content: space-between;
+  }
+}
+
+
+.type-choice {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+  padding: 0;
+  margin: 0;
+  border: 0;
+
+  &__legend {
+    margin-bottom: space(3);
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__options {
+    display: grid;
+    gap: space(3);
+
+    @include up(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__option {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: space(1) space(3);
+    align-items: center;
+    padding: space(4);
+    cursor: pointer;
+    background: $color-surface;
+    border: 2px solid $color-border;
+    border-radius: $radius;
+    transition: border-color $transition;
+
+    &:hover {
+      border-color: $color-border-strong;
+    }
+
+    &:focus-within {
+      outline: 3px solid rgb(200 100 59 / 55%);
+      outline-offset: 2px;
+    }
+
+    &--selected,
+    &--selected:hover {
+      background: rgb(200 100 59 / 6%);
+      border-color: $color-tuff;
+    }
+
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    @include up(md) {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+
+  &__input {
+    @include visually-hidden;
+  }
+
+  &__icon {
+    display: grid;
+    grid-row: span 2;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: $color-tuff-deep;
+    background: rgb(200 100 59 / 10%);
+    border-radius: $radius;
+
+    @include up(md) {
+      grid-row: auto;
+    }
+  }
+
+  &__title {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__text {
+    @include text-small;
+    @include text-muted;
+  }
+}
+
+.check-tree {
+  display: grid;
+  gap: space(3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  @include up(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: space(3) space(4);
+    border: 1px solid $color-border;
+    border-radius: $radius;
+  }
+
+  &__parent {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__icon {
+    flex: none;
+    color: $color-tuff-deep;
+  }
+
+  &__children {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    padding: 0 0 0 space(7);
+    margin: 0;
+    list-style: none;
+  }
+}
+
+.area-picker {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__city {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    padding: space(3) space(4);
+    border: 1px solid $color-border;
+    border-radius: $radius;
+  }
+
+  &__whole {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__districts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: space(1) space(3);
+    padding: 0;
+    margin: 0;
+    border: 0;
+
+    @include up(md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__legend {
+    @include text-small;
+    @include text-muted;
+
+    margin-bottom: space(2);
+  }
+}
+
+.avatar-picker {
+  display: flex;
+  gap: space(4);
+  align-items: center;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__error {
+    @include text-small;
+
+    color: $color-danger;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    margin-top: space(1);
+  }
+
+  &__input {
+    @include visually-hidden;
+  }
+}
+
+.media-manager {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+
+  &__title {
+    @include heading-3;
+  }
+
+  &__count {
+    @include text-small;
+    @include text-muted;
+
+    font-weight: $font-weight-regular;
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(md) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  &__item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: $color-surface-sunken;
+    border-radius: $radius;
+
+    &--error {
+      outline: 2px solid $color-danger;
+    }
+  }
+
+  &__preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: space(2);
+    color: $color-text-muted;
+    text-align: center;
+  }
+
+  &__name {
+    @include line-clamp(2);
+
+    font-size: $font-size-xs;
+    overflow-wrap: anywhere;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(255 255 255 / 70%);
+  }
+
+  &__error {
+    position: absolute;
+    inset: auto 0 0;
+    padding: space(1);
+    font-size: $font-size-xs;
+    color: $color-white;
+    background: $color-danger;
+  }
+
+  &__remove {
+    @include reset-button;
+    @include focus-ring;
+
+    position: absolute;
+    top: space(1);
+    right: space(1);
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: $color-white;
+    background: rgb(29 51 70 / 75%);
+    border-radius: 50%;
+  }
+
+  &__add {
+    @include reset-button;
+    @include focus-ring;
+
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    border: 2px dashed $color-border-strong;
+    border-radius: $radius;
+
+    &:hover {
+      color: $color-tuff-deep;
+      border-color: $color-tuff;
+    }
+  }
+
+  &__input {
+    @include visually-hidden;
+  }
+}
+
+.profile-summary {
+  display: flex;
+  flex-direction: column;
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: space(4) 0;
+    border-bottom: 1px solid $color-border;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  &__head {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    @include text-small;
+
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+  }
+
+  &__who {
+    display: flex;
+    gap: space(3);
+    align-items: center;
+  }
+
+  &__name {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__muted {
+    @include text-muted;
+  }
+
+  &__about {
+    white-space: pre-line;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+.profile-status {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__banner {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+    padding: space(5);
+    border-radius: $radius-lg;
+
+    @include up(md) {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    &--info {
+      background: $color-info-soft;
+    }
+
+    &--success {
+      background: $color-success-soft;
+    }
+
+    &--danger {
+      background: $color-danger-soft;
+    }
+
+    &--warning {
+      background: $color-warning-soft;
+    }
+  }
+
+  &__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    background: $color-white;
+    border-radius: 50%;
+  }
+
+  &__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__title {
+    @include heading-2;
+  }
+
+  &__muted {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__comment {
+    padding: space(3) space(4);
+    margin: 0;
+    white-space: pre-line;
+    background: rgb(255 255 255 / 70%);
+    border-left: 3px solid currentcolor;
+    border-radius: $radius-sm;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+
+    @include up(md) {
+      min-width: 220px;
+    }
+  }
+}

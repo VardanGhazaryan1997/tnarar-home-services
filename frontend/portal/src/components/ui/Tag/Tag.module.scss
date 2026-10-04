@@ -1,0 +1,42 @@
+@use 'styles/mixins' as *;
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px space(2);
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  line-height: 1.6;
+  white-space: nowrap;
+  border-radius: $radius-pill;
+
+  &--neutral {
+    color: $color-text-muted;
+    background: $color-surface-sunken;
+  }
+
+  &--info {
+    color: $color-info;
+    background: $color-info-soft;
+  }
+
+  &--success {
+    color: $color-success;
+    background: $color-success-soft;
+  }
+
+  &--warning {
+    color: $color-warning;
+    background: $color-warning-soft;
+  }
+
+  &--danger {
+    color: $color-danger;
+    background: $color-danger-soft;
+  }
+
+  &--accent {
+    color: $color-white;
+    background: $color-tuff-deep;
+  }
+}

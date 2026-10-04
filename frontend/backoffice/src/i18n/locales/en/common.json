@@ -1,0 +1,1316 @@
+{
+  "app": {
+    "name": "Back Office"
+  },
+  "nav": {
+    "label": "Main menu",
+    "open": "Open menu",
+    "dashboard": "Dashboard",
+    "partners": "Partners",
+    "users": "Users",
+    "catalog": "Catalog",
+    "content": "Website content",
+    "translations": "Translations",
+    "staff": "Staff and roles",
+    "audit": "Audit log",
+    "requests": "Requests",
+    "orders": "Orders",
+    "payments": "Payments",
+    "reviews": "Reviews",
+    "commissions": "Commissions"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to the Back Office",
+    "open": "Open",
+    "greeting": "Hello, {{name}}. Here's what needs attention.",
+    "recentActivity": "Recent changes",
+    "allActivity": "Full audit log",
+    "counters": {
+      "pendingPartners": "Partners waiting for review",
+      "users": "Portal users",
+      "blockedUsers": "Blocked users",
+      "invitedStaff": "Staff invitations not accepted",
+      "draftPages": "Draft pages",
+      "missingTexts": "Missing translations"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backHome": "Back to dashboard"
+  },
+  "languageSwitcher": {
+    "label": "Language"
+  },
+  "auth": {
+    "loading": "Checking your session…",
+    "signOut": "Sign out",
+    "userMenu": "Account menu",
+    "signIn": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "emailRequired": "Enter your email",
+      "emailInvalid": "Enter a valid email address",
+      "passwordRequired": "Enter your password"
+    },
+    "twoFactor": {
+      "title": "Two-step verification",
+      "text": "Enter the 6-digit code from your authenticator app.",
+      "setupTitle": "Set up two-step verification",
+      "step1": "1. Install an authenticator app, such as Google Authenticator or Microsoft Authenticator.",
+      "step2": "2. Scan this QR code with the app.",
+      "step3": "3. Enter the 6-digit code the app shows.",
+      "secretLabel": "Can't scan it? Enter this key in the app:",
+      "qrLabel": "QR code for the authenticator app",
+      "code": "Authenticator code",
+      "codeRequired": "Enter the 6-digit code",
+      "submit": "Verify",
+      "setupSubmit": "Turn on and sign in",
+      "back": "Sign in with a different account"
+    },
+    "acceptInvite": {
+      "title": "Join the Back Office",
+      "text": "Choose a password of at least {{min}} characters. Then sign in and set up two-step verification.",
+      "password": "New password",
+      "confirm": "Repeat the password",
+      "confirmRequired": "Enter the password again",
+      "mismatch": "The passwords don't match",
+      "submit": "Save password",
+      "doneTitle": "Password saved",
+      "doneText": "Sign in with your email and new password."
+    }
+  },
+  "forbidden": {
+    "title": "You don't have access to this section",
+    "text": "Ask a Super Admin to give your role access."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Can't reach the server. Check your connection and try again.",
+    "staff": {
+      "invalid_credentials": "The email or password is not correct.",
+      "locked_out": "Too many failed attempts. Please try again later.",
+      "suspended": "This account is suspended. Contact a Super Admin.",
+      "challenge_invalid": "Signing in took too long. Please sign in again.",
+      "totp_invalid": "The code is not correct. Check that the time on your phone is right and try again.",
+      "two_factor_setup_not_started": "Please sign in again.",
+      "two_factor_not_enabled": "Please sign in again.",
+      "invite_invalid": "This invitation link isn't valid. Ask for a new one.",
+      "invite_expired": "This invitation link has expired. Ask for a new one.",
+      "email_taken": "A staff member with this email already exists",
+      "email_invalid": "Enter a valid email address",
+      "name_invalid": "Enter a name of up to 100 characters",
+      "not_found": "This staff member doesn't exist.",
+      "not_invited": "This person has already accepted the invitation.",
+      "cannot_suspend_self": "You can't suspend yourself.",
+      "last_super_admin": "There must always be at least one active Super Admin.",
+      "super_admin_only": "Only a Super Admin can do this.",
+      "password_too_short": "The password must be at least 12 characters"
+    },
+    "session": {
+      "expired": "Your session has expired. Please sign in again.",
+      "invalid": "Your session has expired. Please sign in again.",
+      "revoked": "You were signed out. Please sign in again.",
+      "missing": "Please sign in."
+    },
+    "email": {
+      "required": "Enter your email",
+      "invalid": "Enter a valid email address"
+    },
+    "password": {
+      "required": "Enter your password",
+      "too_short": "The password must be at least 12 characters",
+      "too_long": "The password is too long"
+    },
+    "totp": {
+      "code_format": "Enter the 6-digit code"
+    },
+    "slug": {
+      "invalid": "Use lower-case latin letters, digits and dashes, e.g. exterior-cladding"
+    },
+    "name": {
+      "required": "Enter a name",
+      "default_language_required": "The name in the default language is required",
+      "language_invalid": "Unknown language code",
+      "too_long": "The name is too long"
+    },
+    "icon": {
+      "too_long": "The icon key is too long"
+    },
+    "sort_order": {
+      "invalid": "The order can't be negative"
+    },
+    "category": {
+      "not_found": "This category no longer exists. Refresh the page.",
+      "slug_taken": "Another category already uses this slug",
+      "parent_not_found": "The parent category no longer exists",
+      "too_deep": "A subcategory can't have subcategories",
+      "parent_invalid": "A category can't be its own parent",
+      "has_subcategories": "Move or delete its subcategories first"
+    },
+    "city": {
+      "not_found": "This city no longer exists. Refresh the page.",
+      "slug_taken": "Another city already uses this slug"
+    },
+    "district": {
+      "not_found": "This district no longer exists. Refresh the page.",
+      "slug_taken": "Another district in this city already uses this slug"
+    },
+    "forbidden": "You don't have permission to do this.",
+    "comment": {
+      "required": "Write a comment for the partner",
+      "too_long": "The comment is too long"
+    },
+    "partner": {
+      "not_found": "This partner profile doesn't exist.",
+      "not_under_review": "This profile is no longer waiting for review.",
+      "not_approved": "Only approved partners can be suspended.",
+      "not_suspended": "This partner isn't suspended."
+    },
+    "role": {
+      "not_found": "This role no longer exists. Refresh the page.",
+      "name_taken": "Another role already has this name",
+      "name_invalid": "Enter a name of up to 64 characters",
+      "description_too_long": "The description is too long",
+      "in_use": "Some staff still have this role. Remove it from them first.",
+      "system_cannot_be_deleted": "Built-in roles can't be deleted.",
+      "system_cannot_be_renamed": "Built-in roles keep their name.",
+      "permission_unknown": "Unknown permission",
+      "permission_super_admin_only": "This permission is reserved for Super Admins"
+    },
+    "roles": {
+      "required": "Choose roles",
+      "invalid": "A chosen role no longer exists. Refresh the page."
+    },
+    "permissions": {
+      "required": "Choose permissions",
+      "unknown": "Unknown permission",
+      "super_admin_only": "Some permissions are reserved for Super Admins"
+    },
+    "description": {
+      "too_long": "The description is too long"
+    },
+    "token": {
+      "required": "This invitation link isn't valid. Ask for a new one."
+    },
+    "user": {
+      "not_found": "This user doesn't exist."
+    },
+    "reason": {
+      "required": "Write the reason",
+      "too_long": "The reason is too long"
+    },
+    "title": {
+      "required": "Enter a title",
+      "default_language_required": "The title in the default language is required",
+      "language_invalid": "Unknown language code",
+      "too_long": "The title is too long"
+    },
+    "body": {
+      "required": "Enter the text",
+      "language_invalid": "Unknown language code",
+      "too_long": "The text is too long"
+    },
+    "question": {
+      "required": "Enter the question",
+      "default_language_required": "The question in the default language is required",
+      "language_invalid": "Unknown language code",
+      "too_long": "The question is too long"
+    },
+    "answer": {
+      "required": "Enter the answer",
+      "default_language_required": "The answer in the default language is required",
+      "language_invalid": "Unknown language code",
+      "too_long": "The answer is too long"
+    },
+    "audience": {
+      "invalid": "Choose who the question is for"
+    },
+    "page": {
+      "not_found": "This page no longer exists.",
+      "slug_taken": "Another page already uses this address",
+      "title_required": "A page needs a title",
+      "body_required": "Write the text in the default language before publishing"
+    },
+    "faq": {
+      "not_found": "This question no longer exists.",
+      "text_required": "A question and an answer are required",
+      "audience_invalid": "Choose who the question is for"
+    },
+    "code": {
+      "invalid": "Use an ISO code like fr or pt-br"
+    },
+    "native_name": {
+      "required": "Enter the name in the language itself",
+      "too_long": "The name is too long"
+    },
+    "key": {
+      "invalid": "Use letters, digits, - and _, with dots between parts"
+    },
+    "values": {
+      "required": "Enter the text",
+      "too_long": "The text is too long",
+      "language_invalid": "Unknown language code"
+    },
+    "namespace": {
+      "invalid": "Unknown app"
+    },
+    "language": {
+      "invalid": "Unknown language",
+      "not_found": "This language doesn't exist.",
+      "code_invalid": "Use an ISO code like fr or pt-br",
+      "code_taken": "This language already exists",
+      "default_cannot_be_deactivated": "The default language can't be hidden.",
+      "inactive_cannot_be_default": "A hidden language can't be the default.",
+      "name_required": "Enter the name",
+      "name_too_long": "The name is too long",
+      "native_name_required": "Enter the name in the language itself"
+    },
+    "translation": {
+      "default_required": "The text in the default language is required",
+      "key_conflict": "This key clashes with an existing key: one key can't be both a text and a group.",
+      "not_found": "This text no longer exists.",
+      "key_invalid": "Use letters, digits, - and _, with dots between parts",
+      "namespace_invalid": "Unknown app",
+      "value_invalid": "The text is too long"
+    },
+    "content": {
+      "invalid": "The file must contain a JSON object"
+    },
+    "action": {
+      "invalid": "Unknown action"
+    },
+    "range": {
+      "invalid": "The end of the period is before its start"
+    },
+    "payment": {
+      "not_found": "This payment doesn't exist.",
+      "not_disputed": "This payment is no longer disputed.",
+      "note_too_long": "The note is too long."
+    },
+    "review": {
+      "not_found": "This review doesn't exist.",
+      "already_hidden": "This review is already hidden.",
+      "not_hidden": "This review isn't hidden.",
+      "reason_required": "Write the reason"
+    },
+    "request": {
+      "not_found": "This request doesn't exist.",
+      "not_open": "This request is no longer open.",
+      "partner_unavailable": "Some of these partners can't receive requests."
+    },
+    "order": {
+      "not_found": "This order doesn't exist.",
+      "not_flagged": "This order doesn't need attention.",
+      "cannot_cancel": "This order can't be cancelled."
+    },
+    "partner_ids": {
+      "required": "Choose at least one partner",
+      "too_many": "At most 20 partners at once"
+    },
+    "note": {
+      "too_long": "The note is too long"
+    },
+    "commission": {
+      "statement_not_found": "This statement doesn't exist.",
+      "rate_invalid": "The rate is 0 to 50 with up to two decimals.",
+      "already_paid": "This statement is already paid.",
+      "settlement_amount_invalid": "The amount can't be more than what is still owed.",
+      "method_invalid": "Unknown payment method.",
+      "date_future": "The payment date can't be in the future.",
+      "reference_too_long": "The reference is too long."
+    },
+    "percent": {
+      "invalid": "The rate is 0 to 50 with up to two decimals."
+    },
+    "amount": {
+      "invalid": "Enter a positive amount."
+    },
+    "method": {
+      "invalid": "Choose the payment method."
+    },
+    "reference": {
+      "too_long": "The reference is too long."
+    }
+  },
+  "catalog": {
+    "tabs": {
+      "categories": "Categories",
+      "cities": "Cities and districts"
+    },
+    "columns": {
+      "name": "Name",
+      "sortOrder": "Order",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Visible",
+      "hidden": "Hidden"
+    },
+    "actions": {
+      "edit": "Edit",
+      "hide": "Hide",
+      "show": "Show",
+      "delete": "Delete"
+    },
+    "form": {
+      "nameIn": "Name ({{language}})",
+      "nameRequired": "Enter the name in this language",
+      "slug": "Slug (used in web addresses)",
+      "slugHelp": "Lower-case latin letters, digits and dashes, e.g. exterior-cladding",
+      "slugRequired": "Enter a slug",
+      "sortOrder": "Order",
+      "sortOrderHelp": "Lower numbers come first",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "categories": {
+      "help": "Categories customers browse and partners offer. Up to two levels.",
+      "add": "Add category",
+      "addSub": "Add subcategory",
+      "edit": "Edit category",
+      "parent": "Parent category",
+      "topLevel": "Top level (no parent)",
+      "parentLocked": "This category has subcategories, so it stays at the top level.",
+      "icon": "Icon",
+      "iconHelp": "Icon key the website uses, e.g. pipe",
+      "empty": "No categories yet",
+      "deleteConfirm": "Delete \"{{name}}\"?",
+      "deleteHelp": "It disappears from the website. Categories with subcategories can't be deleted."
+    },
+    "cities": {
+      "help": "Cities the platform serves. Hide a city instead of deleting it.",
+      "add": "Add city",
+      "edit": "Edit city",
+      "districtCount": "Districts",
+      "empty": "No cities yet"
+    },
+    "districts": {
+      "addTo": "Add district to {{city}}",
+      "edit": "Edit district",
+      "empty": "No districts"
+    },
+    "created": "Added",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "hiddenDone": "Hidden from the website",
+    "shownDone": "Shown on the website"
+  },
+  "partners": {
+    "queue": "Review queue",
+    "queueEmpty": "Nothing to review",
+    "empty": "No partners",
+    "coverage": "{{services}} services · {{areas}} areas",
+    "filters": {
+      "status": "Status",
+      "all": "All",
+      "search": "Search partners",
+      "searchPlaceholder": "Name or phone",
+      "type": "Partner type",
+      "anyType": "Any type"
+    },
+    "columns": {
+      "name": "Partner",
+      "owner": "Owner",
+      "coverage": "Offers",
+      "submitted": "Submitted",
+      "status": "Status"
+    },
+    "status": {
+      "Draft": "Draft",
+      "UnderReview": "Under review",
+      "NeedsChanges": "Needs changes",
+      "Approved": "Approved",
+      "Rejected": "Rejected",
+      "Suspended": "Suspended"
+    },
+    "type": {
+      "Specialist": "Specialist",
+      "Company": "Company",
+      "Supplier": "Supplier"
+    },
+    "detail": {
+      "back": "All partners",
+      "profile": "Profile",
+      "type": "Type",
+      "experience": "Experience",
+      "submitted": "Submitted",
+      "publicAddress": "Public address",
+      "about": "About",
+      "services": "Services",
+      "areas": "Areas",
+      "wholeCity": "{{city}} (whole city)",
+      "unknownPlace": "Unknown place",
+      "unknownCategory": "Unknown category",
+      "workExamples": "Work examples ({{count}})",
+      "noWorkExamples": "No work examples",
+      "documents": "Documents ({{count}})",
+      "noDocuments": "No documents",
+      "owner": "Owner",
+      "ownerName": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "account": "Account",
+      "blocked": "Blocked",
+      "active": "Active",
+      "history": "History",
+      "system": "System",
+      "reviewComment": "Comment for the partner",
+      "years": "{{count}} yrs"
+    },
+    "decisions": {
+      "comment": "Comment for the partner",
+      "commentHelp": "The partner sees this. Say clearly what to do.",
+      "approve": {
+        "button": "Approve",
+        "title": "Approve {{name}}?",
+        "text": "The profile becomes public and starts receiving requests.",
+        "confirm": "Approve",
+        "done": "Approved"
+      },
+      "requestChanges": {
+        "button": "Ask for changes",
+        "title": "Ask {{name}} for changes",
+        "text": "The profile goes back to the partner, who can fix it and submit again.",
+        "confirm": "Send back",
+        "done": "Sent back to the partner"
+      },
+      "reject": {
+        "button": "Reject",
+        "title": "Reject {{name}}?",
+        "text": "Rejection is final: the partner can't submit this profile again.",
+        "confirm": "Reject",
+        "done": "Rejected"
+      },
+      "suspend": {
+        "button": "Suspend",
+        "title": "Suspend {{name}}?",
+        "text": "The profile disappears from the website and stops receiving requests.",
+        "confirm": "Suspend",
+        "done": "Suspended"
+      },
+      "reinstate": {
+        "button": "Reinstate",
+        "title": "Reinstate {{name}}?",
+        "text": "The profile becomes public again.",
+        "confirm": "Reinstate",
+        "done": "Reinstated"
+      }
+    }
+  },
+  "staff": {
+    "tabs": {
+      "members": "Staff",
+      "roles": "Roles"
+    },
+    "invite": "Invite",
+    "superAdmin": "Super Admin",
+    "noRoles": "No roles",
+    "noPermissions": "No permissions",
+    "never": "Never",
+    "empty": "No staff found",
+    "filters": {
+      "search": "Search staff",
+      "searchPlaceholder": "Name or email",
+      "status": "Status",
+      "anyStatus": "Any status",
+      "role": "Role",
+      "anyRole": "Any role"
+    },
+    "columns": {
+      "name": "Name",
+      "roles": "Roles",
+      "lastSignIn": "Last sign-in",
+      "status": "Status"
+    },
+    "status": {
+      "Active": "Active",
+      "Invited": "Invited",
+      "Suspended": "Suspended"
+    },
+    "form": {
+      "inviteTitle": "Invite a staff member",
+      "editTitle": "Edit staff member",
+      "email": "Email",
+      "fullName": "Full name",
+      "roles": "Roles",
+      "rolesHelp": "They get the permissions of every role you choose.",
+      "superAdmin": "Make them a Super Admin",
+      "superAdminHelp": "Super Admins have every permission, including managing roles.",
+      "invite": "Create invitation",
+      "save": "Save",
+      "saved": "Saved"
+    },
+    "inviteLink": {
+      "title": "Send the invitation link",
+      "text": "Send this link to {{name}} ({{email}}). They'll choose a password and set up two-step verification.",
+      "once": "Copy it now: the link is shown only once and works until {{date}}.",
+      "done": "Done"
+    },
+    "detail": {
+      "back": "All staff",
+      "edit": "Edit",
+      "account": "Account",
+      "twoFactor": "Two-step verification",
+      "twoFactorOn": "On",
+      "twoFactorOff": "Not set up",
+      "created": "Added",
+      "inviteExpires": "Invitation expires",
+      "permissions": "Permissions",
+      "allPermissions": "Super Admins have every permission."
+    },
+    "actions": {
+      "renewInvite": {
+        "button": "New invitation link",
+        "title": "Create a new invitation link for {{name}}?",
+        "text": "The previous link stops working.",
+        "confirm": "Create link",
+        "done": "New link created"
+      },
+      "suspend": {
+        "button": "Suspend",
+        "title": "Suspend {{name}}?",
+        "text": "They can't sign in, and they're signed out within 15 minutes.",
+        "confirm": "Suspend",
+        "done": "Suspended"
+      },
+      "activate": {
+        "button": "Activate",
+        "title": "Activate {{name}}?",
+        "text": "They can sign in again.",
+        "confirm": "Activate",
+        "done": "Activated"
+      },
+      "resetTwoFactor": {
+        "button": "Reset two-step verification",
+        "title": "Reset two-step verification for {{name}}?",
+        "text": "Use this if they lost their phone. They're signed out and set up a new authenticator app at the next sign-in.",
+        "confirm": "Reset",
+        "done": "Two-step verification reset"
+      },
+      "grantSuperAdmin": {
+        "button": "Make Super Admin",
+        "title": "Make {{name}} a Super Admin?",
+        "text": "They'll have every permission, including managing roles and other Super Admins.",
+        "confirm": "Make Super Admin",
+        "done": "Now a Super Admin"
+      },
+      "revokeSuperAdmin": {
+        "button": "Remove Super Admin",
+        "title": "Remove Super Admin from {{name}}?",
+        "text": "They keep only the permissions of their roles.",
+        "confirm": "Remove",
+        "done": "No longer a Super Admin"
+      }
+    }
+  },
+  "roles": {
+    "help": "Roles bundle permissions. Staff get the permissions of all their roles.",
+    "viewOnly": "Only Super Admins can change roles.",
+    "add": "Add role",
+    "builtIn": "Built-in",
+    "empty": "No roles yet",
+    "permissionCount": "Permissions: {{count}}",
+    "editAria": "Edit {{name}}",
+    "deleteAria": "Delete {{name}}",
+    "deleteConfirm": "Delete the role \"{{name}}\"?",
+    "deleteHelp": "Only roles nobody has can be deleted.",
+    "deleted": "Role deleted",
+    "columns": {
+      "name": "Role",
+      "description": "Description",
+      "permissions": "Permissions"
+    },
+    "form": {
+      "addTitle": "Add role",
+      "editTitle": "Edit role: {{name}}",
+      "name": "Name",
+      "systemName": "Built-in roles keep their name.",
+      "description": "Description",
+      "permissions": "Permissions"
+    }
+  },
+  "permissionGroups": {
+    "dashboard": "Dashboard",
+    "catalog": "Catalog",
+    "partners": "Partners",
+    "users": "Users",
+    "staff": "Staff",
+    "roles": "Roles",
+    "content": "Content",
+    "translations": "Translations",
+    "audit": "Audit log",
+    "requests": "Requests",
+    "orders": "Orders",
+    "payments": "Payments",
+    "commissions": "Commissions",
+    "support": "Support",
+    "reviews": "Reviews",
+    "materials": "Materials",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "permissions": {
+    "dashboard": {
+      "view": "View the dashboard"
+    },
+    "catalog": {
+      "manage": "Manage categories and cities"
+    },
+    "partners": {
+      "view": "View partners",
+      "approve": "Approve and suspend partners"
+    },
+    "users": {
+      "view": "View users",
+      "block": "Block users"
+    },
+    "staff": {
+      "view": "View staff",
+      "manage": "Invite and manage staff"
+    },
+    "roles": {
+      "manage": "Manage roles"
+    },
+    "content": {
+      "manage": "Manage pages and FAQs"
+    },
+    "translations": {
+      "manage": "Manage languages and translations"
+    },
+    "audit": {
+      "view": "View the audit log"
+    },
+    "requests": {
+      "view": "View requests",
+      "manage": "Manage requests"
+    },
+    "orders": {
+      "view": "View orders",
+      "manage": "Manage orders"
+    },
+    "payments": {
+      "view": "View payments",
+      "manage": "Manage payments"
+    },
+    "commissions": {
+      "view": "View commissions",
+      "manage": "Manage commissions"
+    },
+    "support": {
+      "manage": "Handle support tickets"
+    },
+    "reviews": {
+      "moderate": "Moderate reviews"
+    },
+    "materials": {
+      "pricing": "Set material prices"
+    },
+    "reports": {
+      "view": "View reports"
+    },
+    "settings": {
+      "payments": "Payment settings"
+    }
+  },
+  "users": {
+    "empty": "No users found",
+    "noName": "No name yet",
+    "filters": {
+      "search": "Search users",
+      "searchPlaceholder": "Phone, name or email",
+      "role": "Role",
+      "anyRole": "Any role",
+      "status": "Status",
+      "anyStatus": "Any status"
+    },
+    "columns": {
+      "user": "User",
+      "email": "Email",
+      "roles": "Roles",
+      "joined": "Joined",
+      "status": "Status"
+    },
+    "role": {
+      "Customer": "Customer",
+      "Partner": "Partner"
+    },
+    "status": {
+      "Active": "Active",
+      "Blocked": "Blocked"
+    },
+    "detail": {
+      "back": "All users",
+      "account": "Account",
+      "phone": "Phone",
+      "name": "Name",
+      "lastSignIn": "Last sign-in",
+      "partner": "Partner profile",
+      "partnerHidden": "Hidden from the website while the user is blocked.",
+      "blockReason": "Why this user is blocked"
+    },
+    "block": {
+      "button": "Block",
+      "title": "Block {{name}}?",
+      "text": "They can't sign in, they're signed out within 15 minutes, and their partner profile is hidden.",
+      "reason": "Reason",
+      "reasonHelp": "Only staff see this.",
+      "confirm": "Block",
+      "done": "User blocked"
+    },
+    "unblock": {
+      "button": "Unblock",
+      "title": "Unblock {{name}}?",
+      "text": "They can sign in again, and their partner profile shows again if it was approved.",
+      "confirm": "Unblock",
+      "done": "User unblocked"
+    }
+  },
+  "content": {
+    "tabs": {
+      "pages": "Pages",
+      "faqs": "FAQ"
+    },
+    "published": "Published",
+    "draft": "Draft",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "publishedDone": "Published on the website",
+    "unpublished": "Removed from the website",
+    "yes": "Yes",
+    "columns": {
+      "title": "Title",
+      "footer": "In footer",
+      "updated": "Updated"
+    },
+    "form": {
+      "slug": "Address",
+      "slugHelp": "Lower-case latin letters, digits and dashes, e.g. terms-of-use",
+      "showInFooter": "Link in the website footer",
+      "title": "Title",
+      "body": "Text",
+      "markdownHelp": "Write the text in Markdown: **bold**, ## headings, - lists, [links](https://…). Languages left empty show the default language.",
+      "requiredInDefault": "Required in the default language",
+      "tooLong": "The text is too long"
+    },
+    "pages": {
+      "help": "Pages like About us or Terms of use. Drafts aren't visible on the website.",
+      "add": "Add page",
+      "newTitle": "New page",
+      "back": "All pages",
+      "settings": "Settings",
+      "text": "Title and text",
+      "empty": "No pages yet",
+      "liveNotice": "This page is published: saved changes appear on the website right away.",
+      "deleteConfirm": "Delete \"{{name}}\"?",
+      "deleteHelp": "It disappears from the website."
+    },
+    "faqs": {
+      "add": "Add question",
+      "edit": "Edit question",
+      "question": "Question",
+      "answer": "Answer",
+      "audience": "Audience",
+      "empty": "No questions yet",
+      "deleteConfirm": "Delete this question?"
+    },
+    "audience": {
+      "General": "Everyone",
+      "Customers": "Customers",
+      "Partners": "Partners"
+    }
+  },
+  "translations": {
+    "tabs": {
+      "texts": "Interface texts",
+      "languages": "Languages"
+    },
+    "namespaces": {
+      "portal": "Website",
+      "backoffice": "Back Office"
+    },
+    "transfer": {
+      "language": "Language"
+    },
+    "texts": {
+      "namespace": "App",
+      "noKeys": "No texts yet. Import the default-language file to start.",
+      "translated": "{{translated}} of {{total}}",
+      "search": "Search texts",
+      "searchPlaceholder": "Key or text",
+      "missingIn": "Missing translations",
+      "missingInPlaceholder": "All keys",
+      "missingInLanguage": "Missing in {{language}}",
+      "key": "Key",
+      "keyHelp": "Dotted path used in the code, e.g. partners.detail.back",
+      "keyRequired": "Enter the key",
+      "missing": "Missing",
+      "add": "Add text",
+      "edit": "Edit text",
+      "defaultText": "{{language}} (default)",
+      "empty": "No texts found",
+      "help": "Missing texts show in the default language. Changes reach people when they next open the app.",
+      "deleteConfirm": "Delete \"{{key}}\"?",
+      "deleteHelp": "The text is removed in every language."
+    },
+    "export": {
+      "button": "Export",
+      "title": "Export texts",
+      "confirm": "Download",
+      "withFallback": "Fill missing texts with the default language",
+      "withFallbackHelp": "Useful for sending a complete file to a translator."
+    },
+    "import": {
+      "button": "Import",
+      "title": "Import texts",
+      "confirm": "Import",
+      "file": "i18next JSON file",
+      "fileRequired": "Choose a file",
+      "drop": "Click or drop a .json file here",
+      "languageHelp": "The default language adds new keys; other languages only fill existing keys.",
+      "replace": "Also remove texts that aren't in the file",
+      "replaceHelp": "Use with care: texts missing from the file are deleted for this language.",
+      "notJson": "This file isn't valid JSON.",
+      "added": "Added",
+      "updated": "Updated",
+      "unchanged": "Unchanged",
+      "removed": "Removed",
+      "skipped": "Skipped {{n}} keys that don't exist in the default language",
+      "invalid": "{{n}} entries couldn't be read"
+    },
+    "languages": {
+      "help": "New languages start hidden: translate the texts, then show the language in the switchers.",
+      "add": "Add language",
+      "added": "Language added (hidden)",
+      "edit": "Edit {{name}}",
+      "language": "Language",
+      "code": "Code",
+      "codeHelp": "ISO code, e.g. fr or pt-br. It can't be changed later.",
+      "codeRequired": "Enter the code",
+      "name": "Name in English",
+      "nameHelp": "e.g. French",
+      "nativeName": "Name in the language itself",
+      "nativeNameHelp": "Shown in the language switcher, e.g. Français",
+      "default": "Default",
+      "active": "Shown",
+      "inactive": "Hidden",
+      "show": "Show",
+      "hide": "Hide",
+      "shown": "The language is now shown",
+      "hidden": "The language is now hidden",
+      "hideConfirm": "Hide {{name}}?",
+      "hideHelp": "It disappears from the language switchers. People using it see the default language."
+    }
+  },
+  "audit": {
+    "help": "Every change to platform data: who made it, when, and the old and new values. Secrets are hidden.",
+    "empty": "No changes found",
+    "changeCount": "Fields: {{n}}",
+    "property": "Field",
+    "oldValue": "Before",
+    "newValue": "After",
+    "columns": {
+      "when": "When",
+      "who": "Who",
+      "action": "Action",
+      "what": "What",
+      "changes": "Changes"
+    },
+    "filters": {
+      "entityType": "Record type",
+      "anyEntity": "Any record",
+      "entityId": "Record id",
+      "entityIdPlaceholder": "Record id",
+      "action": "Action",
+      "anyAction": "Any action",
+      "period": "Period"
+    },
+    "actions": {
+      "Created": "Created",
+      "Updated": "Changed",
+      "Deleted": "Deleted"
+    },
+    "actorTypes": {
+      "System": "System",
+      "User": "Portal user",
+      "Staff": "Staff"
+    },
+    "entities": {
+      "PartnerProfile": "Partner profile",
+      "User": "User",
+      "StaffUser": "Staff member",
+      "Role": "Role",
+      "Category": "Category",
+      "City": "City",
+      "District": "District",
+      "StaticPage": "Page",
+      "FaqItem": "FAQ",
+      "Language": "Language",
+      "PartnerService": "Partner service",
+      "PartnerArea": "Partner area",
+      "PartnerMedia": "Partner file",
+      "StaffUserRole": "Staff role",
+      "CommissionRate": "Commission rate",
+      "CommissionStatement": "Commission statement",
+      "Settlement": "Commission payment"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "reasonRequired": "Write the reason",
+    "tooLong": "At most {{max}} characters"
+  },
+  "requests": {
+    "queue": "Operator queue",
+    "queueEmpty": "Nothing in the queue. Every request has partners working on it.",
+    "empty": "No requests",
+    "filters": {
+      "show": "Show",
+      "all": "All",
+      "search": "Search requests",
+      "searchPlaceholder": "Text or customer's phone",
+      "kind": "Request type",
+      "anyKind": "Any type"
+    },
+    "columns": {
+      "request": "Request",
+      "customer": "Customer",
+      "partners": "Partners",
+      "created": "Created",
+      "status": "Status"
+    },
+    "counts": "Sent {{sent}} · answered {{responded}} · declined {{declined}}",
+    "kind": {
+      "Open": "Offers from many",
+      "Direct": "To one partner"
+    },
+    "status": {
+      "Open": "Open",
+      "Closed": "Order made",
+      "Cancelled": "Cancelled"
+    },
+    "attention": {
+      "NoMatchingPartners": "No matching partners",
+      "NoResponse": "No one answered",
+      "DirectPartnerDeclined": "The chosen partner declined",
+      "AllDeclined": "Everyone declined"
+    },
+    "source": {
+      "Direct": "Chosen by the customer",
+      "Matched": "Matched",
+      "Manual": "Sent by staff"
+    },
+    "recipientStatus": {
+      "New": "Not opened",
+      "Viewed": "Viewed",
+      "Declined": "Declined",
+      "Responded": "Answered"
+    },
+    "detail": {
+      "back": "All requests",
+      "request": "Request",
+      "kind": "Type",
+      "when": "When",
+      "budget": "Budget",
+      "description": "Description",
+      "customer": "Customer",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "account": "Account",
+      "blocked": "Blocked",
+      "active": "Active",
+      "recipients": "Partners ({{n}})",
+      "noRecipients": "Not sent to anyone yet.",
+      "partner": "Partner",
+      "source": "How",
+      "sent": "Sent",
+      "waitingSince": "Waiting for an operator since {{date}}.",
+      "cancelled": "Cancelled"
+    },
+    "assign": {
+      "button": "Send to partners",
+      "title": "Send the request to partners",
+      "text": "Pick approved partners who can do this job. They get the request in their inbox and an SMS.",
+      "partners": "Partners",
+      "placeholder": "Search by name or phone",
+      "none": "No approved partners found",
+      "required": "Choose at least one partner",
+      "confirm": "Send",
+      "done": "Sent to {{n}} partners"
+    },
+    "cancel": {
+      "button": "Cancel request",
+      "title": "Cancel this request?",
+      "text": "Partners can no longer answer it. The customer sees the reason.",
+      "reason": "Reason",
+      "confirm": "Yes, cancel it",
+      "done": "The request is cancelled"
+    }
+  },
+  "orders": {
+    "empty": "No orders",
+    "attentionEmpty": "No orders need attention.",
+    "needsAttention": "Needs attention",
+    "pendingChange": "Change waiting",
+    "filters": {
+      "show": "Show",
+      "all": "All",
+      "search": "Search orders",
+      "searchPlaceholder": "Phone or name"
+    },
+    "columns": {
+      "order": "Order",
+      "parties": "Customer · partner",
+      "price": "Price",
+      "created": "Created",
+      "status": "Status"
+    },
+    "kind": {
+      "Work": "Work",
+      "Visit": "Visit"
+    },
+    "status": {
+      "Confirmed": "Confirmed",
+      "InProgress": "In progress",
+      "CompletionRequested": "Awaiting confirmation",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled"
+    },
+    "party": {
+      "Customer": "the customer",
+      "Partner": "the partner",
+      "Staff": "staff",
+      "System": "the system"
+    },
+    "purpose": {
+      "Deposit": "Deposit",
+      "Stage": "Stage",
+      "Final": "Final payment"
+    },
+    "changeKind": {
+      "ExtraWork": "Extra work",
+      "Schedule": "New schedule"
+    },
+    "changeStatus": {
+      "Pending": "Waiting",
+      "Accepted": "Accepted",
+      "Rejected": "Declined",
+      "Withdrawn": "Withdrawn",
+      "Closed": "Closed"
+    },
+    "days": "{{n}} days",
+    "detail": {
+      "back": "All orders",
+      "terms": "Terms",
+      "schedule": "Schedule",
+      "request": "Request",
+      "openRequest": "Open the request",
+      "summary": "Agreed work",
+      "agreed": "agreed {{price}}",
+      "parties": "Customer and partner",
+      "customer": "Customer",
+      "partner": "Partner",
+      "payments": "Payments: confirmed {{paid}} of {{total}}",
+      "noPayments": "No payments recorded.",
+      "review": "Review",
+      "changes": "Changes",
+      "history": "History",
+      "attention": "Cancelled after the work started ({{date}})",
+      "attentionText": "Contact both sides about payments, then mark it as resolved.",
+      "cancelledBy": "Cancelled by {{who}} on {{date}}"
+    },
+    "cancel": {
+      "button": "Cancel order",
+      "title": "Cancel this order?",
+      "text": "Both sides are told, with the reason.",
+      "reason": "Reason",
+      "confirm": "Yes, cancel it",
+      "done": "The order is cancelled"
+    },
+    "resolve": {
+      "button": "Mark as resolved",
+      "done": "Marked as resolved"
+    }
+  },
+  "payments": {
+    "help": "Customers pay partners directly; one side records a payment and the other confirms it. Disputed records wait for your decision.",
+    "disputes": "Disputes",
+    "disputesEmpty": "No disputed payments.",
+    "empty": "No payments",
+    "filters": {
+      "status": "Status",
+      "all": "All"
+    },
+    "ofOrder": "Order for {{price}}",
+    "columns": {
+      "amount": "Amount",
+      "how": "How and when",
+      "parties": "Customer · partner",
+      "status": "Status",
+      "dispute": "Dispute"
+    },
+    "status": {
+      "Pending": "Waiting",
+      "Confirmed": "Confirmed",
+      "Disputed": "Disputed",
+      "Withdrawn": "Withdrawn",
+      "Rejected": "Not counted"
+    },
+    "method": {
+      "Cash": "Cash",
+      "BankTransfer": "Bank transfer",
+      "Card": "Card",
+      "Other": "Other"
+    },
+    "recordedBy": {
+      "Customer": "recorded by the customer",
+      "Partner": "recorded by the partner"
+    },
+    "resolve": {
+      "button": "Decide",
+      "title": "Decide the disputed payment",
+      "decision": "Decision",
+      "decisionRequired": "Choose a decision",
+      "counts": "It was paid: count it",
+      "rejected": "It wasn't paid: don't count it",
+      "note": "Note for both sides",
+      "confirm": "Save decision",
+      "doneCounts": "The payment counts as paid",
+      "doneRejected": "The payment is not counted"
+    }
+  },
+  "reviews": {
+    "empty": "No reviews",
+    "rating": "{{n}} out of 5",
+    "reply": "Partner's reply",
+    "order": "order",
+    "hidden": "Hidden",
+    "visible": "Public",
+    "hiddenBecause": "Hidden: {{reason}}",
+    "filters": {
+      "show": "Show",
+      "all": "All",
+      "visible": "Only public",
+      "hidden": "Only hidden",
+      "rating": "Rating",
+      "anyRating": "Any rating",
+      "atMost": "{{n}} stars or fewer"
+    },
+    "columns": {
+      "review": "Review",
+      "partner": "Partner · customer",
+      "date": "Date",
+      "status": "Status"
+    },
+    "hide": {
+      "button": "Hide",
+      "title": "Hide this review?",
+      "text": "It disappears from the partner's public profile and rating. You can restore it later.",
+      "reason": "Reason (for the team)",
+      "confirm": "Hide review",
+      "done": "The review is hidden"
+    },
+    "restore": {
+      "button": "Restore",
+      "done": "The review is public again"
+    }
+  },
+  "commissions": {
+    "tabs": {
+      "statements": "Weekly statements",
+      "rates": "Rates"
+    },
+    "help": "Every Monday each partner gets a statement of commission on last week's completed orders, due in 7 days. Partners pay us directly and you record the payment. Overdue by more than 14 days, a partner gets no new requests until they pay.",
+    "filters": {
+      "label": "Show",
+      "Open": "Unpaid",
+      "Overdue": "Overdue",
+      "Paid": "Paid",
+      "all": "All",
+      "partner": "Partner: {{name}}"
+    },
+    "empty": {
+      "Open": "No unpaid statements.",
+      "Overdue": "No overdue statements.",
+      "Paid": "No paid statements yet.",
+      "all": "No statements yet."
+    },
+    "columns": {
+      "partner": "Partner",
+      "week": "Week",
+      "amount": "Outstanding",
+      "outstanding": "Still to pay",
+      "due": "Due",
+      "status": "Status"
+    },
+    "ofTotal": "of {{total}}",
+    "status": {
+      "Open": "Unpaid",
+      "Overdue": "Overdue",
+      "Paid": "Paid"
+    },
+    "paused": "New requests paused",
+    "open": "Open",
+    "method": {
+      "BankTransfer": "Bank transfer",
+      "Cash": "Cash",
+      "Card": "Card",
+      "Other": "Other"
+    },
+    "settle": {
+      "button": "Record payment",
+      "title": "Commission payment",
+      "amount": "Amount",
+      "amountRange": "The amount is 1 to {{max}}",
+      "method": "Method",
+      "paidOn": "Paid on",
+      "paidOnRequired": "Choose the date",
+      "reference": "Reference",
+      "referenceHint": "Transfer or receipt number",
+      "confirm": "Record",
+      "done": "Payment recorded"
+    },
+    "detail": {
+      "back": "All statements",
+      "title": "Statement for {{week}}",
+      "total": "Total",
+      "paid": "Paid",
+      "issued": "Issued",
+      "paidAt": "Fully paid",
+      "lines": "Orders ({{count}})",
+      "order": "Order",
+      "orderLink": "Order",
+      "completed": "Completed {{date}}",
+      "price": "Final price",
+      "rate": "Rate",
+      "commission": "Commission",
+      "settlements": "Payments",
+      "noSettlements": "No payments recorded yet.",
+      "recorded": "Recorded"
+    },
+    "rates": {
+      "help": "Commission is the order's final price times the rate in force when the order completes. A category's rate also applies to its subcategories that don't have their own. Changes apply to future orders only.",
+      "default": "Default rate",
+      "category": "Category",
+      "applies": "Rate in force",
+      "fromParent": "from parent",
+      "fromDefault": "default",
+      "set": "Set",
+      "change": "Change",
+      "clear": "Remove",
+      "clearConfirm": "Remove this category's own rate?",
+      "editTitle": "Rate: {{name}}",
+      "own": "Category rate",
+      "ownHelp": "0 to 50%, up to two decimals",
+      "save": "Save",
+      "saved": "Rate saved",
+      "cleared": "The category now uses the inherited rate",
+      "range": "0 to {{max}}%",
+      "empty": "No categories"
+    }
+  }
+}

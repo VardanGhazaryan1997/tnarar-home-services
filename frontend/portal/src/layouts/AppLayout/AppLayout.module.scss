@@ -1,0 +1,217 @@
+@use 'styles/mixins' as *;
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__skip {
+    @include visually-hidden;
+
+    &:focus {
+      position: fixed;
+      top: space(2);
+      left: space(2);
+      z-index: $z-modal;
+      width: auto;
+      height: auto;
+      padding: space(2) space(3);
+      margin: 0;
+      clip-path: none;
+      color: $color-white;
+      background: $color-night;
+      border-radius: $radius;
+    }
+  }
+
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: $z-header;
+    background: $color-white;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__bar {
+    display: flex;
+    gap: space(4);
+    align-items: center;
+    max-width: $content-width;
+    height: $header-height;
+    padding: 0 space(4);
+    margin: 0 auto;
+  }
+
+  &__logo {
+    @include focus-ring;
+
+    display: inline-flex;
+    text-decoration: none;
+    border-radius: $radius-sm;
+  }
+
+  &__nav {
+    display: none;
+    gap: space(1);
+
+    @include up(md) {
+      display: flex;
+    }
+  }
+
+  &__nav-link {
+    @include focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: space(2) space(3);
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+    text-decoration: none;
+    border-radius: $radius;
+
+    &:hover {
+      color: $color-night;
+      background: $color-surface-sunken;
+    }
+
+    &--active {
+      color: $color-night;
+      background: $color-surface-sunken;
+    }
+  }
+
+  &__tools {
+    display: flex;
+    gap: space(3);
+    align-items: center;
+    margin-left: auto;
+  }
+
+  &__account {
+    @include focus-ring;
+
+    display: none;
+    gap: space(2);
+    align-items: center;
+    max-width: 220px;
+    padding: space(2) space(3);
+    color: $color-night;
+    text-decoration: none;
+    border-radius: $radius;
+
+    &:hover,
+    &--active {
+      background: $color-surface-sunken;
+    }
+
+    @include up(md) {
+      display: inline-flex;
+    }
+  }
+
+  &__account-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    // Partners' Armenian menu fills the bar: below wide screens only the icon shows (the name stays for screen readers).
+    @media (width < 1400px) {
+      @include visually-hidden;
+    }
+  }
+
+  &__main {
+    flex: 1;
+    width: 100%;
+    max-width: $content-width;
+    padding: space(4);
+    margin: 0 auto;
+
+    @include up(md) {
+      padding: space(6) space(4);
+    }
+
+    &--with-tabs {
+      padding-bottom: calc(#{$tab-bar-height} + #{space(5)});
+
+      @include up(md) {
+        padding-bottom: space(6);
+      }
+    }
+  }
+
+
+  &__tabs {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $z-tab-bar;
+    display: flex;
+    height: calc(#{$tab-bar-height} + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: $color-white;
+    border-top: 1px solid $color-border;
+
+    @include up(md) {
+      display: none;
+    }
+  }
+
+  &__tab {
+    @include focus-ring;
+
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+    min-width: $touch-target;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-text-faint;
+    text-decoration: none;
+
+    &--active {
+      color: $color-tuff-deep;
+    }
+  }
+
+  &__badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    margin-left: space(1);
+    font-size: 0.6875rem;
+    font-weight: $font-weight-bold;
+    line-height: 1;
+    color: $color-white;
+    background: $color-tuff-deep;
+    border-radius: $radius-pill;
+  }
+
+  &__tab-label {
+    max-width: 100%;
+    padding: 0 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__tab-icon {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__tab-icon &__badge {
+    position: absolute;
+    top: -6px;
+    left: 14px;
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,36 @@
+@use 'styles/mixins' as *;
+
+.card {
+  @include surface;
+
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+  padding: space(4);
+
+  @include up(md) {
+    padding: space(5);
+  }
+
+  &--flush {
+    gap: 0;
+    padding: 0;
+  }
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    @include heading-3;
+  }
+
+  &__actions {
+    display: flex;
+    gap: space(2);
+  }
+}

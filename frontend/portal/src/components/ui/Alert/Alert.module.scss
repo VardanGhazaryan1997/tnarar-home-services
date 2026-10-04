@@ -1,0 +1,38 @@
+@use 'styles/mixins' as *;
+
+.alert {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+  padding: space(3) space(4);
+  border-left: 4px solid currentcolor;
+  border-radius: $radius;
+
+  &--info {
+    color: $color-info;
+    background: $color-info-soft;
+  }
+
+  &--success {
+    color: $color-success;
+    background: $color-success-soft;
+  }
+
+  &--warning {
+    color: $color-warning;
+    background: $color-warning-soft;
+  }
+
+  &--danger {
+    color: $color-danger;
+    background: $color-danger-soft;
+  }
+
+  &__title {
+    font-weight: $font-weight-semibold;
+  }
+
+  &__body {
+    color: $color-text;
+  }
+}

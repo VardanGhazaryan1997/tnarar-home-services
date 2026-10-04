@@ -1,0 +1,15 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "rules": {
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$",
+      {
+        "resolveNestedSelectors": true,
+        "message": "Use BEM class names: block, block__element, block--modifier, block__element--modifier (kebab-case)"
+      }
+    ],
+    "selector-max-id": 0,
+    "declaration-no-important": true,
+    "selector-max-compound-selectors": 3
+  }
+}

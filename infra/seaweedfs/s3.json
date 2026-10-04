@@ -1,0 +1,11 @@
+{
+  "identities": [
+    {
+      "name": "home_services_dev",
+      "credentials": [
+        { "accessKey": "home_services", "secretKey": "dev-only-secret-change-in-production" }
+      ],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

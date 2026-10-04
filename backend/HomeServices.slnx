@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HomeServices.Api/HomeServices.Api.csproj" />
+    <Project Path="src/HomeServices.Application/HomeServices.Application.csproj" />
+    <Project Path="src/HomeServices.Domain/HomeServices.Domain.csproj" />
+    <Project Path="src/HomeServices.Infrastructure/HomeServices.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HomeServices.Api.IntegrationTests/HomeServices.Api.IntegrationTests.csproj" />
+    <Project Path="tests/HomeServices.Application.Tests/HomeServices.Application.Tests.csproj" />
+    <Project Path="tests/HomeServices.Architecture.Tests/HomeServices.Architecture.Tests.csproj" />
+    <Project Path="tests/HomeServices.Domain.Tests/HomeServices.Domain.Tests.csproj" />
+    <Project Path="tests/HomeServices.Infrastructure.IntegrationTests/HomeServices.Infrastructure.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

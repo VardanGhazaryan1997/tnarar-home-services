@@ -1,0 +1,236 @@
+@use 'styles/mixins' as *;
+
+.offer-list {
+  display: grid;
+  gap: space(3);
+
+  @include up(md) {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+.offer-card {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+  padding: space(4);
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+
+  &--open {
+    border-color: $color-border-strong;
+    box-shadow: $shadow-sm;
+  }
+
+  &--accepted {
+    border: 2px solid $color-success;
+  }
+
+  &__header {
+    display: flex;
+    gap: space(3);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__who {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__partner {
+    @include heading-3;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1);
+  }
+
+  &__price {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-night;
+    white-space: nowrap;
+  }
+
+  &__expiry {
+    @include text-small;
+    @include text-muted;
+
+    display: flex;
+    gap: space(1);
+    align-items: center;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    padding-top: space(3);
+    border-top: 1px solid $color-border;
+  }
+}
+
+.offer-terms {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+
+  &__summary {
+    white-space: pre-line;
+  }
+
+  &__lines {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__line {
+    display: flex;
+    gap: space(2);
+    align-items: flex-start;
+
+    &--excluded {
+      color: $color-text-muted;
+    }
+  }
+
+  &__icon {
+    flex: none;
+    margin-top: 3px;
+    color: $color-success;
+  }
+
+  &__line--excluded &__icon {
+    color: $color-danger;
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: space(3);
+    margin: 0;
+
+    dt {
+      @include text-small;
+      @include text-muted;
+    }
+
+    dd {
+      margin: 0;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  &__note {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__stages {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    padding: space(3);
+    margin: 0;
+    list-style: none;
+    background: $color-surface-sunken;
+    border-radius: $radius;
+  }
+
+  &__stage {
+    display: flex;
+    gap: space(2);
+    justify-content: space-between;
+  }
+
+  &__amount {
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.offer-builder {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+  max-width: $narrow-width;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__row {
+    display: grid;
+    gap: space(3);
+
+    @include up(sm) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__editor {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__editor-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: space(2);
+    align-items: end;
+    padding: space(3);
+    background: $color-surface-sunken;
+    border-radius: $radius;
+
+    @include up(sm) {
+      grid-template-columns: 2fr 1fr 1fr auto;
+    }
+  }
+
+  &__editor-row--line {
+    @include up(sm) {
+      grid-template-columns: 1fr 160px auto;
+    }
+  }
+
+  &__group-title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__sum {
+    @include text-small;
+
+    color: $color-text-muted;
+
+    &--wrong {
+      color: $color-danger;
+    }
+  }
+
+  &__context {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    justify-content: flex-end;
+  }
+}

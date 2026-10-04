@@ -1,0 +1,396 @@
+@use 'styles/mixins' as *;
+
+// Phones: the list, or the open conversation. Desktop: both, side by side, filling the screen.
+.messages-page {
+  display: grid;
+  gap: space(4);
+
+  @include up(md) {
+    grid-template-columns: 340px minmax(0, 1fr);
+    height: calc(100vh - #{$header-height} - #{space(6) * 2});
+    min-height: 480px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__title {
+    @include heading-2;
+
+    overflow-wrap: anywhere;
+  }
+
+  &__thread {
+    display: none;
+    min-height: 0;
+
+    @include up(md) {
+      @include surface;
+
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &--open &__list {
+    display: none;
+
+    @include up(md) {
+      display: flex;
+    }
+  }
+
+  &--open &__thread {
+    @include surface;
+
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - #{$header-height} - #{$tab-bar-height} - #{space(4) * 2});
+
+    @include up(md) {
+      height: auto;
+    }
+  }
+}
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  &__item {
+    @include focus-ring;
+
+    display: flex;
+    gap: space(3);
+    align-items: flex-start;
+    padding: space(3);
+    color: inherit;
+    text-decoration: none;
+    border-radius: $radius;
+
+    &:hover {
+      background: $color-white;
+    }
+
+    &--active {
+      background: $color-white;
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  &__avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: $color-white;
+    background: $color-night-soft;
+    border-radius: 50%;
+  }
+
+  &__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__top {
+    display: flex;
+    gap: space(2);
+    justify-content: space-between;
+  }
+
+  &__name {
+    overflow: hidden;
+    font-weight: $font-weight-semibold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__time,
+  &__place {
+    @include text-small;
+
+    color: $color-text-faint;
+    white-space: nowrap;
+  }
+
+  &__place {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__preview {
+    @include text-small;
+
+    overflow: hidden;
+    color: $color-text-muted;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item--unread &__preview {
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+
+  &__badge {
+    display: grid;
+    flex: none;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 space(1);
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    color: $color-white;
+    background: $color-tuff-deep;
+    border-radius: $radius-pill;
+  }
+}
+
+.thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    gap: space(3);
+    align-items: center;
+    padding: space(3) space(4);
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__back {
+    @include focus-ring;
+
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    color: $color-night;
+    border-radius: $radius;
+
+    @include up(md) {
+      display: none;
+    }
+  }
+
+  &__who {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    @include heading-3;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__about {
+    @include text-small;
+
+    overflow: hidden;
+    color: $color-text-muted;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+    padding: space(4);
+    overflow-y: auto;
+    background: $color-mist;
+  }
+
+  &__older {
+    display: flex;
+    justify-content: center;
+    margin-bottom: space(3);
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+
+    text-align: center;
+  }
+
+  &__messages {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__day {
+    @include text-small;
+
+    align-self: center;
+    padding: 2px space(3);
+    margin: space(2) 0;
+    color: $color-text-muted;
+    background: $color-white;
+    border-radius: $radius-pill;
+  }
+
+  &__message {
+    display: flex;
+
+    &--mine {
+      justify-content: flex-end;
+    }
+  }
+
+  &__bubble {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    max-width: min(80%, 520px);
+    padding: space(2) space(3);
+    background: $color-white;
+    border-radius: $radius-lg $radius-lg $radius-lg $radius-sm;
+    box-shadow: $shadow-sm;
+
+    &--mine {
+      color: $color-white;
+      background: $color-night;
+      border-radius: $radius-lg $radius-lg $radius-sm;
+    }
+  }
+
+  &__body {
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+
+  &__files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__file {
+    display: inline-flex;
+    gap: space(1);
+    align-items: center;
+    color: inherit;
+  }
+
+  &__image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: $radius;
+  }
+
+  &__meta {
+    display: flex;
+    gap: space(2);
+    justify-content: flex-end;
+    font-size: $font-size-xs;
+    opacity: 0.7;
+  }
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+  padding: space(3);
+  border-top: 1px solid $color-border;
+
+  &__row {
+    display: flex;
+    gap: space(2);
+    align-items: flex-end;
+  }
+
+  &__input {
+    @include visually-hidden;
+  }
+
+  &__text {
+    @include focus-ring;
+
+    flex: 1;
+    min-height: $touch-target;
+    max-height: 160px;
+    padding: space(2) space(3);
+    resize: none;
+    border: 1px solid $color-border-strong;
+    border-radius: $radius-lg;
+  }
+
+  &__files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__file {
+    display: inline-flex;
+    gap: space(1);
+    align-items: center;
+    padding: space(1) space(2);
+    font-size: $font-size-sm;
+    background: $color-surface-sunken;
+    border-radius: $radius-pill;
+
+    &--error {
+      color: $color-danger;
+      background: $color-danger-soft;
+    }
+  }
+
+  &__file-name {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__remove {
+    @include reset-button;
+    @include focus-ring;
+
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+  }
+
+  &__error {
+    @include text-small;
+
+    color: $color-danger;
+  }
+}

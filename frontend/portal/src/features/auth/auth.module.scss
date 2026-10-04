@@ -1,0 +1,55 @@
+@use 'styles/mixins' as *;
+
+.auth-wait {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+}
+
+.sign-in {
+  display: flex;
+  justify-content: center;
+  padding: space(2) 0;
+
+  @include up(md) {
+    padding: space(6) 0;
+  }
+
+  &__card {
+    @include surface;
+
+    display: flex;
+    flex-direction: column;
+    gap: space(5);
+    width: 100%;
+    max-width: 440px;
+    padding: space(5);
+
+    @include up(md) {
+      padding: space(6);
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__title {
+    @include heading-2;
+  }
+
+  &__lead {
+    @include text-muted;
+
+    margin-top: calc(-1 * #{space(2)});
+  }
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    justify-content: space-between;
+  }
+}

@@ -1,0 +1,56 @@
+@use 'styles/mixins' as *;
+
+.category-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: space(3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  @include up(md) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  &__tile {
+    @include surface;
+    @include focus-ring;
+
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    height: 100%;
+    padding: space(4);
+    color: $color-text;
+    text-decoration: none;
+    transition:
+      border-color $transition,
+      box-shadow $transition;
+
+    &:hover {
+      border-color: $color-tuff;
+      box-shadow: $shadow;
+    }
+
+    @include up(md) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    color: $color-tuff-deep;
+    background: rgb(200 100 59 / 10%);
+    border-radius: $radius;
+  }
+
+  &__name {
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
+  }
+}

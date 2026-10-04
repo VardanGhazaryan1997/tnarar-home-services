@@ -1,0 +1,14 @@
+@use 'styles/mixins' as *;
+
+.pagination {
+  display: flex;
+  gap: space(3);
+  align-items: center;
+  justify-content: center;
+  padding: space(4) 0;
+
+  &__status {
+    @include text-small;
+    @include text-muted;
+  }
+}

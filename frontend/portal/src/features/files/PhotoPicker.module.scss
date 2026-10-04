@@ -1,0 +1,126 @@
+@use 'styles/mixins' as *;
+
+.photo-picker {
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__input {
+    @include visually-hidden;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__item {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: $color-surface-sunken;
+    border: 1px solid $color-border;
+    border-radius: $radius;
+
+    &--error {
+      border-color: $color-danger;
+    }
+  }
+
+  &__preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: space(2);
+    color: $color-text-muted;
+  }
+
+  &__name {
+    @include line-clamp(2);
+
+    font-size: $font-size-xs;
+    text-align: center;
+    word-break: break-all;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: $color-white;
+    background: rgb(29 51 70 / 45%);
+  }
+
+  &__error {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 2px space(1);
+    font-size: $font-size-xs;
+    color: $color-white;
+    background: $color-danger;
+  }
+
+  &__remove {
+    @include reset-button;
+    @include focus-ring;
+
+    position: absolute;
+    top: space(1);
+    right: space(1);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    color: $color-white;
+    background: rgb(29 51 70 / 70%);
+    border-radius: 50%;
+  }
+
+  &__add {
+    @include reset-button;
+    @include focus-ring;
+
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-tuff-deep;
+    border: 2px dashed $color-border-strong;
+    border-radius: $radius;
+
+    &:hover {
+      border-color: $color-tuff;
+    }
+  }
+}

@@ -1,0 +1,4 @@
+# Overrides for test code only (inherits everything else from the repo .editorconfig).
+[*.cs]
+# Test names describe behaviour (Health_returns_200_Healthy); an Async suffix adds nothing.
+dotnet_naming_rule.async_methods_suffix.severity = none

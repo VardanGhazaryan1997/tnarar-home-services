@@ -1,0 +1,58 @@
+@use 'styles/mixins' as *;
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  vertical-align: middle;
+
+  &__star {
+    fill: none;
+    stroke: $color-border-strong;
+
+    &--filled {
+      fill: $color-tuff;
+      stroke: $color-tuff;
+    }
+  }
+}
+
+.star-input {
+  padding: 0;
+  margin: 0;
+  border: 0;
+
+  &__label {
+    margin-bottom: space(2);
+    font-weight: $font-weight-semibold;
+  }
+
+  &__stars {
+    display: flex;
+    gap: space(1);
+  }
+
+  &__option {
+    position: relative;
+    display: inline-flex;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: $radius;
+
+    &:focus-within {
+      outline: 3px solid rgb(200 100 59 / 55%);
+      outline-offset: 1px;
+    }
+  }
+
+  &__radio {
+    @include visually-hidden;
+  }
+
+  &__error {
+    @include text-small;
+
+    margin-top: space(1);
+    color: $color-danger;
+  }
+}

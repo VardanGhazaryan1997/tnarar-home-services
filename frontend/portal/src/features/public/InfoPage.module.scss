@@ -1,0 +1,56 @@
+@use 'styles/mixins' as *;
+
+// Markdown has no classes of its own, so its elements are styled inside the body.
+.info-page {
+  max-width: $narrow-width;
+
+  &__body {
+    @include surface;
+
+    padding: space(5);
+    overflow-wrap: anywhere;
+
+    @include up(md) {
+      padding: space(6);
+    }
+
+    :where(h1, h2, h3) {
+      margin: space(5) 0 space(2);
+      line-height: $line-height-tight;
+    }
+
+    :where(h1) {
+      font-size: $font-size-2xl;
+    }
+
+    :where(h2) {
+      font-size: $font-size-xl;
+    }
+
+    :where(h3) {
+      font-size: $font-size-lg;
+    }
+
+    :where(p, ul, ol, blockquote) {
+      margin: 0 0 space(3);
+    }
+
+    :where(ul, ol) {
+      padding-left: space(5);
+    }
+
+    :where(a) {
+      color: $color-tuff-deep;
+    }
+
+    :where(blockquote) {
+      padding-left: space(4);
+      color: $color-text-muted;
+      border-left: 3px solid $color-border-strong;
+    }
+
+    :where(:first-child) {
+      margin-top: 0;
+    }
+  }
+}

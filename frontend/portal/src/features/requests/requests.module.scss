@@ -1,0 +1,115 @@
+@use 'styles/mixins' as *;
+
+.requests-page {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+}
+
+.request-page {
+  display: grid;
+  gap: space(4);
+  align-items: start;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  }
+
+  &__main,
+  &__side {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__text {
+    white-space: pre-line;
+  }
+
+  &__partners {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__partner {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__muted {
+    @include text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+  }
+}
+
+.request-form {
+  display: flex;
+  flex-direction: column;
+  gap: space(5);
+  max-width: $narrow-width;
+
+  &__steps {
+    display: flex;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__step {
+    flex: 1;
+    height: 4px;
+    background: $color-border;
+    border-radius: $radius-pill;
+
+    &--done {
+      background: $color-tuff;
+    }
+  }
+
+  &__step-label {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: space(4);
+  }
+
+  &__row {
+    display: grid;
+    gap: space(4);
+
+    @include up(sm) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    gap: space(2);
+    justify-content: space-between;
+  }
+
+  &__to {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    padding: space(3) space(4);
+    background: $color-info-soft;
+    border-radius: $radius;
+  }
+}

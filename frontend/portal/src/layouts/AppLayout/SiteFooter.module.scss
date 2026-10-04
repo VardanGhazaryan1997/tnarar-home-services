@@ -1,0 +1,72 @@
+@use 'styles/mixins' as *;
+
+.site-footer {
+  @include text-small;
+
+  padding: space(6) space(4) calc(#{$tab-bar-height} + #{space(5)});
+  background: $color-surface;
+  border-top: 1px solid $color-border;
+
+  @include up(md) {
+    padding-bottom: space(5);
+  }
+
+  &__inner {
+    display: grid;
+    gap: space(5);
+    max-width: $content-width;
+    margin: 0 auto;
+
+    @include up(md) {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__tagline {
+    @include text-muted;
+
+    max-width: 320px;
+  }
+
+  &__nav {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: space(4);
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__link {
+    @include focus-ring;
+
+    color: $color-text;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-tuff-deep;
+      text-decoration: underline;
+    }
+  }
+
+  &__copyright {
+    @include text-muted;
+
+    max-width: $content-width;
+    padding-top: space(4);
+    margin: space(5) auto 0;
+    border-top: 1px solid $color-border;
+  }
+}

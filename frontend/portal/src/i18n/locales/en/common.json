@@ -1,0 +1,1231 @@
+{
+  "app": {
+    "name": "Home Services"
+  },
+  "home": {
+    "title": "Find trusted specialists for your home",
+    "subtitle": "Construction, renovation, plumbing, electrical work and cleaning in Yerevan and nearby",
+    "cta": "Describe your job",
+    "howTitle": "How it works",
+    "steps": {
+      "describe": {
+        "title": "Describe the job",
+        "text": "What needs doing, where and when. Add photos so specialists understand it."
+      },
+      "offers": {
+        "title": "Get offers",
+        "text": "Matching specialists nearby send you offers with a price, dates and a payment plan."
+      },
+      "choose": {
+        "title": "Choose and agree",
+        "text": "Compare the offers and accept the one you like. You then see each other's contacts."
+      }
+    },
+    "documentTitle": "TnaShen — trusted specialists for your home",
+    "or": "or",
+    "promises": {
+      "checked": "Every specialist is checked by our team",
+      "free": "Free for customers",
+      "private": "Your phone stays private until you agree"
+    },
+    "servicesTitle": "Popular services",
+    "allServices": "All services",
+    "recentTitle": "Recently joined",
+    "allPartners": "All specialists",
+    "join": {
+      "title": "Are you a specialist or a company?",
+      "text": "Create a free profile, show your work and receive requests from customers near you.",
+      "cta": "Join as a partner"
+    },
+    "ctaInline": "describe your job and get offers"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backHome": "Back to home"
+  },
+  "languageSwitcher": {
+    "label": "Language"
+  },
+  "common": {
+    "close": "Close",
+    "loading": "Loading…",
+    "optional": "optional",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "retry": "Try again",
+    "next": "Next",
+    "edit": "Edit"
+  },
+  "nav": {
+    "home": "Home",
+    "requests": "Requests",
+    "inbox": "Inbox",
+    "orders": "Orders",
+    "messages": "Messages",
+    "account": "Account",
+    "signIn": "Sign in",
+    "tab": {
+      "home": "Home",
+      "requests": "Requests",
+      "inbox": "Inbox",
+      "orders": "Orders",
+      "messages": "Chats",
+      "account": "Account",
+      "services": "Find"
+    },
+    "services": "Find a specialist",
+    "how": "How it works"
+  },
+  "layout": {
+    "skipToContent": "Skip to content",
+    "home": "TnaShen home page",
+    "mainNavigation": "Main",
+    "tabNavigation": "Sections",
+    "footer": "© {{year}} TnaShen. Home services in Armenia.",
+    "tagline": "Home services in Armenia: find checked specialists, compare offers and agree in one place.",
+    "footerNavigation": "Footer",
+    "links": {
+      "services": "Services",
+      "search": "Find a specialist",
+      "how": "How it works",
+      "partners": "For partners"
+    }
+  },
+  "auth": {
+    "phoneTitle": "Sign in or create an account",
+    "phoneLead": "We'll text you a code. No password needed.",
+    "phoneLabel": "Phone number",
+    "phoneHint": "For example 091 23 45 67",
+    "sendCode": "Get the code",
+    "codeTitle": "Enter the code",
+    "codeLead": "We sent a 6-digit code to {{phone}}.",
+    "codeLabel": "Code from the SMS",
+    "confirm": "Continue",
+    "changePhone": "Change number",
+    "resend": "Send the code again",
+    "resendIn": "Send again in {{seconds}} s",
+    "profileTitle": "What's your name?",
+    "profileLead": "Specialists see your first name when you send them a request.",
+    "finish": "Done"
+  },
+  "account": {
+    "title": "Account",
+    "details": "Your details",
+    "phone": "Phone number",
+    "phoneHint": "You sign in with this number.",
+    "name": "Full name",
+    "email": "Email",
+    "saved": "Saved.",
+    "roles": "Your roles",
+    "signOut": "Sign out",
+    "role": {
+      "Customer": "Customer",
+      "Partner": "Partner"
+    },
+    "partner": {
+      "title": "Your partner profile",
+      "text": "Services, areas, work examples and review status.",
+      "open": "Open",
+      "joinTitle": "Offer your services on TnaShen",
+      "joinText": "Create a free partner profile and receive requests from customers near you.",
+      "join": "Become a partner"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "No connection to the server. Check your internet and try again.",
+    "phone": {
+      "required": "Enter your phone number.",
+      "invalid": "This doesn't look like a phone number."
+    },
+    "otp": {
+      "code_format": "The code has 6 digits.",
+      "invalid": "The code is wrong.",
+      "expired": "The code has expired. Send a new one.",
+      "too_many_attempts": "Too many wrong codes. Send a new one.",
+      "resend_too_soon": "Please wait a little before asking for a new code.",
+      "too_many_requests": "Too many codes requested. Try again later."
+    },
+    "session": {
+      "expired": "Your session has ended. Please sign in again.",
+      "invalid": "Your session has ended. Please sign in again.",
+      "revoked": "You were signed out. Please sign in again.",
+      "missing": "Please sign in."
+    },
+    "name": {
+      "required": "Enter your name.",
+      "too_long": "The name is too long."
+    },
+    "email": {
+      "invalid": "This doesn't look like an email address."
+    },
+    "concurrency_conflict": "Someone changed this at the same time. Reload the page and try again.",
+    "partner": {
+      "not_found": "You don't have a partner profile.",
+      "incomplete": "The profile isn't complete yet.",
+      "not_editable": "The profile can't be changed right now.",
+      "cannot_submit": "The profile can't be sent right now.",
+      "type_locked": "The type can't change once the profile is approved.",
+      "too_many_media": "You've reached the limit for these files.",
+      "media_duplicate": "This file is already on your profile.",
+      "media_not_found": "This file is no longer on your profile."
+    },
+    "request": {
+      "partner_unavailable": "This specialist can't take requests right now.",
+      "own_partner": "You can't send a request to yourself.",
+      "not_open": "This request is no longer open.",
+      "not_found": "Request not found.",
+      "already_declined": "You already declined this request.",
+      "already_responded": "You already responded to this request."
+    },
+    "offer": {
+      "already_sent": "You already have a waiting offer of this type. Withdraw it to send a new one.",
+      "partner_unavailable": "This specialist can't take orders right now.",
+      "visit_already_agreed": "The customer already accepted your visit.",
+      "not_open": "This offer is no longer open.",
+      "expired": "This offer has expired.",
+      "not_found": "Offer not found."
+    },
+    "order": {
+      "not_found": "Order not found.",
+      "wrong_party": "This step is for the other side.",
+      "cannot_start": "This order can't be started now.",
+      "cannot_request_completion": "This order can't be marked as done now.",
+      "completion_not_requested": "The specialist hasn't marked this order as done.",
+      "cannot_cancel": "This order can't be cancelled any more.",
+      "reason_required": "Please say why.",
+      "reason_too_long": "The reason is too long.",
+      "cannot_change": "This order can't be changed any more."
+    },
+    "category": {
+      "invalid": "Choose a service from the list."
+    },
+    "city": {
+      "invalid": "Choose a city from the list."
+    },
+    "district": {
+      "invalid": "Choose a district of this city."
+    },
+    "description": {
+      "required": "Describe the job.",
+      "length": "The description must be 20–4000 characters.",
+      "too_long": "The explanation is too long."
+    },
+    "time_note": {
+      "too_long": "Keep it under 200 characters."
+    },
+    "preferred_date": {
+      "past": "The date can't be in the past."
+    },
+    "budget": {
+      "invalid": "Enter a valid amount.",
+      "range_invalid": "\"Up to\" must not be less than \"from\"."
+    },
+    "media": {
+      "too_many": "At most 10 photos or videos.",
+      "invalid": "Some files couldn't be used. Remove them and try again."
+    },
+    "partner_id": {
+      "required": "Choose a specialist."
+    },
+    "summary": {
+      "required": "Describe your offer.",
+      "length": "Write 10–4000 characters."
+    },
+    "lines": {
+      "invalid": "Every item needs a name (up to 200 characters).",
+      "too_many": "At most 30 items."
+    },
+    "price": {
+      "invalid": "Enter a valid price."
+    },
+    "materials_note": {
+      "too_long": "Keep it under 1000 characters."
+    },
+    "start_date": {
+      "past": "The start date can't be in the past."
+    },
+    "duration_days": {
+      "invalid": "Enter 1–3650 days."
+    },
+    "visit_at": {
+      "required": "Choose the visit time.",
+      "past": "The visit must be in the future."
+    },
+    "stages": {
+      "invalid": "Every payment needs a type and an amount above zero.",
+      "final_last": "Only the last payment can be final.",
+      "sum_mismatch": "The payments must add up to the price.",
+      "too_many": "At most 10 payments."
+    },
+    "valid_days": {
+      "invalid": "Choose 1–30 days."
+    },
+    "reason": {
+      "too_long": "The reason is too long.",
+      "required": "Please say why."
+    },
+    "conversation": {
+      "unavailable": "You can't start a conversation here.",
+      "closed": "This conversation is closed.",
+      "not_found": "Conversation not found."
+    },
+    "message": {
+      "empty": "Write something or attach a file.",
+      "files_invalid": "Some files can't be sent. Upload them again."
+    },
+    "display_name": {
+      "required": "Enter a name.",
+      "length": "The name needs 2 to 100 characters."
+    },
+    "about": {
+      "too_long": "The description is too long."
+    },
+    "years_of_experience": {
+      "invalid": "Enter a whole number from 0 to 70."
+    },
+    "categories": {
+      "required": "Choose at least one service.",
+      "too_many": "Too many services.",
+      "invalid": "One of the services is no longer available."
+    },
+    "areas": {
+      "required": "Choose at least one area.",
+      "too_many": "Too many areas.",
+      "invalid": "One of the areas is no longer available."
+    },
+    "avatar": {
+      "invalid": "This photo can't be used. Upload it again."
+    },
+    "file": {
+      "invalid": "This file can't be used here."
+    },
+    "caption": {
+      "too_long": "The caption is too long."
+    },
+    "note": {
+      "too_long": "The note is too long."
+    },
+    "title": {
+      "required": "Name it.",
+      "too_long": "The name is too long."
+    },
+    "amount": {
+      "required": "Enter the amount.",
+      "invalid": "Enter an amount greater than zero."
+    },
+    "new_duration_days": {
+      "invalid": "The duration must be 1–365 days."
+    },
+    "kind": {
+      "invalid": "Choose what to change."
+    },
+    "change": {
+      "pending_exists": "A change is already waiting for an answer.",
+      "not_found": "This change no longer exists.",
+      "not_pending": "This change has already been answered.",
+      "wrong_party": "This change is for the other side to answer.",
+      "extra_work_on_visit": "A visit has no extra work; send a work offer instead.",
+      "title_invalid": "Name the extra work.",
+      "amount_invalid": "Enter the extra price.",
+      "price_too_high": "The total price would be too high.",
+      "visit_time_invalid": "Choose a new visit time in the future.",
+      "schedule_empty": "Choose a new start date or duration.",
+      "duration_invalid": "The duration must be 1–365 days.",
+      "start_date_past": "The new start date can't be in the past.",
+      "description_too_long": "The explanation is too long.",
+      "note_too_long": "The note is too long."
+    },
+    "payment": {
+      "not_found": "Payment not found.",
+      "wrong_party": "This step is for the other side.",
+      "order_cancelled": "Payments can't be recorded on a cancelled order.",
+      "amount_invalid": "Enter an amount more than zero.",
+      "exceeds_price": "Payments can't add up to more than the order's price.",
+      "date_future": "The date can't be in the future.",
+      "stage_invalid": "This payment stage isn't on the order.",
+      "not_pending": "This payment has already been answered.",
+      "reason_required": "Say what is wrong with this payment.",
+      "not_disputed": "This payment isn't disputed."
+    },
+    "review": {
+      "already_submitted": "You already reviewed this order.",
+      "order_not_completed": "You can review the order once it's completed.",
+      "wrong_party": "This step is for the other side.",
+      "already_replied": "You already replied to this review.",
+      "not_found": "Review not found.",
+      "rating_invalid": "Choose 1 to 5 stars."
+    },
+    "rating": {
+      "invalid": "Choose 1 to 5 stars."
+    },
+    "text": {
+      "required": "Write a reply.",
+      "too_long": "The text is too long."
+    },
+    "method": {
+      "invalid": "Choose how it was paid."
+    },
+    "notification": {
+      "not_found": "Notification not found."
+    },
+    "commission": {
+      "statement_not_found": "This statement doesn't exist."
+    }
+  },
+  "pagination": {
+    "label": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "status": "Page {{page}} of {{pages}}"
+  },
+  "format": {
+    "budgetFrom": "from {{amount}}",
+    "budgetUpTo": "up to {{amount}}"
+  },
+  "files": {
+    "uploading": "Uploading {{name}}",
+    "typeNotAllowed": "Only photos (JPG, PNG, WebP) and videos (MP4, MOV)",
+    "tooLarge": "Too large (photos up to 10 MB, videos up to 200 MB)",
+    "uploadFailed": "Upload failed",
+    "remove": "Remove {{name}}",
+    "add": "Add photos or video",
+    "skipped": "{{n}} file(s) not added: at most 10."
+  },
+  "requests": {
+    "tabsLabel": "Requests",
+    "tabs": {
+      "mine": "My requests",
+      "inbox": "Inbox",
+      "offers": "Sent offers",
+      "commissions": "Commissions"
+    },
+    "new": "New request",
+    "mineTitle": "My requests",
+    "mineSubtitle": "Jobs you asked for, and the offers you received.",
+    "filterLabel": "Show",
+    "all": "All",
+    "status": {
+      "Open": "Open",
+      "Closed": "Agreed",
+      "Cancelled": "Cancelled"
+    },
+    "emptyTitle": "No requests here yet",
+    "emptyText": "Describe a job and specialists nearby will send you offers.",
+    "kind": {
+      "Direct": "Sent to one specialist"
+    },
+    "findingPartners": "We're finding specialists for you",
+    "sentSummary": "Sent to {{sent}} · {{responded}} responded",
+    "anyPlace": "Anywhere",
+    "fields": {
+      "category": "Service",
+      "place": "Where",
+      "when": "When",
+      "budget": "Budget",
+      "city": "City",
+      "district": "District",
+      "description": "Describe the job",
+      "photos": "Photos and video",
+      "preferredDate": "Preferred date",
+      "timeNote": "Convenient time",
+      "budgetMin": "Budget from (֏)",
+      "budgetMax": "Budget up to (֏)"
+    },
+    "flexible": "Flexible",
+    "noBudget": "Not given",
+    "photos": "Photos",
+    "errors": {
+      "categoryRequired": "Choose a service.",
+      "cityRequired": "Choose a city.",
+      "descriptionShort": "Describe the job in at least {{min}} characters."
+    },
+    "newTitle": "Describe your job",
+    "newDirectTitle": "Request to a specialist",
+    "newSubtitle": "The more detail you give, the more accurate the offers.",
+    "stepOf": "Step {{step}} of {{total}}",
+    "steps": {
+      "what": "What and where",
+      "details": "Details and photos",
+      "when": "When and budget"
+    },
+    "directTo": "Only {{name}} receives this request.",
+    "choose": "Choose…",
+    "anyDistrict": "Any district",
+    "descriptionHint": "{{n}} / {{max}} characters. Mention sizes, materials and anything unusual.",
+    "photosHint": "Up to 10 photos or videos. Photos help specialists price the job.",
+    "timeNotePlaceholder": "e.g. weekday evenings",
+    "budgetPrivate": "Your budget is only for you and our team; specialists don't see it.",
+    "submit": "Send request",
+    "notFound": "Request not found",
+    "notFoundText": "It may have been removed, or it belongs to someone else.",
+    "createdOn": "Created {{date}}",
+    "created": "Your request has been sent. You'll get offers here.",
+    "findingPartnersLong": "No specialist could take it automatically, so our team is finding one for you.",
+    "cancelledOn": "Cancelled on {{date}}",
+    "details": "Details",
+    "whoHasIt": "Specialists",
+    "cancel": "Cancel request",
+    "cancelTitle": "Cancel this request?",
+    "cancelConfirm": "Cancel request",
+    "cancelText": "Specialists will stop receiving it, and waiting offers will close.",
+    "cancelReason": "Why are you cancelling?"
+  },
+  "inbox": {
+    "status": {
+      "New": "New",
+      "Viewed": "Viewed",
+      "Responded": "Responded",
+      "Declined": "Declined"
+    },
+    "title": "Inbox",
+    "subtitle": "Requests from customers that match your services and areas.",
+    "emptyTitle": "No requests here",
+    "emptyText": "New requests in your categories and areas will appear here.",
+    "direct": "Sent to you",
+    "preferred": "wanted {{date}}",
+    "photos": "{{n}} photo(s)",
+    "notFoundText": "It may have been removed, or it wasn't sent to you.",
+    "receivedOn": "Received {{date}}",
+    "requestEnded": {
+      "Cancelled": "The customer cancelled this request.",
+      "Closed": "The customer has agreed with a specialist."
+    },
+    "youDeclined": "You declined this request.",
+    "customer": "Customer",
+    "customerNoName": "Customer",
+    "contactAfterOrder": "You'll see the customer's contacts once they accept your offer.",
+    "sendOffer": "Send an offer",
+    "decline": "Decline",
+    "declineTitle": "Decline this request?",
+    "declineConfirm": "Decline",
+    "declineText": "The customer isn't told who declined. Only our team sees your reason.",
+    "declineReason": "Reason"
+  },
+  "offers": {
+    "status": {
+      "Sent": "Waiting",
+      "Accepted": "Accepted",
+      "Rejected": "Rejected",
+      "Withdrawn": "Withdrawn",
+      "Expired": "Expired",
+      "Closed": "Closed"
+    },
+    "included": "Included",
+    "excluded": "Not included",
+    "fields": {
+      "visitAt": "Visit time",
+      "start": "Start",
+      "duration": "Duration",
+      "materials": "Materials",
+      "summary": "What you'll do",
+      "visitSummary": "About the visit",
+      "lines": "Work items",
+      "lineTitle": "Item {{n}}",
+      "lineKind": "Item {{n}} is",
+      "materialsIncluded": "Materials are included in the price",
+      "materialsNote": "About materials",
+      "price": "Price (֏)",
+      "fee": "Visit fee (֏)",
+      "durationDays": "Duration (days)",
+      "startDate": "Can start on",
+      "validDays": "Offer valid for",
+      "stageTitle": "Payment {{n}} name",
+      "stagePurpose": "Payment {{n}} type",
+      "stageAmount": "Payment {{n}} amount (֏)"
+    },
+    "startToAgree": "To agree",
+    "days": "{{n}} day(s)",
+    "materialsIncluded": "Included",
+    "materialsNotIncluded": "Not included",
+    "paymentPlan": "Payment plan",
+    "purpose": {
+      "Deposit": "Deposit",
+      "Stage": "Stage payment",
+      "Final": "Final payment"
+    },
+    "kind": {
+      "Work": "Work",
+      "Visit": "Visit"
+    },
+    "free": "Free",
+    "validUntil": "Valid until {{date}}",
+    "rejectReasonShown": "Reason: {{reason}}",
+    "title": "Offers",
+    "titleCount": "Offers ({{n}})",
+    "none": "No offers yet. Specialists who received your request will send them here.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "openOrder": "Open the order",
+    "acceptTitle": "Accept this offer?",
+    "acceptConfirm": "Accept offer",
+    "acceptText": "{{name}} · {{price}}",
+    "acceptVisitNote": "This books the visit. Your request stays open for the work offer that follows.",
+    "acceptWorkNote": "This creates the order and closes the request; the other offers will close.",
+    "rejectTitle": "Reject this offer?",
+    "rejectConfirm": "Reject",
+    "rejectReason": "Reason",
+    "rejectReasonHint": "The specialist sees it.",
+    "yours": "Your offers",
+    "withdraw": "Withdraw",
+    "errors": {
+      "summaryShort": "Write at least {{min}} characters.",
+      "priceRequired": "Enter the price.",
+      "visitAtRequired": "Choose the visit time."
+    },
+    "newTitle": "Send an offer",
+    "backToRequest": "Back to the request",
+    "kindLabel": "Offer type",
+    "kindChoice": {
+      "Work": "Offer for the work",
+      "Visit": "Propose a visit first"
+    },
+    "sections": {
+      "scope": "The work",
+      "visit": "The visit",
+      "priceAndTime": "Price and time",
+      "payments": "Payment plan"
+    },
+    "summaryHint": "Describe the job as you'll do it.",
+    "visitSummaryHint": "What you'll check and why a visit is needed.",
+    "lineIncluded": "Included",
+    "lineExcluded": "Not included",
+    "removeLine": "Remove item {{n}}",
+    "addIncluded": "Add included work",
+    "addExcluded": "Add excluded work",
+    "feeHint": "0 means a free visit.",
+    "paymentsHint": "Optional. Without a plan the whole price is paid at the end.",
+    "removeStage": "Remove payment {{n}}",
+    "stagesTotal": "Payments add up to {{total}} of {{price}}",
+    "addStage": "Add a payment",
+    "send": "Send offer",
+    "sent": "Your offer has been sent to the customer.",
+    "mineTitle": "Sent offers",
+    "mineSubtitle": "Your offers and what customers decided.",
+    "mineEmpty": "No offers here",
+    "mineEmptyText": "Offers you send from your inbox appear here.",
+    "sentOn": "sent {{date}}"
+  },
+  "orders": {
+    "title": "Orders",
+    "subtitle": "Work you agreed on.",
+    "sideLabel": "Show",
+    "as": {
+      "Customer": "I ordered",
+      "Partner": "I'm doing"
+    },
+    "emptyTitle": "No orders yet",
+    "emptyText": "When you accept an offer (or a customer accepts yours), the order appears here.",
+    "status": {
+      "Confirmed": "Confirmed",
+      "InProgress": "In progress",
+      "CompletionRequested": "Awaiting confirmation",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled"
+    },
+    "notFound": "Order not found",
+    "notFoundText": "It may belong to someone else.",
+    "yourSpecialist": "Your specialist",
+    "yourCustomer": "Your customer",
+    "visitTitle": "Assessment visit",
+    "workTitle": "Order",
+    "createdVisit": "The visit is booked. The specialist will contact you.",
+    "created": "The order is confirmed. You can now contact each other.",
+    "terms": "Agreed terms",
+    "history": "History",
+    "documentTitle": "Order: {{place}} — TnaShen",
+    "progressLabel": "Order progress",
+    "next": {
+      "Customer": {
+        "Confirmed": "The specialist will start on the agreed date. You can chat, or propose a change, at any time.",
+        "InProgress": "The work is under way. The specialist will mark it as done when it's finished.",
+        "CompletionRequested": "The specialist says the work is done. Check it and confirm, or say what's missing. Without an answer it completes on {{date}}.",
+        "Completed": "This order is complete. Thank you for using TnaShen!"
+      },
+      "Partner": {
+        "Confirmed": "Start the work when you begin, and mark it as done when you finish.",
+        "InProgress": "Mark the work as done when it's finished; the customer then confirms.",
+        "CompletionRequested": "Waiting for the customer to confirm. It completes by itself on {{date}}.",
+        "Completed": "This order is complete."
+      }
+    },
+    "cancelledBy": "Cancelled by {{who}} on {{date}}",
+    "teamWillHelp": "The work had already started, so our team will contact you both about payments.",
+    "party": {
+      "Customer": "the customer",
+      "Partner": "the specialist",
+      "Staff": "the TnaShen team",
+      "System": "TnaShen"
+    },
+    "actions": {
+      "start": "Start work",
+      "requestCompletion": "Mark as done",
+      "visitDone": "Visit done",
+      "rejectCompletion": "Not finished yet",
+      "confirmCompletion": "Confirm it's done",
+      "proposeChange": "Propose a change",
+      "cancel": "Cancel the order"
+    },
+    "rejectCompletion": {
+      "title": "Not finished yet?",
+      "text": "The order goes back to in progress. Tell the specialist what is missing.",
+      "label": "What is missing",
+      "confirm": "Send back"
+    },
+    "reasonRequired": "Please say why.",
+    "priceChanged": "Agreed price {{agreed}}, plus accepted extra work.",
+    "payments": "Payment plan",
+    "total": "Total",
+    "changes": "Changes",
+    "manage": "Need something else?",
+    "cancel": {
+      "title": "Cancel the order?",
+      "text": "The other side sees your reason. This can't be undone.",
+      "textStarted": "The work has already started: our team will contact you both about payments. The other side sees your reason.",
+      "label": "Why are you cancelling?",
+      "confirm": "Cancel the order"
+    },
+    "event": {
+      "Confirmed": "Order confirmed",
+      "InProgress": "Work started",
+      "Reopened": "Sent back: not finished yet",
+      "CompletionRequested": "Marked as done",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled"
+    },
+    "change": {
+      "kind": {
+        "ExtraWork": "Extra work",
+        "Schedule": "New schedule"
+      },
+      "kindLabel": "What to change",
+      "status": {
+        "Pending": "Waiting",
+        "Accepted": "Accepted",
+        "Rejected": "Declined",
+        "Withdrawn": "Withdrawn",
+        "Closed": "Closed"
+      },
+      "waitingForThem": "Waiting for the other side",
+      "waitingForYou": "Your answer is needed",
+      "proposedBy": "Proposed by {{who}}, {{date}}",
+      "extraWorkHint": "If you accept, the price becomes {{total}} and a payment for the extra work is added.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "withdraw": "Withdraw",
+      "declineTitle": "Decline the change?",
+      "declineNote": "Say why",
+      "answer": "answer: {{note}}",
+      "newVisitAt": "New visit time: {{date}}",
+      "newStartDate": "New start date: {{date}}",
+      "newDuration": "Duration: {{n}} days",
+      "proposeTitle": "Propose a change",
+      "intro": "The other side accepts or declines it. Only one change can wait at a time.",
+      "send": "Send",
+      "oneAtATime": "A change is waiting for an answer; another can be proposed after that.",
+      "amountHint": "The extra amount, in drams. It is added to the price as a separate payment.",
+      "fields": {
+        "title": "Extra work",
+        "amount": "Extra price",
+        "newVisitAt": "New visit time",
+        "newStartDate": "New start date",
+        "newDurationDays": "New duration (days)",
+        "description": "Explanation"
+      },
+      "errors": {
+        "title": "Name the extra work.",
+        "amount": "Enter the extra price.",
+        "visitAt": "Choose the new visit time.",
+        "schedule": "Choose a new start date or duration."
+      }
+    },
+    "pay": {
+      "heading": "Payments",
+      "record": {
+        "Customer": "I paid",
+        "Partner": "I received a payment"
+      },
+      "title": {
+        "Customer": "Record a payment you made",
+        "Partner": "Record a payment you received"
+      },
+      "intro": {
+        "Customer": "Payments go directly to the specialist. Record each one here; the specialist confirms it.",
+        "Partner": "Record what the customer paid you; the customer confirms it."
+      },
+      "paidOf": "Confirmed {{paid}} of {{total}}",
+      "progress": "Confirmed payments",
+      "records": "Recorded payments",
+      "none": {
+        "Customer": "No payments recorded yet. When you pay the specialist, record it here.",
+        "Partner": "No payments recorded yet. When the customer pays you, record it here."
+      },
+      "status": {
+        "Pending": "Waiting for confirmation",
+        "Confirmed": "Confirmed",
+        "Disputed": "Disputed",
+        "Withdrawn": "Withdrawn",
+        "Rejected": "Not counted"
+      },
+      "methods": {
+        "Cash": "Cash",
+        "BankTransfer": "Bank transfer",
+        "Card": "Card",
+        "Other": "Other"
+      },
+      "byYou": "recorded by you",
+      "by": "recorded by {{who}}",
+      "disputeReason": "Dispute:",
+      "withTeam": "Our team will look into it and contact you both.",
+      "teamNote": "TnaShen team:",
+      "confirm": {
+        "Customer": "Yes, I paid this",
+        "Partner": "Yes, I received it"
+      },
+      "dispute": "Dispute",
+      "withdraw": "Withdraw",
+      "disputeTitle": "Dispute this payment?",
+      "disputeText": "The TnaShen team will look into it. The other side sees your reason.",
+      "disputeLabel": "What is wrong",
+      "save": "Record payment",
+      "amount": "Amount, ֏",
+      "remaining": "Up to {{amount}}",
+      "paidOn": "Date",
+      "method": "How it was paid",
+      "stage": "Which payment",
+      "noStage": "Not linked to a stage",
+      "note": "Note",
+      "errors": {
+        "amount": "Enter the amount.",
+        "tooMuch": "At most {{max}}: payments can't add up to more than the price.",
+        "date": "Choose the date."
+      }
+    }
+  },
+  "chat": {
+    "message": "Message",
+    "openFailed": "Couldn't open the chat",
+    "listLabel": "Conversations",
+    "title": "Messages",
+    "pickTitle": "Choose a conversation",
+    "pickText": "Your chats with customers and specialists appear on the left.",
+    "you": "You",
+    "files": "{{n}} file(s)",
+    "noMessages": "No messages yet",
+    "role": {
+      "Customer": "Customer",
+      "Partner": "Specialist"
+    },
+    "unread": "{{n}} unread",
+    "emptyTitle": "No conversations yet",
+    "emptyText": "Start one from a request, an offer or an order.",
+    "seen": "Seen",
+    "notFound": "Conversation not found",
+    "backToList": "Back to conversations",
+    "openOrder": "Order",
+    "older": "Show earlier messages",
+    "startHint": "Say hello and ask what you need to know.",
+    "messagesLabel": "Messages",
+    "closed": "This conversation is closed: the request ended without an order.",
+    "attach": "Attach files",
+    "placeholder": "Write a message",
+    "send": "Send",
+    "ask": "Ask a question",
+    "askCustomer": "Ask the customer"
+  },
+  "public": {
+    "partnerType": {
+      "Specialist": "Specialist",
+      "Company": "Company",
+      "Supplier": "Supplier"
+    },
+    "partnerTypePlural": {
+      "Specialist": "Specialists",
+      "Company": "Companies"
+    },
+    "years": "{{n}} yrs experience",
+    "workCount": "Works: {{n}}",
+    "search": {
+      "label": "Find a specialist",
+      "what": "What do you need?",
+      "where": "Where?",
+      "anyService": "Any service",
+      "anyCity": "Any city",
+      "submit": "Search",
+      "title": "Specialists and companies",
+      "documentTitle": "{{title}} — TnaShen",
+      "found": "Found: {{n}}",
+      "subcategories": "Narrow down",
+      "allIn": "All: {{name}}",
+      "name": "Name",
+      "namePlaceholder": "Search by name",
+      "filters": "Filters",
+      "filtersCount": "Filters ({{n}})",
+      "city": "City",
+      "district": "District",
+      "anyDistrict": "Any district",
+      "type": "Who",
+      "anyType": "Everyone",
+      "clear": "Clear filters",
+      "results": "Results",
+      "emptyTitle": "No one matches yet",
+      "emptyText": "Try another city or fewer filters, or describe your job: we'll send it to the right specialists.",
+      "unknownCategory": "We don't have this service."
+    },
+    "services": {
+      "documentTitle": "Services — TnaShen",
+      "title": "Services",
+      "subtitle": "Choose a service to see the specialists and companies who do it.",
+      "everyone": "See everyone"
+    },
+    "profile": {
+      "documentTitle": "{{name}} — TnaShen",
+      "openWork": "Open work {{n}} {{caption}}",
+      "video": "Video",
+      "workOf": "Work {{n}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "notFound": "Profile not found",
+      "notFoundText": "This specialist isn't on TnaShen or their profile isn't public right now.",
+      "memberSince": "On TnaShen since {{date}}",
+      "request": "Send a request",
+      "about": "About",
+      "work": "Work examples ({{n}})",
+      "workList": "Work examples",
+      "noWork": "No work examples yet.",
+      "services": "Services",
+      "areas": "Works in",
+      "wholeCity": "The whole city",
+      "contactTitle": "Need this specialist?",
+      "contactText": "Describe the job and they'll reply with an offer. Phone numbers are shared once you agree on an order."
+    },
+    "how": {
+      "documentTitle": "How it works — TnaShen",
+      "title": "How TnaShen works",
+      "forWhom": "For whom",
+      "faq": "Questions and answers",
+      "customers": {
+        "tab": "For customers",
+        "subtitle": "From a description of the job to an agreed price and dates, in one place.",
+        "steps": {
+          "describe": {
+            "title": "Describe the job",
+            "text": "Say what needs doing, where and when, and add photos. Or send a request to one specialist from their profile."
+          },
+          "offers": {
+            "title": "Get offers",
+            "text": "Checked specialists nearby reply with a price, what's included, dates and a payment plan."
+          },
+          "choose": {
+            "title": "Compare and choose",
+            "text": "Ask questions in the chat, compare the offers and accept the best one. You then see each other's contacts."
+          },
+          "done": {
+            "title": "Get it done",
+            "text": "Follow the order in TnaShen and confirm when the work is finished."
+          }
+        },
+        "benefits": {
+          "checked": {
+            "title": "Checked specialists",
+            "text": "Our team reviews every profile and its documents before it goes public."
+          },
+          "free": {
+            "title": "Free for you",
+            "text": "Posting requests and comparing offers costs nothing."
+          },
+          "chat": {
+            "title": "Everything in writing",
+            "text": "Offers, changes and messages stay in one place, so nothing gets lost."
+          }
+        },
+        "ctaText": "Ready? Describe the job and get your first offers.",
+        "cta": "Describe your job"
+      },
+      "partners": {
+        "tab": "For partners",
+        "subtitle": "Find new customers near you and manage your work in one place.",
+        "steps": {
+          "profile": {
+            "title": "Create your profile",
+            "text": "Your services, where you work, a few words about you and photos of your work."
+          },
+          "review": {
+            "title": "We check it",
+            "text": "Our team reviews the profile and your documents, and tells you if anything needs changing."
+          },
+          "requests": {
+            "title": "Receive requests",
+            "text": "Customers near you send requests for the services you offer."
+          },
+          "offers": {
+            "title": "Send offers and agree",
+            "text": "Reply with a clear offer: price, scope, dates and payment stages. Agree in the chat."
+          }
+        },
+        "benefits": {
+          "clients": {
+            "title": "Customers near you",
+            "text": "Requests come only for your services and your areas."
+          },
+          "showcase": {
+            "title": "Your work on show",
+            "text": "A public profile with your photos, services and experience."
+          },
+          "tools": {
+            "title": "Simple tools",
+            "text": "Offers, orders and chat work on your phone."
+          }
+        },
+        "ctaText": "Creating a profile is free and takes about ten minutes.",
+        "cta": "Create your profile"
+      }
+    },
+    "info": {
+      "documentTitle": "{{title}} — TnaShen",
+      "notFound": "Page not found",
+      "updated": "Updated {{date}}"
+    }
+  },
+  "partner": {
+    "documentTitle": "Partner profile — TnaShen",
+    "title": "Partner profile",
+    "subtitle": "Tell customers who you are, what you do and where.",
+    "stepsLabel": "Profile steps",
+    "stepOf": "Step {{step}} of {{total}}",
+    "steps": {
+      "type": "Who you are",
+      "services": "Services",
+      "areas": "Where you work",
+      "about": "About you",
+      "work": "Work and documents",
+      "review": "Check and send"
+    },
+    "fields": {
+      "type": "You work as",
+      "nameSpecialist": "Your name as customers see it",
+      "nameCompany": "Company name",
+      "years": "Years of experience",
+      "avatar": "Photo or logo",
+      "about": "About you and your work",
+      "work": "Work examples",
+      "documents": "Documents"
+    },
+    "typeLocked": "The type can't change once the profile is approved.",
+    "typeText": {
+      "Specialist": "You do the work yourself: a plumber, electrician, tiler…",
+      "Company": "A team or a company that takes on jobs.",
+      "Supplier": "You sell building materials (orders come later)."
+    },
+    "nameHint": "Shown on your public profile.",
+    "servicesIntro": "Choose what you do. A main service also covers its subservices in search.",
+    "selected": "Chosen: {{n}} of {{max}}",
+    "areasIntro": "Choose the cities, or some of their districts, where you take jobs.",
+    "wholeCity": "The whole of {{city}}",
+    "orDistricts": "Or only some districts of {{city}}:",
+    "avatarHint": "A clear photo of you, or your logo. JPEG, PNG or WebP.",
+    "avatarChange": "Change",
+    "avatarAdd": "Add a photo",
+    "avatarRemove": "Remove",
+    "aboutHint": "{{n}} / {{max}} characters",
+    "aboutHintShort": "{{n}} characters — write at least {{min}}.",
+    "aboutPlaceholder": "What you do best, your experience, how you work, guarantees…",
+    "workHint": "Photos or videos of finished jobs. They're public: at least one is needed.",
+    "documentsHint": "ID, license or company registration (photos or PDF). Only the TnaShen team sees these.",
+    "editSection": "Edit: {{section}}",
+    "none": "Not filled in yet",
+    "mediaSummary": "Work examples: {{work}} · Documents: {{documents}}",
+    "missingTitle": "Before sending, add:",
+    "missing": {
+      "about": "A description of at least 50 characters",
+      "services": "At least one service",
+      "areas": "At least one area",
+      "work_examples": "At least one work example"
+    },
+    "readyText": "Everything is in place. Check your profile and send it: our team will review it and let you know.",
+    "liveEditText": "Your changes are saved and already on your public profile.",
+    "needsChangesTitle": "Our team asked for changes",
+    "saveContinue": "Save and continue",
+    "done": "Done",
+    "submit": "Send for review",
+    "resubmit": "Send again",
+    "errors": {
+      "name": "The name needs 2 to 100 characters.",
+      "years": "Enter a whole number from 0 to 70.",
+      "services": "Choose at least one service.",
+      "areas": "Choose at least one area.",
+      "about": "Write at least 50 characters.",
+      "work": "Add at least one work example."
+    },
+    "notice": {
+      "submitted": "Your profile was sent for review.",
+      "saved": "Your profile is saved."
+    },
+    "status": {
+      "UnderReview": {
+        "title": "Your profile is being reviewed",
+        "text": "Our team checks every profile and its documents. We'll let you know when it's approved or if something needs changing."
+      },
+      "Approved": {
+        "title": "Your profile is live",
+        "text": "Customers can find you and send you requests."
+      },
+      "Rejected": {
+        "title": "Your profile wasn't approved",
+        "text": "If you think this is a mistake, contact us."
+      },
+      "Suspended": {
+        "title": "Your profile is paused",
+        "text": "Your profile is hidden for now and you don't receive new requests. Contact us to sort it out."
+      }
+    },
+    "submittedAt": "Sent on {{date}}",
+    "viewPublic": "View public profile",
+    "edit": "Edit profile",
+    "openInbox": "Open inbox",
+    "yourProfile": "Your profile"
+  },
+  "reviews": {
+    "ratingLabel": "{{rating}} out of 5",
+    "stars": "{{n}} out of 5 stars",
+    "count": "({{n}} reviews)",
+    "heading": "Review",
+    "formIntro": "How did {{name}} do? Your review appears on their public profile.",
+    "rating": "Your rating",
+    "ratingRequired": "Choose 1 to 5 stars.",
+    "text": "Your review",
+    "textHint": "What went well, what could be better. Please don't share phone numbers.",
+    "submit": "Publish review",
+    "replyLabel": "Your reply",
+    "replyHint": "Shown under the review on your public profile. You can reply once.",
+    "replyRequired": "Write a reply.",
+    "reply": "Publish reply",
+    "hidden": "The TnaShen team has hidden this review from the public profile.",
+    "replyFrom": "Reply from {{name}}",
+    "publicHeading": "Reviews ({{n}})",
+    "noneYet": "No reviews yet.",
+    "anonymous": "Customer"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "documentTitle": "Notifications — TnaShen",
+    "bellUnread": "Notifications: {{n}} unread",
+    "unreadCount": "Unread: {{n}}",
+    "allRead": "You're all caught up.",
+    "markAll": "Mark all as read",
+    "show": "Show",
+    "filter": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "emptyTitle": "No notifications",
+    "emptyText": "New requests, offers, orders and payments show up here.",
+    "new": "New",
+    "status": {
+      "Accepted": "accepted",
+      "Rejected": "turned down",
+      "Confirmed": "confirmed",
+      "Disputed": "disputed"
+    },
+    "kind": {
+      "ExtraWork": "extra work",
+      "Schedule": "a new schedule",
+      "Work": "work",
+      "Visit": "a visit"
+    },
+    "types": {
+      "RequestReceived": "You have a new request. Take a look and send an offer.",
+      "OfferReceived": "{{name}} sent an offer for {{price}} on your request.",
+      "OfferAccepted": "Your offer was accepted: a new order for {{price}}.",
+      "OfferRejected": "A customer turned down your offer.",
+      "OrderStarted": "{{name}} started the work.",
+      "CompletionRequested": "{{name}} marked the order as done. Please confirm.",
+      "OrderCompleted": "The order is complete.",
+      "OrderAutoCompleted": "The order completed automatically.",
+      "CompletionRejected": "{{name}} says the work isn't finished yet.",
+      "OrderCancelled": "The order was cancelled by {{name}}.",
+      "ChangeProposed": "{{name}} proposed {{kind}} on your order.",
+      "ChangeAnswered": "{{name}} {{status}} your proposed change.",
+      "PaymentRecorded": "{{name}} recorded a payment of {{amount}}. Please confirm it.",
+      "PaymentAnswered": "{{name}} {{status}} the payment of {{amount}}.",
+      "PaymentResolved": "The TnaShen team decided on the disputed payment of {{amount}}: {{status}}.",
+      "ReviewReceived": "{{name}} left a review: {{rating}} out of 5.",
+      "ReviewReplied": "{{name}} replied to your review.",
+      "PartnerApproved": "Your partner profile is approved and visible to customers.",
+      "PartnerNeedsChanges": "Your partner profile needs a few changes.",
+      "PartnerRejected": "Your partner profile was not approved.",
+      "Other": "Something new happened.",
+      "CommissionStatementIssued": "Your weekly commission statement is ready: {{amount}}, due by {{dueOn}}.",
+      "CommissionOverdue": "Your commission statement is overdue: {{amount}} still to pay.",
+      "CommissionSettled": "We recorded your payment of {{amount}}. Still to pay: {{outstanding}}.",
+      "PartnerPausedForDebt": "New requests are paused because a commission statement has been unpaid for too long.",
+      "PartnerResumed": "Thank you for paying. You're receiving new requests again."
+    }
+  },
+  "commissions": {
+    "title": "Commissions",
+    "subtitle": "TnaShen takes a commission on each completed order. Every Monday you get a statement for last week, due in 7 days.",
+    "howToPay": "Pay by bank transfer or in cash, mentioning the statement's week. Our team records the payment and it shows here.",
+    "summary": {
+      "outstanding": "To pay",
+      "outstandingHint": "On issued statements",
+      "overdue": "Overdue",
+      "overdueHint": "Please pay as soon as you can",
+      "nextDue": "Next due",
+      "nextDueHint": "Earliest unpaid statement",
+      "unbilled": "This week",
+      "unbilledHint": "Goes on the next statement"
+    },
+    "paused": {
+      "title": "New requests are paused",
+      "text": "Since {{date}} you get no new requests because a statement is more than {{days}} days overdue. Your current orders continue. Pay it and requests start again.",
+      "open": "See statements"
+    },
+    "viewLabel": "Show",
+    "views": {
+      "statements": "Weekly statements",
+      "orders": "By order"
+    },
+    "status": {
+      "Open": "Unpaid",
+      "Overdue": "Overdue",
+      "Paid": "Paid"
+    },
+    "statementLine": "Total {{total}} · paid {{paid}}",
+    "dueLine": "{{amount}} to pay by {{date}}",
+    "paidOn": "Paid on {{date}}",
+    "statementsEmpty": "No statements yet",
+    "statementsEmptyText": "Your first statement arrives on the Monday after the week of your first completed order.",
+    "chargesEmpty": "No commissions yet",
+    "chargesEmptyText": "Commission is charged when an order completes.",
+    "order": "Order",
+    "billed": "On a statement",
+    "unbilled": "Next statement",
+    "chargeLine": "{{price}} × {{rate}} = {{amount}}",
+    "priceRate": "{{price}} × {{rate}}",
+    "completedOn": "Completed {{date}}",
+    "back": "Commissions",
+    "statementTitle": "Statement for {{week}}",
+    "facts": {
+      "total": "Total",
+      "paid": "Paid",
+      "outstanding": "To pay",
+      "dueOn": "Due",
+      "issuedAt": "Issued",
+      "paidAt": "Fully paid"
+    },
+    "orders": "Orders ({{count}})",
+    "payments": "Payments",
+    "noPayments": "No payments recorded yet.",
+    "recordedAt": "recorded {{date}}",
+    "method": {
+      "BankTransfer": "Bank transfer",
+      "Cash": "Cash",
+      "Card": "Card",
+      "Other": "Other"
+    },
+    "notFound": "Statement not found",
+    "notFoundText": "This statement doesn't exist or isn't yours."
+  }
+}

@@ -1,0 +1,85 @@
+@use 'styles/mixins' as *;
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: space(2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  @include up(md) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: space(3);
+  }
+
+  &__thumb {
+    @include reset-button;
+    @include focus-ring;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: $color-surface-sunken;
+    border-radius: $radius;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform $transition;
+
+    &:hover {
+      transform: scale(1.03);
+    }
+  }
+
+  &__video {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: $color-text-faint;
+  }
+
+  &__badge {
+    position: absolute;
+    bottom: space(2);
+    left: space(2);
+    padding: 2px space(2);
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-white;
+    background: rgb(29 51 70 / 75%);
+    border-radius: $radius-pill;
+  }
+
+  &__figure {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    margin: 0;
+  }
+
+  &__large {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    background: $color-night;
+    border-radius: $radius;
+  }
+
+  &__caption {
+    @include text-muted;
+  }
+
+  &__nav {
+    display: flex;
+    gap: space(2);
+    justify-content: space-between;
+    width: 100%;
+  }
+}

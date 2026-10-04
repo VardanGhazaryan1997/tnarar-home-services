@@ -1,0 +1,10 @@
+# Keeps local folders out of Docker builds that use the repository root as context (the API image).
+**/node_modules
+**/dist
+**/coverage
+**/bin
+**/obj
+**/TestResults
+**/.vs
+.git
+.env

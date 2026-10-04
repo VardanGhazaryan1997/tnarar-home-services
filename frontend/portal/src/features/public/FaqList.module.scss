@@ -1,0 +1,54 @@
+@use 'styles/mixins' as *;
+
+.faq-list {
+  @include surface;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__item {
+    border-bottom: 1px solid $color-border;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__question {
+    @include focus-ring;
+
+    display: flex;
+    gap: space(3);
+    align-items: center;
+    justify-content: space-between;
+    min-height: $touch-target;
+    padding: space(4);
+    font-weight: $font-weight-semibold;
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      flex: none;
+      font-size: $font-size-xl;
+      line-height: 1;
+      color: $color-tuff-deep;
+      content: '+';
+    }
+  }
+
+  &__item[open] &__question::after {
+    content: '−';
+  }
+
+  &__answer {
+    @include text-muted;
+
+    padding: 0 space(4) space(4);
+    white-space: pre-line;
+  }
+}

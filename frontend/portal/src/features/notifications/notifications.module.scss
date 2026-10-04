@@ -1,0 +1,114 @@
+@use 'styles/mixins' as *;
+
+.bell {
+  @include focus-ring;
+
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: $color-text-muted;
+  border-radius: 50%;
+  transition:
+    background $transition,
+    color $transition;
+
+  &:hover,
+  &--active {
+    color: $color-text;
+    background: $color-surface-sunken;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 0.6875rem;
+    font-weight: $font-weight-bold;
+    line-height: 18px;
+    color: $color-white;
+    text-align: center;
+    background: $color-tuff-deep;
+    border-radius: 999px;
+  }
+}
+
+.notifications {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    li + li {
+      border-top: 1px solid $color-border;
+    }
+  }
+}
+
+.notification {
+  @include reset-button;
+  @include focus-ring;
+
+  display: flex;
+  gap: space(3);
+  align-items: flex-start;
+  width: 100%;
+  padding: space(3) space(4);
+  text-align: left;
+  cursor: pointer;
+  transition: background $transition;
+
+  &:hover {
+    background: $color-mist;
+  }
+
+  &--unread {
+    background: $color-info-soft;
+
+    .notification__text {
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    color: $color-tuff-deep;
+    background: $color-white;
+    border: 1px solid $color-border;
+    border-radius: 50%;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: space(1);
+    min-width: 0;
+  }
+
+  &__time {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    margin-top: space(2);
+    background: $color-tuff;
+    border-radius: 50%;
+  }
+}

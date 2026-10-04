@@ -18,9 +18,13 @@ public class CatalogEndpointTests(ApiFactory factory)
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var categories = (await response.Content.ReadFromJsonAsync<List<CategoryDto>>())!;
-        categories.Count.ShouldBe(7);
-        categories.Single(c => c.Slug == "plumbing").Name.ShouldBe("Сантехника");
-        categories.Single(c => c.Slug == "plumbing").Icon.ShouldBe("pipe");
+        categories.Count.ShouldBe(18);
+        categories.Sum(c => c.Children.Count).ShouldBe(133);
+        var plumbing = categories.Single(c => c.Slug == "plumbing");
+        plumbing.Name.ShouldBe("Сантехника");
+        plumbing.Icon.ShouldBe("pipe");
+        plumbing.Children.Select(c => c.Slug).ShouldContain("plumbing-leaks");
+        plumbing.Children.Single(c => c.Slug == "plumbing-leaks").Name.ShouldBe("Устранение протечек");
     }
 
     [Fact]

@@ -3,25 +3,14 @@ using HomeServices.Domain.Localization;
 namespace HomeServices.Infrastructure.Persistence.Configurations;
 
 /// <summary>
-/// Reference data the platform starts with: the initial service categories (from the
-/// partner network) and the five launch cities. Staff manage them in the Back Office later.
+/// Reference data the platform starts with: the five launch cities (service categories are in
+/// CatalogSeed.Categories.cs). Staff manage them in the Back Office later.
 /// Ids are fixed so migrations stay stable.
 /// </summary>
-internal static class CatalogSeed
+internal static partial class CatalogSeed
 {
     internal static LocalizedText Text(string hy, string ru, string en) =>
         LocalizedText.From(new Dictionary<string, string> { ["hy"] = hy, ["ru"] = ru, ["en"] = en });
-
-    internal static readonly (Guid Id, string Slug, string Icon, LocalizedText Name)[] Categories =
-    [
-        (new("019a0000-0000-7000-8000-000000000101"), "construction", "brick", Text("Շինարարություն", "Строительство", "Construction")),
-        (new("019a0000-0000-7000-8000-000000000102"), "renovation", "roller", Text("Վերանորոգում", "Ремонт", "Renovation")),
-        (new("019a0000-0000-7000-8000-000000000103"), "plumbing", "pipe", Text("Սանտեխնիկա", "Сантехника", "Plumbing")),
-        (new("019a0000-0000-7000-8000-000000000104"), "heating", "flame", Text("Ջեռուցում", "Отопление", "Heating")),
-        (new("019a0000-0000-7000-8000-000000000105"), "electrical", "bolt", Text("Էլեկտրական աշխատանքներ", "Электромонтажные работы", "Electrical work")),
-        (new("019a0000-0000-7000-8000-000000000106"), "exterior-cladding", "facade", Text("Ֆասադի երեսպատում", "Облицовка фасада", "Exterior cladding")),
-        (new("019a0000-0000-7000-8000-000000000107"), "cleaning", "sparkle", Text("Պրոֆեսիոնալ մաքրում", "Профессиональная уборка", "Professional cleaning")),
-    ];
 
     internal static readonly Guid YerevanId = new("019a0000-0000-7000-8000-000000000201");
 

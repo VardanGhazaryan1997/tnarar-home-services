@@ -11,18 +11,24 @@ public class CatalogStorageTests(PostgresFixture db)
     private static LocalizedText Text(string hy) => LocalizedText.Empty.With("hy", hy);
 
     [Fact]
-    public async Task Migrations_seed_the_launch_categories()
+    public async Task Migrations_seed_the_main_categories_and_their_subcategories()
     {
         await using var context = await MigratedContext("catalog_categories");
 
-        var categories = await context.Categories.OrderBy(c => c.SortOrder).ToListAsync();
+        var all = await context.Categories.ToListAsync();
+        var main = all.Where(c => c.ParentId == null).OrderBy(c => c.SortOrder).ToList();
 
-        categories.Select(c => c.Slug).ShouldBe(new[]
+        main.Count.ShouldBe(18);
+        main.Take(7).Select(c => c.Slug).ShouldBe(new[]
         {
             "construction", "renovation", "plumbing", "heating", "electrical", "exterior-cladding", "cleaning",
         });
-        categories.ShouldAllBe(c => c.IsActive && c.ParentId == null);
-        categories.Single(c => c.Slug == "plumbing").Name.Get("ru", "hy").ShouldBe("Сантехника");
+        all.Count.ShouldBe(18 + 133);
+        all.ShouldAllBe(c => c.IsActive);
+        all.Where(c => c.ParentId != null).ShouldAllBe(c => main.Any(m => m.Id == c.ParentId));
+        main.ShouldAllBe(m => all.Any(c => c.ParentId == m.Id));
+        all.Single(c => c.Slug == "plumbing").Name.Get("ru", "hy").ShouldBe("Сантехника");
+        all.Single(c => c.Slug == "cleaning-after-renovation").Name.Get("en", "hy").ShouldBe("Post-renovation cleaning");
     }
 
     [Fact]

@@ -37,6 +37,14 @@ export const ICON_PATHS = {
   roller: 'M4 4h13v5H4zM17 6.5h3V12h-8v3M11 15h2v6h-2z',
   facade: 'M4 21V7l8-4 8 4v14M4 21h16M8 10h2M14 10h2M8 14h2M14 14h2M10 21v-3h4v3',
   sparkle: 'M12 3l2 5.5L19.5 10 14 12l-2 6-2-6-5.5-2L10 8.5 12 3ZM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z',
+  roof: 'M2 13 12 4l10 9M5 10.3V20h14v-9.7M16 7.6V4h3v6.3M8 14h8M8 17h8',
+  window: 'M5 3h14v18H5zM12 3v18M5 12h14',
+  snowflake: 'M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 3.5l3 2 3-2M9 20.5l3-2 3 2',
+  layers: 'M12 3 2 8l10 5 10-5-10-5ZM2 12.5l10 5 10-5M2 17l10 5 10-5',
+  fence: 'M5 21V7l2-3 2 3v14M15 21V7l2-3 2 3v14M3 10h18M3 16h18',
+  hammer: 'M4 4h11v5H4zM15 6.5h4M9.5 9v12',
+  shovel: 'M12 3v11M9 3h6M8 14h8v3a4 4 0 0 1-8 0v-3Z',
+  leaf: 'M5 19C5 10 11 4 20 4c0 9-6 15-15 15ZM5 19l8-8',
 }
 
 export const ICON_NAMES = Object.keys(ICON_PATHS)

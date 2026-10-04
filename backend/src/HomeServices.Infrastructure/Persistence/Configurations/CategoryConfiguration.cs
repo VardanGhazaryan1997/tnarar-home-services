@@ -33,5 +33,20 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             IsDeleted = false,
             CreatedAt = SeededAt,
         }));
+
+        // Subcategories are numbered within their parent.
+        builder.HasData(CatalogSeed.Subcategories
+            .GroupBy(c => c.ParentId)
+            .SelectMany(group => group.Select((c, index) => new
+            {
+                c.Id,
+                ParentId = (Guid?)c.ParentId,
+                c.Slug,
+                c.Name,
+                SortOrder = index + 1,
+                IsActive = true,
+                IsDeleted = false,
+                CreatedAt = SeededAt,
+            })));
     }
 }

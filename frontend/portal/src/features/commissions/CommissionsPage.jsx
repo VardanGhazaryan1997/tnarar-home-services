@@ -18,7 +18,7 @@ import styles from './commissions.module.scss'
 const VIEWS = ['statements', 'orders']
 
 /**
- * What the partner owes TnaShen: totals, weekly statements (newest first) and the commission on each completed
+ * What the partner owes Tnarar: totals, weekly statements (newest first) and the commission on each completed
  * order. Partners pay offline; the team records payments.
  */
 export default function CommissionsPage() {

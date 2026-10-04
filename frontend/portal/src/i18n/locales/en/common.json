@@ -21,7 +21,7 @@
         "text": "Compare the offers and accept the one you like. You then see each other's contacts."
       }
     },
-    "documentTitle": "TnaShen — trusted specialists for your home",
+    "documentTitle": "Tnarar — trusted specialists for your home",
     "or": "or",
     "promises": {
       "checked": "Every specialist is checked by our team",
@@ -79,10 +79,10 @@
   },
   "layout": {
     "skipToContent": "Skip to content",
-    "home": "TnaShen home page",
+    "home": "Tnarar home page",
     "mainNavigation": "Main",
     "tabNavigation": "Sections",
-    "footer": "© {{year}} TnaShen. Home services in Armenia.",
+    "footer": "© {{year}} Tnarar. Home services in Armenia.",
     "tagline": "Home services in Armenia: find checked specialists, compare offers and agree in one place.",
     "footerNavigation": "Footer",
     "links": {
@@ -127,7 +127,7 @@
       "title": "Your partner profile",
       "text": "Services, areas, work examples and review status.",
       "open": "Open",
-      "joinTitle": "Offer your services on TnaShen",
+      "joinTitle": "Offer your services on Tnarar",
       "joinText": "Create a free partner profile and receive requests from customers near you.",
       "join": "Become a partner"
     }
@@ -634,14 +634,14 @@
     "created": "The order is confirmed. You can now contact each other.",
     "terms": "Agreed terms",
     "history": "History",
-    "documentTitle": "Order: {{place}} — TnaShen",
+    "documentTitle": "Order: {{place}} — Tnarar",
     "progressLabel": "Order progress",
     "next": {
       "Customer": {
         "Confirmed": "The specialist will start on the agreed date. You can chat, or propose a change, at any time.",
         "InProgress": "The work is under way. The specialist will mark it as done when it's finished.",
         "CompletionRequested": "The specialist says the work is done. Check it and confirm, or say what's missing. Without an answer it completes on {{date}}.",
-        "Completed": "This order is complete. Thank you for using TnaShen!"
+        "Completed": "This order is complete. Thank you for using Tnarar!"
       },
       "Partner": {
         "Confirmed": "Start the work when you begin, and mark it as done when you finish.",
@@ -655,8 +655,8 @@
     "party": {
       "Customer": "the customer",
       "Partner": "the specialist",
-      "Staff": "the TnaShen team",
-      "System": "TnaShen"
+      "Staff": "the Tnarar team",
+      "System": "Tnarar"
     },
     "actions": {
       "start": "Start work",
@@ -778,7 +778,7 @@
       "by": "recorded by {{who}}",
       "disputeReason": "Dispute:",
       "withTeam": "Our team will look into it and contact you both.",
-      "teamNote": "TnaShen team:",
+      "teamNote": "Tnarar team:",
       "confirm": {
         "Customer": "Yes, I paid this",
         "Partner": "Yes, I received it"
@@ -786,7 +786,7 @@
       "dispute": "Dispute",
       "withdraw": "Withdraw",
       "disputeTitle": "Dispute this payment?",
-      "disputeText": "The TnaShen team will look into it. The other side sees your reason.",
+      "disputeText": "The Tnarar team will look into it. The other side sees your reason.",
       "disputeLabel": "What is wrong",
       "save": "Record payment",
       "amount": "Amount, ֏",
@@ -854,7 +854,7 @@
       "anyCity": "Any city",
       "submit": "Search",
       "title": "Specialists and companies",
-      "documentTitle": "{{title}} — TnaShen",
+      "documentTitle": "{{title}} — Tnarar",
       "found": "Found: {{n}}",
       "subcategories": "Narrow down",
       "allIn": "All: {{name}}",
@@ -874,21 +874,21 @@
       "unknownCategory": "We don't have this service."
     },
     "services": {
-      "documentTitle": "Services — TnaShen",
+      "documentTitle": "Services — Tnarar",
       "title": "Services",
       "subtitle": "Choose a service to see the specialists and companies who do it.",
       "everyone": "See everyone"
     },
     "profile": {
-      "documentTitle": "{{name}} — TnaShen",
+      "documentTitle": "{{name}} — Tnarar",
       "openWork": "Open work {{n}} {{caption}}",
       "video": "Video",
       "workOf": "Work {{n}} of {{total}}",
       "previous": "Previous",
       "next": "Next",
       "notFound": "Profile not found",
-      "notFoundText": "This specialist isn't on TnaShen or their profile isn't public right now.",
-      "memberSince": "On TnaShen since {{date}}",
+      "notFoundText": "This specialist isn't on Tnarar or their profile isn't public right now.",
+      "memberSince": "On Tnarar since {{date}}",
       "request": "Send a request",
       "about": "About",
       "work": "Work examples ({{n}})",
@@ -901,8 +901,8 @@
       "contactText": "Describe the job and they'll reply with an offer. Phone numbers are shared once you agree on an order."
     },
     "how": {
-      "documentTitle": "How it works — TnaShen",
-      "title": "How TnaShen works",
+      "documentTitle": "How it works — Tnarar",
+      "title": "How Tnarar works",
       "forWhom": "For whom",
       "faq": "Questions and answers",
       "customers": {
@@ -923,7 +923,7 @@
           },
           "done": {
             "title": "Get it done",
-            "text": "Follow the order in TnaShen and confirm when the work is finished."
+            "text": "Follow the order in Tnarar and confirm when the work is finished."
           }
         },
         "benefits": {
@@ -983,13 +983,13 @@
       }
     },
     "info": {
-      "documentTitle": "{{title}} — TnaShen",
+      "documentTitle": "{{title}} — Tnarar",
       "notFound": "Page not found",
       "updated": "Updated {{date}}"
     }
   },
   "partner": {
-    "documentTitle": "Partner profile — TnaShen",
+    "documentTitle": "Partner profile — Tnarar",
     "title": "Partner profile",
     "subtitle": "Tell customers who you are, what you do and where.",
     "stepsLabel": "Profile steps",
@@ -1032,7 +1032,7 @@
     "aboutHintShort": "{{n}} characters — write at least {{min}}.",
     "aboutPlaceholder": "What you do best, your experience, how you work, guarantees…",
     "workHint": "Photos or videos of finished jobs. They're public: at least one is needed.",
-    "documentsHint": "ID, license or company registration (photos or PDF). Only the TnaShen team sees these.",
+    "documentsHint": "ID, license or company registration (photos or PDF). Only the Tnarar team sees these.",
     "editSection": "Edit: {{section}}",
     "none": "Not filled in yet",
     "mediaSummary": "Work examples: {{work}} · Documents: {{documents}}",
@@ -1101,7 +1101,7 @@
     "replyHint": "Shown under the review on your public profile. You can reply once.",
     "replyRequired": "Write a reply.",
     "reply": "Publish reply",
-    "hidden": "The TnaShen team has hidden this review from the public profile.",
+    "hidden": "The Tnarar team has hidden this review from the public profile.",
     "replyFrom": "Reply from {{name}}",
     "publicHeading": "Reviews ({{n}})",
     "noneYet": "No reviews yet.",
@@ -1109,7 +1109,7 @@
   },
   "notifications": {
     "title": "Notifications",
-    "documentTitle": "Notifications — TnaShen",
+    "documentTitle": "Notifications — Tnarar",
     "bellUnread": "Notifications: {{n}} unread",
     "unreadCount": "Unread: {{n}}",
     "allRead": "You're all caught up.",
@@ -1149,7 +1149,7 @@
       "ChangeAnswered": "{{name}} {{status}} your proposed change.",
       "PaymentRecorded": "{{name}} recorded a payment of {{amount}}. Please confirm it.",
       "PaymentAnswered": "{{name}} {{status}} the payment of {{amount}}.",
-      "PaymentResolved": "The TnaShen team decided on the disputed payment of {{amount}}: {{status}}.",
+      "PaymentResolved": "The Tnarar team decided on the disputed payment of {{amount}}: {{status}}.",
       "ReviewReceived": "{{name}} left a review: {{rating}} out of 5.",
       "ReviewReplied": "{{name}} replied to your review.",
       "PartnerApproved": "Your partner profile is approved and visible to customers.",
@@ -1165,7 +1165,7 @@
   },
   "commissions": {
     "title": "Commissions",
-    "subtitle": "TnaShen takes a commission on each completed order. Every Monday you get a statement for last week, due in 7 days.",
+    "subtitle": "Tnarar takes a commission on each completed order. Every Monday you get a statement for last week, due in 7 days.",
     "howToPay": "Pay by bank transfer or in cash, mentioning the statement's week. Our team records the payment and it shows here.",
     "summary": {
       "outstanding": "To pay",

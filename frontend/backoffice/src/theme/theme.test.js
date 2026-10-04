@@ -7,7 +7,7 @@ describe('Back Office theme', () => {
     )
   })
 
-  it('uses the TnaShen brand colors', () => {
+  it('uses the Tnarar brand colors', () => {
     expect(theme.token.colorPrimary).toBe(BRAND.araratNight)
     expect(theme.token.colorBgLayout).toBe(BRAND.cleanMist)
     expect(theme.components.Layout.siderBg).toBe(BRAND.araratNight)

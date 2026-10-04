@@ -89,6 +89,26 @@ public class IdentityServicesTests
     }
 
     [Fact]
+    public void A_fixed_code_is_returned_every_time()
+    {
+        var generator = new FixedOtpGenerator("111111");
+
+        generator.Generate().ShouldBe("111111");
+        generator.Generate().ShouldBe("111111");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("11111")]
+    [InlineData("1111111")]
+    [InlineData("12a456")]
+    public void A_fixed_code_must_be_six_digits(string code)
+    {
+        FixedOtpGenerator.IsValidCode(code).ShouldBeFalse();
+        Should.Throw<ArgumentException>(() => new FixedOtpGenerator(code));
+    }
+
+    [Fact]
     public async Task The_development_SMS_sender_keeps_messages_for_tests()
     {
         var sms = new FakeSmsSender(NullLogger<FakeSmsSender>.Instance);

@@ -1,4 +1,4 @@
-// Ant Design theme for the Back Office, from the TnaShen brand (logo & colors).
+// Ant Design theme for the Back Office, from the Tnarar brand (logo & colors).
 // All styling goes through these tokens; the Back Office has no custom SCSS.
 
 /** Brand colors. */

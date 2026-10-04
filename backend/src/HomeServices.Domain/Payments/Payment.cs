@@ -26,7 +26,7 @@ public enum PaymentStatus
 }
 
 /// <summary>
-/// A payment made directly between the customer and the partner (TnaShen doesn't take the money in release 1).
+/// A payment made directly between the customer and the partner (Tnarar doesn't take the money in release 1).
 /// One side records it, the other confirms or disputes it; a dispute goes to the team.
 /// </summary>
 public sealed class Payment : AuditableEntity, IAudited

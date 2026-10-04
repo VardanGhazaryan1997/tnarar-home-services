@@ -169,6 +169,6 @@ internal static class SmsTexts
             NotificationType.PartnerPausedForDebt => "Նոր հայտերը դադարեցված են մինչև միջնորդավճարի վճարումը։",
             _ => "Նոր ծանուցում։",
         };
-        return $"TnaShen: {text} {portalUrl.TrimEnd('/')}/hy{notification.Link}";
+        return $"Tnarar: {text} {portalUrl.TrimEnd('/')}/hy{notification.Link}";
     }
 }

@@ -3,7 +3,7 @@ using HomeServices.Domain.Common;
 namespace HomeServices.Domain.Commissions;
 
 /// <summary>
-/// The share of an order's price a partner owes TnaShen. <see cref="CategoryId"/> null = the default rate; a category
+/// The share of an order's price a partner owes Tnarar. <see cref="CategoryId"/> null = the default rate; a category
 /// rate applies to it and its subcategories (unless a subcategory has its own).
 /// </summary>
 public sealed class CommissionRate : Entity, IAudited
@@ -115,7 +115,7 @@ public enum StatementStatus
 }
 
 /// <summary>
-/// One partner's commissions for one week (Monday–Sunday), due <see cref="DueOn"/>. Partners pay TnaShen offline;
+/// One partner's commissions for one week (Monday–Sunday), due <see cref="DueOn"/>. Partners pay Tnarar offline;
 /// staff record each payment as a <see cref="Settlement"/>. Overdue = open after the due date.
 /// </summary>
 public sealed class CommissionStatement : Entity, IAudited

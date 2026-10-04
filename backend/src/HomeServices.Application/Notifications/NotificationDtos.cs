@@ -34,7 +34,7 @@ public sealed class NotificationSettings
     public const string SectionName = "Notifications";
 
     /// <summary>The Portal's address, for links in SMS messages.</summary>
-    public string PortalUrl { get; set; } = "https://tnashen.am";
+    public string PortalUrl { get; set; } = "https://tnarar.am";
 
     /// <summary>How often the delivery job looks for new notifications.</summary>
     public int DeliverySeconds { get; set; } = 15;

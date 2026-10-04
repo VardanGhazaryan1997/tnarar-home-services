@@ -132,7 +132,7 @@ describe('Partner profile', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Aram Plumbing' })).toBeInTheDocument()
     expect(screen.getByText('20 yrs experience')).toBeInTheDocument()
-    expect(screen.getByText(/On TnaShen since 2026/)).toBeInTheDocument()
+    expect(screen.getByText(/On Tnarar since 2026/)).toBeInTheDocument()
     expect(screen.getByText(/Clean and on time/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Boilers' })).toHaveAttribute('href', '/en/services/boilers')
     expect(screen.getByText('Kentron, Arabkir')).toBeInTheDocument()

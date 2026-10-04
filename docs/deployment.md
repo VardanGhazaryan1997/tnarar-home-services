@@ -26,17 +26,19 @@ Staging runs on [Railway](https://railway.com) in the **EU West (Amsterdam)** re
   every job twice.
 - **Files** go straight between the browser and the bucket with signed links; the API sets the bucket's CORS rules
   for the two sites on start.
-- **SMS** are not sent on staging: sign-in codes and notification texts are written to the API log (look for
-  `SMS to`).
+- **SMS** are not sent on staging: every Portal sign-in code is **`111111`** (`Auth:FixedOtpCode` in
+  `appsettings.Staging.json`), and the texts are written to the API log (look for `SMS to`). The API refuses to
+  start in Production if a fixed code is set.
 
-Each service's build and deploy settings are in its `railway.json` (Dockerfile, health check, one replica, and
-watch paths so a change in one app only redeploys that app).
+Each service's intended build and deploy settings are in its `railway.json` (Dockerfile, health check, one replica,
+watch paths). Railway no longer applies these files to services created after 2026-08-28, so enter the same values
+in each service's **Settings** (see step 2); the files stay as the record of what each service should have.
 
 ## One-time setup
 
 ### 1. Project, database and bucket
 
-1. In Railway: **New Project → Empty project**. Name it `tnashen-staging`. In **Settings**, set the region to
+1. In Railway: **New Project → Empty project**. Name it `tnarar-staging`. In **Settings**, set the region to
    **EU West (Amsterdam)**.
 2. **Create → Database → PostgreSQL**. Keep the name `Postgres`. In its **Backups** tab, turn on **daily** backups.
 3. **Create → Bucket**, region EU West. Name it `files`.
@@ -54,8 +56,19 @@ Connect Railway to the GitHub repository (**Create → GitHub Repo**), three tim
 
 The name `api` matters: the two sites find it at `api.railway.internal`.
 
-For **portal** and **backoffice**: **Settings → Networking → Generate Domain** (or add a custom domain such as
-`staging.tnashen.am` and `admin.staging.tnashen.am`, then the DNS record Railway shows). Don't give **api** a public
+Then, because Railway ignores the config files for new services, set these by hand:
+
+| Service | Setting | Value |
+| --- | --- | --- |
+| `api` | **Variables** | `RAILWAY_DOCKERFILE_PATH=backend/Dockerfile` (without it Railway tries Railpack and the build fails) |
+| `api` | **Settings → Deploy** | Healthcheck path `/health`, timeout `300`; keep **1** replica |
+| `portal` / `backoffice` | **Settings → Build** | Watch paths `/frontend/portal/**` / `/frontend/backoffice/**` |
+| `portal` / `backoffice` | **Settings → Deploy** | Healthcheck path `/` |
+| all four (and Postgres) | **Settings → Deploy → Regions** | **EU West (Amsterdam)** (new services default to US West) |
+
+For **portal** and **backoffice**, after their first deploy (before that Railway shows "Could not load public
+networking"): **Settings → Networking → Generate Domain** (or add a custom domain such as
+`staging.tnarar.am` and `admin.staging.tnarar.am`, then the DNS record Railway shows). Don't give **api** a public
 domain.
 
 ### 3. Variables
@@ -84,11 +97,14 @@ Storage__CorsOrigins__1=https://${{backoffice.RAILWAY_PUBLIC_DOMAIN}}
 Notifications__PortalUrl=https://${{portal.RAILWAY_PUBLIC_DOMAIN}}
 ```
 
-Make the two random keys with PowerShell 7:
+Make the two random keys in PowerShell (run it twice; works in Windows PowerShell 5 and PowerShell 7):
 
 ```powershell
-[Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(48))
+$b = New-Object byte[] 48; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)
 ```
+
+The three `RAILWAY_PUBLIC_DOMAIN` lines only get a value once the sites have domains; add them (or redeploy the
+API) after generating the domains.
 
 Never reuse the development keys from `appsettings.Development.json`. Changing `Jwt__SigningKey` later signs
 everyone out; changing `Auth__SecretHashKey` invalidates all sessions and pending codes.
@@ -110,7 +126,7 @@ Click **Deploy** (Railway shows the staged changes). The first API start creates
 2. `https://<portal domain>/api/v1/languages` returns a list of languages.
 3. The Back Office signs in with the Super Admin email and password, then asks you to set up two-factor
    authentication.
-4. In the Portal, sign in with a phone number; read the code in the **api** logs (`SMS to +374...`).
+4. In the Portal, sign in with any phone number and the code `111111`.
 5. Upload a photo (partner profile or a new request). If it fails with a CORS error in the browser console, check
    the `Storage__CorsOrigins__*` values and the api log.
 

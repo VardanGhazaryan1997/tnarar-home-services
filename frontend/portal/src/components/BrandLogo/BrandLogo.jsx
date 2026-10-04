@@ -15,13 +15,13 @@ export function BrandMark({ size = 32 }) {
   )
 }
 
-/** The TnaShen logo: the mark and the wordmark "ՏնաՇեն" ("Տնա" in Ararat Night, "Շեն" in Tuff Stone). */
+/** The Tnarar logo: the mark and the wordmark "Tnarar" ("Tna" in Ararat Night, "rar" in Tuff Stone). */
 export default function BrandLogo({ size = 32 }) {
   return (
-    <span className={styles['brand-logo']} role="img" aria-label="ՏնաՇեն">
+    <span className={styles['brand-logo']} role="img" aria-label="Tnarar">
       <BrandMark size={size} />
       <span className={styles['brand-logo__word']} aria-hidden="true">
-        Տնա<span className={styles['brand-logo__accent']}>Շեն</span>
+        Tna<span className={styles['brand-logo__accent']}>rar</span>
       </span>
     </span>
   )

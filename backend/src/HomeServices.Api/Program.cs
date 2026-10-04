@@ -91,6 +91,12 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<Notifi
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
+// A fixed SMS code is a testing convenience; never let it reach production.
+if (builder.Environment.IsProduction() && !string.IsNullOrEmpty(builder.Configuration["Auth:FixedOtpCode"]))
+{
+    throw new InvalidOperationException("Auth:FixedOtpCode is for staging and must not be set in Production.");
+}
+
 var app = builder.Build();
 
 // Request logging is outermost so it records the final status code (after error handling).

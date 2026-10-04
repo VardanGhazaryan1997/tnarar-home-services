@@ -38,7 +38,7 @@ public class NotificationTests
         new GetUnreadNotificationCountHandler(Db, user).HandleAsync(new GetUnreadNotificationCount(), CancellationToken.None);
 
     private Task<int> DeliverAsync() =>
-        new DeliverNotificationsHandler(Db, _sms, _pusher, Options.Create(new NotificationSettings { PortalUrl = "https://tnashen.test/" }), Clock)
+        new DeliverNotificationsHandler(Db, _sms, _pusher, Options.Create(new NotificationSettings { PortalUrl = "https://tnarar.test/" }), Clock)
             .HandleAsync(new DeliverNotifications(), CancellationToken.None);
 
     [Fact]
@@ -104,8 +104,8 @@ public class NotificationTests
 
         _sms.Sent.Count.ShouldBe(2);
         var partnerPhone = Db.Users.Single(u => u.Id == aram.UserId).Phone;
-        _sms.Sent.ShouldContain(m => m.To == partnerPhone && m.Message.EndsWith($"https://tnashen.test/hy/inbox/{request.Id}", StringComparison.Ordinal));
-        _sms.Sent.ShouldContain(m => m.To == _data.Requests.Partners.User.Phone && m.Message.StartsWith("TnaShen:", StringComparison.Ordinal));
+        _sms.Sent.ShouldContain(m => m.To == partnerPhone && m.Message.EndsWith($"https://tnarar.test/hy/inbox/{request.Id}", StringComparison.Ordinal));
+        _sms.Sent.ShouldContain(m => m.To == _data.Requests.Partners.User.Phone && m.Message.StartsWith("Tnarar:", StringComparison.Ordinal));
         _pusher.Pushed.Select(p => p.Notification.Type).ShouldBe(new[] { "RequestReceived", "OfferReceived", "OfferRejected" });
 
         (await DeliverAsync()).ShouldBe(0);

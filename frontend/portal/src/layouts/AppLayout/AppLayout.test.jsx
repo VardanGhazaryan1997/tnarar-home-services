@@ -17,7 +17,7 @@ describe('AppLayout', () => {
     const main = within(header).getByRole('navigation', { name: en.layout.mainNavigation })
     expect(within(main).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.services, en.nav.how])
     expect(screen.getByRole('link', { name: en.layout.skipToContent })).toHaveAttribute('href', '#main')
-    expect(screen.getByRole('contentinfo')).toHaveTextContent('TnaShen')
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('Tnarar')
   })
 
   it('shows signed-in users their sections and name', async () => {

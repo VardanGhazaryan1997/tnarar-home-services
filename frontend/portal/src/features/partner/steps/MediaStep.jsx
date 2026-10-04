@@ -5,7 +5,7 @@ import MediaManager from '../MediaManager'
 import { DOCUMENT_TYPES, LIMITS } from '../profileForm'
 import styles from '../partner.module.scss'
 
-/** Step 5: photos and videos of finished work (public), and documents only the TnaShen team sees. */
+/** Step 5: photos and videos of finished work (public), and documents only the Tnarar team sees. */
 export default function MediaStep({ profile, showErrors }) {
   const { t } = useTranslation()
   return (

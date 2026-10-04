@@ -29,7 +29,7 @@ public sealed class StorageSettings
     public bool CreateBucket { get; set; }
 
     /// <summary>
-    /// Sites allowed to upload and download straight from the browser (e.g. "https://staging.tnashen.am"). When set,
+    /// Sites allowed to upload and download straight from the browser (e.g. "https://staging.tnarar.am"). When set,
     /// the bucket's CORS rules are replaced with these when the API starts; empty leaves the bucket's rules alone.
     /// </summary>
     public string[] CorsOrigins { get; set; } = [];

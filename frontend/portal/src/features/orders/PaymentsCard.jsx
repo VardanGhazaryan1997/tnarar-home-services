@@ -81,7 +81,7 @@ function PaymentRow({ order, payment, onDispute }) {
 }
 
 /**
- * Payments made directly between the two sides (TnaShen doesn't hold the money): how much is confirmed, the
+ * Payments made directly between the two sides (Tnarar doesn't hold the money): how much is confirmed, the
  * payment plan, and each record. Either side records a payment; the other confirms or disputes it.
  */
 export default function PaymentsCard({ order }) {

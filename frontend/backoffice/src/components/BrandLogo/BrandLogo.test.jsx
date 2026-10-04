@@ -6,24 +6,24 @@ describe('BrandLogo', () => {
   it('shows the mark and the Armenian wordmark with an accessible name', () => {
     render(<BrandLogo />)
 
-    const logo = screen.getByRole('img', { name: 'ՏնաՇեն' })
+    const logo = screen.getByRole('img', { name: 'Tnarar' })
     expect(logo.querySelector('svg')).toBeInTheDocument()
-    expect(logo).toHaveTextContent('ՏնաՇեն')
-    expect(screen.getByText('Շեն')).toHaveStyle({ color: BRAND.tuffStone })
+    expect(logo).toHaveTextContent('Tnarar')
+    expect(screen.getByText('rar')).toHaveStyle({ color: BRAND.tuffStone })
   })
 
   it('uses light colors on dark backgrounds', () => {
     render(<BrandLogo tone="dark" />)
 
-    expect(screen.getByText('Տնա')).toHaveStyle({ color: '#ffffff' })
-    expect(screen.getByText('Շեն')).toHaveStyle({ color: BRAND.tuffLight })
+    expect(screen.getByText('Tna')).toHaveStyle({ color: '#ffffff' })
+    expect(screen.getByText('rar')).toHaveStyle({ color: BRAND.tuffLight })
   })
 
   it('can show the mark alone', () => {
     render(<BrandLogo compact size={24} />)
 
-    const logo = screen.getByRole('img', { name: 'ՏնաՇեն' })
-    expect(logo).not.toHaveTextContent('Տնա')
+    const logo = screen.getByRole('img', { name: 'Tnarar' })
+    expect(logo).not.toHaveTextContent('Tna')
     expect(logo.querySelector('svg')).toHaveAttribute('width', '24')
   })
 })

@@ -21,19 +21,19 @@ export function BrandMark({ size = 32, tone = 'light' }) {
 }
 
 /**
- * The TnaShen logo: the mark and the Armenian wordmark "ՏնաՇեն" ("Տնա" in Ararat Night, "Շեն" in Tuff Stone).
+ * The Tnarar logo: the mark and the wordmark "Tnarar" ("Tna" in Ararat Night, "rar" in Tuff Stone).
  * `tone="dark"` is for dark backgrounds; `compact` shows the mark only.
  */
 export default function BrandLogo({ size = 32, tone = 'light', compact = false }) {
   const onDark = tone === 'dark'
 
   return (
-    <span role="img" aria-label="ՏնաՇեն" style={{ display: 'inline-flex', alignItems: 'center', gap: size / 4, lineHeight: 1 }}>
+    <span role="img" aria-label="Tnarar" style={{ display: 'inline-flex', alignItems: 'center', gap: size / 4, lineHeight: 1 }}>
       <BrandMark size={size} tone={tone} />
       {!compact && (
         <span aria-hidden="true" style={{ fontFamily: "'Noto Sans Armenian', sans-serif", fontWeight: 700, fontSize: size * 0.7, letterSpacing: 0.2 }}>
-          <span style={{ color: onDark ? '#ffffff' : BRAND.araratNight }}>Տնա</span>
-          <span style={{ color: onDark ? BRAND.tuffLight : BRAND.tuffStone }}>Շեն</span>
+          <span style={{ color: onDark ? '#ffffff' : BRAND.araratNight }}>Tna</span>
+          <span style={{ color: onDark ? BRAND.tuffLight : BRAND.tuffStone }}>rar</span>
         </span>
       )}
     </span>

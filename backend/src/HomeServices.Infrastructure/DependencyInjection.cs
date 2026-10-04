@@ -100,6 +100,9 @@ public static class DependencyInjection
         services.AddOptions<AuthSettings>()
             .BindConfiguration(AuthSettings.SectionName)
             .Validate(s => s.SecretHashKey.Length >= 32, "Auth:SecretHashKey must be at least 32 characters.")
+            .Validate(
+                s => string.IsNullOrEmpty(s.FixedOtpCode) || FixedOtpGenerator.IsValidCode(s.FixedOtpCode),
+                "Auth:FixedOtpCode must be exactly 6 digits.")
             .ValidateOnStart();
         services.AddOptions<JwtSettings>()
             .BindConfiguration(JwtSettings.SectionName)
@@ -107,7 +110,10 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<ISecretHasher, HmacSecretHasher>();
-        services.AddSingleton<IOtpGenerator, RandomOtpGenerator>();
+        services.AddSingleton<IOtpGenerator>(provider =>
+            provider.GetRequiredService<IOptions<AuthSettings>>().Value.FixedOtpCode is { Length: > 0 } fixedCode
+                ? new FixedOtpGenerator(fixedCode)
+                : new RandomOtpGenerator());
         services.AddSingleton<ITokenService, JwtTokenService>();
         services.AddSingleton<FakeSmsSender>();
         services.AddSingleton<ISmsSender>(provider => provider.GetRequiredService<FakeSmsSender>());

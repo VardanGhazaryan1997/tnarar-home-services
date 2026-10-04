@@ -32,7 +32,7 @@ const CONTENT = {
   },
 }
 
-/** How TnaShen works, for customers or for partners (`?for=partners`), with the questions people ask. */
+/** How Tnarar works, for customers or for partners (`?for=partners`), with the questions people ask. */
 export default function HowItWorksPage() {
   const { t } = useTranslation()
   const path = useLocalizedPath()

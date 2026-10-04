@@ -5,12 +5,32 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HomeServices.Infrastructure.Persistence.Configurations;
 
+internal sealed class RegionConfiguration : IEntityTypeConfiguration<Region>
+{
+    public void Configure(EntityTypeBuilder<Region> builder)
+    {
+        builder.Property(r => r.Slug).HasMaxLength(Slug.MaxLength);
+        builder.HasIndex(r => r.Slug).IsUnique();
+
+        builder.HasData(CatalogSeed.Regions.Select((r, index) => new
+        {
+            r.Id,
+            r.Slug,
+            r.Name,
+            SortOrder = index + 1,
+        }));
+    }
+}
+
 internal sealed class CityConfiguration : IEntityTypeConfiguration<City>
 {
     public void Configure(EntityTypeBuilder<City> builder)
     {
         builder.Property(c => c.Slug).HasMaxLength(Slug.MaxLength);
         builder.HasIndex(c => c.Slug).IsUnique();
+        builder.Property(c => c.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(c => c.RegionId);
+        builder.HasOne<Region>().WithMany().HasForeignKey(c => c.RegionId).OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(c => c.Districts)
             .WithOne()
@@ -25,6 +45,8 @@ internal sealed class CityConfiguration : IEntityTypeConfiguration<City>
             c.Name,
             SortOrder = index + 1,
             IsActive = true,
+            RegionId = (Guid?)c.RegionId,
+            c.Kind,
         }));
     }
 }

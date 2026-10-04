@@ -6,7 +6,7 @@ import { STEP_OF_MISSING } from '../profileForm'
 import styles from '../partner.module.scss'
 
 /** Step 6: everything at a glance, what still blocks sending it for review, and the send button below. */
-export default function ReviewStep({ profile, categories, cities, goTo }) {
+export default function ReviewStep({ profile, categories, cities, regions = [], goTo }) {
   const { t } = useTranslation()
   const approved = profile.status === 'Approved'
   return (
@@ -27,7 +27,7 @@ export default function ReviewStep({ profile, categories, cities, goTo }) {
       )}
       {!approved && profile.canSubmit && <p className={styles['partner-wizard__intro']}>{t('partner.readyText')}</p>}
       {approved && <p className={styles['partner-wizard__intro']}>{t('partner.liveEditText')}</p>}
-      <ProfileSummary profile={profile} categories={categories} cities={cities} onEdit={goTo} />
+      <ProfileSummary profile={profile} categories={categories} cities={cities} regions={regions} onEdit={goTo} />
     </div>
   )
 }

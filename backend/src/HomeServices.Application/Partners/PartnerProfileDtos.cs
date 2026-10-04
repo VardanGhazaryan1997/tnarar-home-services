@@ -4,7 +4,8 @@ using HomeServices.Domain.Partners;
 
 namespace HomeServices.Application.Partners;
 
-public sealed record PartnerAreaDto(Guid CityId, Guid? DistrictId);
+/// <summary>A place the partner works: a whole region (<see cref="RegionId"/> only), or a town or village with an optional district.</summary>
+public sealed record PartnerAreaDto(Guid? CityId, Guid? DistrictId, Guid? RegionId = null);
 
 public sealed record PartnerMediaDto(Guid Id, string? Caption, int SortOrder, FileDto File);
 
@@ -64,7 +65,7 @@ public sealed class PartnerProfileDtoFactory(FileDtoFactory files)
             profile.YearsOfExperience,
             avatar,
             profile.Services.Select(s => s.CategoryId).Order().ToList(),
-            profile.Areas.Select(a => new PartnerAreaDto(a.CityId, a.DistrictId)).OrderBy(a => a.CityId).ThenBy(a => a.DistrictId).ToList(),
+            profile.Areas.Select(a => new PartnerAreaDto(a.CityId, a.DistrictId, a.RegionId)).OrderBy(a => a.RegionId).ThenBy(a => a.CityId).ThenBy(a => a.DistrictId).ToList(),
             media.Where(m => m.Kind == PartnerMediaKind.WorkExample).Select(m => m.Dto).ToList(),
             media.Where(m => m.Kind == PartnerMediaKind.Document).Select(m => m.Dto).ToList(),
             profile.CanEdit,

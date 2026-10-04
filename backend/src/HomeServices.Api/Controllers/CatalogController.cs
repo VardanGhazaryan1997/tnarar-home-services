@@ -16,7 +16,14 @@ public sealed class CatalogController : ControllerBase
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new GetCategories(), cancellationToken);
 
-    /// <summary>Active cities with their districts, names in the request language.</summary>
+    /// <summary>Yerevan and the regions (marzes), names in the request language.</summary>
+    [HttpGet("regions")]
+    public Task<IReadOnlyList<RegionDto>> GetRegions(
+        [FromServices] IQueryHandler<GetRegions, IReadOnlyList<RegionDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetRegions(), cancellationToken);
+
+    /// <summary>Active towns and villages with their districts, names in the request language.</summary>
     [HttpGet("cities")]
     public Task<IReadOnlyList<CityDto>> GetCities(
         [FromServices] IQueryHandler<GetCities, IReadOnlyList<CityDto>> handler,

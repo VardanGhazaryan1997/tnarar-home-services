@@ -1,12 +1,13 @@
 import { EditOutlined, EyeInvisibleOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons'
-import { Alert, App, Button, Flex, Space, Table, Tag, Tooltip, Typography } from 'antd'
-import { useState } from 'react'
+import { Alert, App, Button, Flex, Input, Select, Space, Table, Tag, Tooltip, Typography } from 'antd'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { errorMessage } from '@/api/errors'
 import {
   useAddDistrictMutation,
   useCreateCityMutation,
   useGetCitiesQuery,
+  useGetRegionsQuery,
   useSetCityActiveMutation,
   useSetDistrictActiveMutation,
   useUpdateCityMutation,
@@ -16,12 +17,18 @@ import { localizedName } from './names'
 import PlaceFormModal from './PlaceFormModal'
 import { useCatalogLanguages } from './useCatalogLanguages'
 
-/** Cities and their districts. Cities and districts are hidden, not deleted. */
+/**
+ * Towns and villages, by region, with their districts. Filter by region or search by name; places and districts are
+ * hidden, not deleted.
+ */
 export default function CitiesTab() {
   const { t, i18n } = useTranslation()
   const { message } = App.useApp()
   const { defaultCode } = useCatalogLanguages()
   const { data = [], isLoading, error } = useGetCitiesQuery()
+  const { data: regions = [] } = useGetRegionsQuery()
+  const [regionFilter, setRegionFilter] = useState(null)
+  const [search, setSearch] = useState('')
   const [createCity] = useCreateCityMutation()
   const [updateCity] = useUpdateCityMutation()
   const [setCityActive] = useSetCityActiveMutation()
@@ -32,6 +39,16 @@ export default function CitiesTab() {
   const [dialog, setDialog] = useState(null)
 
   const nameOf = (place) => localizedName(place.name, i18n.resolvedLanguage, defaultCode)
+  const regionById = useMemo(() => new Map(regions.map((region) => [region.id, region])), [regions])
+
+  const rows = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase()
+    return data.filter((city) => {
+      if (regionFilter === 'none' ? city.regionId : regionFilter && city.regionId !== regionFilter) return false
+      if (!term) return true
+      return city.slug.includes(term) || Object.values(city.name).some((name) => name.toLocaleLowerCase().includes(term))
+    })
+  }, [data, regionFilter, search])
 
   const toggle = async (action, isActive) => {
     try {
@@ -100,6 +117,18 @@ export default function CitiesTab() {
   const cityColumns = [
     nameColumn,
     {
+      title: t('catalog.cities.region'),
+      key: 'region',
+      responsive: ['sm'],
+      render: (_, city) => (regionById.get(city.regionId) ? nameOf(regionById.get(city.regionId)) : '—'),
+    },
+    {
+      title: t('catalog.cities.kind'),
+      key: 'kind',
+      width: 100,
+      render: (_, city) => <Tag color={city.kind === 'Village' ? 'gold' : 'blue'}>{t(`catalog.cities.kinds.${city.kind ?? 'City'}`)}</Tag>,
+    },
+    {
       title: t('catalog.cities.districtCount'),
       key: 'districts',
       width: 110,
@@ -165,13 +194,34 @@ export default function CitiesTab() {
           {t('catalog.cities.add')}
         </Button>
       </Flex>
+      <Flex gap="middle" wrap style={{ marginBottom: 16 }}>
+        <Select
+          aria-label={t('catalog.cities.region')}
+          style={{ minWidth: 220 }}
+          value={regionFilter}
+          onChange={setRegionFilter}
+          options={[
+            { value: null, label: t('catalog.cities.allRegions') },
+            ...regions.map((region) => ({ value: region.id, label: nameOf(region) })),
+            { value: 'none', label: t('catalog.cities.noRegion') },
+          ]}
+        />
+        <Input.Search
+          allowClear
+          aria-label={t('catalog.cities.search')}
+          placeholder={t('catalog.cities.search')}
+          style={{ maxWidth: 280 }}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+      </Flex>
       {error && <Alert type="error" showIcon title={errorMessage(t, error)} style={{ marginBottom: 16 }} />}
       <Table
         rowKey="id"
         columns={cityColumns}
-        dataSource={data}
+        dataSource={rows}
         loading={isLoading}
-        pagination={false}
+        pagination={{ pageSize: 50, hideOnSinglePage: true, showSizeChanger: false }}
         expandable={{ expandedRowRender: districtTable }}
         scroll={{ x: 'max-content' }}
         locale={{ emptyText: t('catalog.cities.empty') }}
@@ -180,6 +230,8 @@ export default function CitiesTab() {
         open={Boolean(dialog)}
         title={dialogTitle()}
         place={dialog?.place ?? null}
+        regions={dialog?.kind === 'city' ? regions : undefined}
+        regionName={nameOf}
         onSave={save}
         onClose={() => setDialog(null)}
       />

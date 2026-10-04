@@ -898,7 +898,8 @@
       "areas": "Works in",
       "wholeCity": "The whole city",
       "contactTitle": "Need this specialist?",
-      "contactText": "Describe the job and they'll reply with an offer. Phone numbers are shared once you agree on an order."
+      "contactText": "Describe the job and they'll reply with an offer. Phone numbers are shared once you agree on an order.",
+      "wholeRegion": "The whole region"
     },
     "how": {
       "documentTitle": "How it works — Tnarar",
@@ -1021,7 +1022,7 @@
     "nameHint": "Shown on your public profile.",
     "servicesIntro": "Choose what you do. A main service also covers its subservices in search.",
     "selected": "Chosen: {{n}} of {{max}}",
-    "areasIntro": "Choose the cities, or some of their districts, where you take jobs.",
+    "areasIntro": "Choose whole regions, single towns and villages, or districts of Yerevan where you take jobs.",
     "wholeCity": "The whole of {{city}}",
     "orDistricts": "Or only some districts of {{city}}:",
     "avatarHint": "A clear photo of you, or your logo. JPEG, PNG or WebP.",
@@ -1084,7 +1085,16 @@
     "viewPublic": "View public profile",
     "edit": "Edit profile",
     "openInbox": "Open inbox",
-    "yourProfile": "Your profile"
+    "yourProfile": "Your profile",
+    "wholeRegion": "All of {{region}}",
+    "showPlaces": "Choose towns and villages ({{count}})",
+    "hidePlaces": "Hide",
+    "coversRegion": "Covers every town and village in {{region}}.",
+    "searchPlaces": "Find a town or village",
+    "noPlaces": "Nothing found. Try another spelling.",
+    "otherPlaces": "Other places",
+    "towns": "Towns",
+    "villages": "Villages"
   },
   "reviews": {
     "ratingLabel": "{{rating}} out of 5",

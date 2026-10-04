@@ -29,6 +29,9 @@ export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories',
       invalidatesTags: ['Categories'],
     }),
 
+    getRegions: build.query({
+      query: () => `${BASE}/regions`,
+    }),
     getCities: build.query({
       query: () => `${BASE}/cities`,
       providesTags: ['Cities'],
@@ -69,6 +72,7 @@ export const {
   useUpdateCategoryMutation,
   useSetCategoryActiveMutation,
   useDeleteCategoryMutation,
+  useGetRegionsQuery,
   useGetCitiesQuery,
   useCreateCityMutation,
   useUpdateCityMutation,

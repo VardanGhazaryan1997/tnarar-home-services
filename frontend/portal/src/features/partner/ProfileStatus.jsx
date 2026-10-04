@@ -18,7 +18,7 @@ const LOOK = {
 }
 
 /** Where a submitted profile stands: under review, live (with Edit), rejected or suspended, and what it contains. */
-export default function ProfileStatus({ profile, categories, cities, onEdit, notice }) {
+export default function ProfileStatus({ profile, categories, cities, regions = [], onEdit, notice }) {
   const { t, i18n } = useTranslation()
   const path = useLocalizedPath()
   const look = LOOK[profile.status]
@@ -55,7 +55,7 @@ export default function ProfileStatus({ profile, categories, cities, onEdit, not
         )}
       </section>
       <Card title={t('partner.yourProfile')}>
-        <ProfileSummary profile={profile} categories={categories} cities={cities} />
+        <ProfileSummary profile={profile} categories={categories} cities={cities} regions={regions} />
       </Card>
     </div>
   )

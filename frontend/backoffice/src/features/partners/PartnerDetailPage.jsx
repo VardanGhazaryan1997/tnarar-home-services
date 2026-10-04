@@ -10,7 +10,7 @@ import { hasPermission } from '@/features/auth/permissions'
 import DecisionModal from './DecisionModal'
 import { formatDate } from '@/i18n/format'
 import PartnerStatusTag from './PartnerStatusTag'
-import { DECISIONS_BY_STATUS, useDecideOnPartnerMutation, useGetCategoryNamesQuery, useGetPartnerQuery, useGetPlaceNamesQuery } from './partnersApi'
+import { DECISIONS_BY_STATUS, useDecideOnPartnerMutation, useGetCategoryNamesQuery, useGetPartnerQuery, useGetPlaceNamesQuery, useGetRegionNamesQuery } from './partnersApi'
 
 // Category names by id, subcategories included.
 function categoryNames(tree = []) {
@@ -24,7 +24,11 @@ function categoryNames(tree = []) {
   return names
 }
 
-function areaLabel(area, cities = [], t) {
+function areaLabel(area, cities = [], regions = [], t) {
+  if (area.regionId) {
+    const region = regions.find((r) => r.id === area.regionId)
+    return region ? t('partners.detail.wholeRegion', { region: region.name }) : t('partners.detail.unknownPlace')
+  }
   const city = cities.find((c) => c.id === area.cityId)
   if (!city) return t('partners.detail.unknownPlace')
   if (!area.districtId) return t('partners.detail.wholeCity', { city: city.name })
@@ -62,6 +66,7 @@ export default function PartnerDetailPage() {
   const { data, isLoading, error } = useGetPartnerQuery(id)
   const { data: categories } = useGetCategoryNamesQuery(i18n.language)
   const { data: cities } = useGetPlaceNamesQuery(i18n.language)
+  const { data: regions } = useGetRegionNamesQuery(i18n.language)
   const [decide] = useDecideOnPartnerMutation()
   const [decision, setDecision] = useState(null)
 
@@ -146,7 +151,7 @@ export default function PartnerDetailPage() {
           <Descriptions.Item label={t('partners.detail.areas')} span={2}>
             <Space wrap size={[4, 4]}>
               {profile.areas.map((area) => (
-                <Tag key={`${area.cityId}-${area.districtId ?? 'all'}`}>{areaLabel(area, cities, t)}</Tag>
+                <Tag key={`${area.regionId ?? area.cityId}-${area.districtId ?? 'all'}`}>{areaLabel(area, cities, regions, t)}</Tag>
               ))}
             </Space>
           </Descriptions.Item>

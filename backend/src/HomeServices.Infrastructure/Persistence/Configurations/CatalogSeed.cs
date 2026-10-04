@@ -3,8 +3,8 @@ using HomeServices.Domain.Localization;
 namespace HomeServices.Infrastructure.Persistence.Configurations;
 
 /// <summary>
-/// Reference data the platform starts with: the five launch cities (service categories are in
-/// CatalogSeed.Categories.cs). Staff manage them in the Back Office later.
+/// Reference data the platform starts with: Yerevan's districts (categories are in CatalogSeed.Categories.cs,
+/// regions, towns and villages in CatalogSeed.Places.cs). Staff manage them in the Back Office later.
 /// Ids are fixed so migrations stay stable.
 /// </summary>
 internal static partial class CatalogSeed
@@ -13,15 +13,6 @@ internal static partial class CatalogSeed
         LocalizedText.From(new Dictionary<string, string> { ["hy"] = hy, ["ru"] = ru, ["en"] = en });
 
     internal static readonly Guid YerevanId = new("019a0000-0000-7000-8000-000000000201");
-
-    internal static readonly (Guid Id, string Slug, LocalizedText Name)[] Cities =
-    [
-        (YerevanId, "yerevan", Text("Երևան", "Ереван", "Yerevan")),
-        (new("019a0000-0000-7000-8000-000000000202"), "ejmiatsin", Text("Էջմիածին", "Эчмиадзин", "Ejmiatsin")),
-        (new("019a0000-0000-7000-8000-000000000203"), "abovyan", Text("Աբովյան", "Абовян", "Abovyan")),
-        (new("019a0000-0000-7000-8000-000000000204"), "ashtarak", Text("Աշտարակ", "Аштарак", "Ashtarak")),
-        (new("019a0000-0000-7000-8000-000000000205"), "masis", Text("Մասիս", "Масис", "Masis")),
-    ];
 
     /// <summary>Yerevan's 12 administrative districts.</summary>
     internal static readonly (Guid Id, string Slug, LocalizedText Name)[] YerevanDistricts =

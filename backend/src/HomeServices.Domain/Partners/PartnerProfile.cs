@@ -150,24 +150,35 @@ public sealed class PartnerProfile : AuditableEntity, IAudited
     }
 
     /// <summary>
-    /// Replaces where the partner works. A whole city (no district) covers its districts, so
-    /// districts of a city that is also chosen whole are dropped. The caller checks the places exist.
+    /// Replaces where the partner works with whole cities and districts. See <see cref="SetAreas(IEnumerable{AreaChoice})"/>.
     /// </summary>
-    public void SetAreas(IEnumerable<(Guid CityId, Guid? DistrictId)> areas)
+    public void SetAreas(IEnumerable<(Guid CityId, Guid? DistrictId)> areas) =>
+        SetAreas(areas.Select(a => new AreaChoice(null, a.CityId, a.DistrictId)));
+
+    /// <summary>
+    /// Replaces where the partner works. A whole city (no district) covers its districts, so districts of a city that
+    /// is also chosen whole are dropped. The caller checks the places exist (and may drop places inside a chosen region).
+    /// </summary>
+    public void SetAreas(IEnumerable<AreaChoice> areas)
     {
         EnsureEditable();
         var distinct = areas.Distinct().ToList();
-        var wholeCities = distinct.Where(a => a.DistrictId is null).Select(a => a.CityId).ToHashSet();
+        if (distinct.Any(a => !a.IsValid))
+        {
+            throw new DomainException("partner.area_invalid", "An area is a region, or a city with an optional district.");
+        }
+
+        var wholeCities = distinct.Where(a => a.CityId is not null && a.DistrictId is null).Select(a => a.CityId).ToHashSet();
         var wanted = distinct.Where(a => a.DistrictId is null || !wholeCities.Contains(a.CityId)).ToList();
         if (wanted.Count > MaxAreas)
         {
             throw new DomainException("partner.too_many_areas", $"At most {MaxAreas} areas.");
         }
 
-        _areas.RemoveAll(a => !wanted.Contains((a.CityId, a.DistrictId)));
-        foreach (var (cityId, districtId) in wanted.Where(w => !_areas.Any(a => a.CityId == w.CityId && a.DistrictId == w.DistrictId)))
+        _areas.RemoveAll(a => !wanted.Contains(a.Choice));
+        foreach (var choice in wanted.Where(w => !_areas.Any(a => a.Choice == w)))
         {
-            _areas.Add(new PartnerArea(Id, cityId, districtId));
+            _areas.Add(new PartnerArea(Id, choice));
         }
     }
 

@@ -29,6 +29,10 @@ Staging runs on [Railway](https://railway.com) in the **EU West (Amsterdam)** re
 - **SMS** are not sent on staging: every Portal sign-in code is **`111111`** (`Auth:FixedOtpCode` in
   `appsettings.Staging.json`), and the texts are written to the API log (look for `SMS to`). The API refuses to
   start in Production if a fixed code is set.
+- **Demo partners**: on staging (`DemoData:SeedPartners` in `appsettings.Staging.json`, and in `launchSettings.json`
+  for local runs) the API adds 24 invented companies and specialists on first start, with services, areas and
+  placeholder work photos. Their phones are +374 99 000 101 … 124, so with the code `111111` you can sign in as one.
+  It runs once; the API refuses to start in Production with it on.
 
 Each service's intended build and deploy settings are in its `railway.json` (Dockerfile, health check, one replica,
 watch paths). Railway no longer applies these files to services created after 2026-08-28, so enter the same values

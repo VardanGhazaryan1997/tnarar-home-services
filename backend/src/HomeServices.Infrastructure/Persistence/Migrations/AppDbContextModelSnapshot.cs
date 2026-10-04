@@ -1836,10 +1836,20 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("kind");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("name");
+
+                    b.Property<Guid?>("RegionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("region_id");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -1854,6 +1864,9 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_cities");
 
+                    b.HasIndex("RegionId")
+                        .HasDatabaseName("ix_cities_region_id");
+
                     b.HasIndex("Slug")
                         .IsUnique()
                         .HasDatabaseName("ix_cities_slug");
@@ -1865,41 +1878,2581 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("019a0000-0000-7000-8000-000000000201"),
                             IsActive = true,
+                            Kind = "City",
                             Name = "{\"hy\":\"\\u0535\\u0580\\u0587\\u0561\\u0576\",\"ru\":\"\\u0415\\u0440\\u0435\\u0432\\u0430\\u043D\",\"en\":\"Yerevan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000401"),
                             Slug = "yerevan",
                             SortOrder = 1
                         },
                         new
                         {
-                            Id = new Guid("019a0000-0000-7000-8000-000000000202"),
+                            Id = new Guid("019a0000-0000-7000-8000-000000000204"),
                             IsActive = true,
-                            Name = "{\"hy\":\"\\u0537\\u057B\\u0574\\u056B\\u0561\\u056E\\u056B\\u0576\",\"ru\":\"\\u042D\\u0447\\u043C\\u0438\\u0430\\u0434\\u0437\\u0438\\u043D\",\"en\":\"Ejmiatsin\"}",
-                            Slug = "ejmiatsin",
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0577\\u057F\\u0561\\u0580\\u0561\\u056F\",\"ru\":\"\\u0410\\u0448\\u0442\\u0430\\u0440\\u0430\\u043A\",\"en\":\"Ashtarak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ashtarak",
                             SortOrder = 2
                         },
                         new
                         {
-                            Id = new Guid("019a0000-0000-7000-8000-000000000203"),
+                            Id = new Guid("24e77f68-00c5-5c93-b883-0f7e3ee4e65e"),
                             IsActive = true,
-                            Name = "{\"hy\":\"\\u0531\\u0562\\u0578\\u057E\\u0575\\u0561\\u0576\",\"ru\":\"\\u0410\\u0431\\u043E\\u0432\\u044F\\u043D\",\"en\":\"Abovyan\"}",
-                            Slug = "abovyan",
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u057A\\u0561\\u0580\\u0561\\u0576\",\"ru\":\"\\u0410\\u043F\\u0430\\u0440\\u0430\\u043D\",\"en\":\"Aparan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "aparan",
                             SortOrder = 3
                         },
                         new
                         {
-                            Id = new Guid("019a0000-0000-7000-8000-000000000204"),
+                            Id = new Guid("1bc25562-470d-5790-bb46-198b469b0d14"),
                             IsActive = true,
-                            Name = "{\"hy\":\"\\u0531\\u0577\\u057F\\u0561\\u0580\\u0561\\u056F\",\"ru\":\"\\u0410\\u0448\\u0442\\u0430\\u0440\\u0430\\u043A\",\"en\":\"Ashtarak\"}",
-                            Slug = "ashtarak",
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0539\\u0561\\u056C\\u056B\\u0576\",\"ru\":\"\\u0422\\u0430\\u043B\\u0438\\u043D\",\"en\":\"Talin\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "talin",
                             SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("5cd71c59-e2a2-55b1-bec7-fb737271927b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0563\\u0561\\u0580\\u0561\\u056F\",\"ru\":\"\\u0410\\u0433\\u0430\\u0440\\u0430\\u043A\",\"en\":\"Agarak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "agarak-aragatsotn",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("cc24dee6-cbe5-58a6-a921-b0a793f48344"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0563\\u0561\\u0580\\u0561\\u056F\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0433\\u0430\\u0440\\u0430\\u043A\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Agarakavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "agarakavan",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("4c7e11dd-4cf9-531e-8339-8187a91437d8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u056C\\u0561\\u0563\\u0575\\u0561\\u0566\",\"ru\":\"\\u0410\\u043B\\u0430\\u0433\\u044F\\u0437\",\"en\":\"Alagyaz\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "alagyaz",
+                            SortOrder = 7
+                        },
+                        new
+                        {
+                            Id = new Guid("e620f5bb-a75a-5060-916a-51a9bb418115"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u056F\\u0578\\u0582\\u0576\\u0584\",\"ru\":\"\\u0410\\u043A\\u0443\\u043D\\u043A\",\"en\":\"Akunk\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "akunk",
+                            SortOrder = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("8ab9f556-0a0f-50a9-bafe-2ab9cc829be3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0572\\u0571\\u0584\",\"ru\":\"\\u0410\\u0445\\u0434\\u0437\\u043A\",\"en\":\"Aghdzk\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "aghdzk",
+                            SortOrder = 9
+                        },
+                        new
+                        {
+                            Id = new Guid("b955f94a-1809-5ad0-a82b-8f1080b021ab"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0576\\u057F\\u0561\\u057C\\u0578\\u0582\\u057F\",\"ru\":\"\\u0410\\u043D\\u0442\\u0430\\u0440\\u0443\\u0442\",\"en\":\"Antarut\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "antarut",
+                            SortOrder = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("23a46024-6cc5-58c0-accb-4e12193f0599"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0577\\u0576\\u0561\\u056F\",\"ru\":\"\\u0410\\u0448\\u043D\\u0430\\u043A\",\"en\":\"Ashnak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ashnak",
+                            SortOrder = 11
+                        },
+                        new
+                        {
+                            Id = new Guid("b7849a08-a31b-5717-b262-756d66337ff6"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u057A\\u0576\\u0561\\u0563\\u0575\\u0578\\u0582\\u0572\",\"ru\":\"\\u0410\\u043F\\u043D\\u0430\\u0433\\u044E\\u0445\",\"en\":\"Apnagyugh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "apnagyugh",
+                            SortOrder = 12
+                        },
+                        new
+                        {
+                            Id = new Guid("72111424-f132-5aca-918c-8f19aeb7dc01"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0432\\u0430\\u043D\",\"en\":\"Avan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "avan",
+                            SortOrder = 13
+                        },
+                        new
+                        {
+                            Id = new Guid("88c8c91e-4c13-5747-a733-5e7bd631d2e2"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u057E\\u0577\\u0565\\u0576\",\"ru\":\"\\u0410\\u0432\\u0448\\u0435\\u043D\",\"en\":\"Avshen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "avshen",
+                            SortOrder = 14
+                        },
+                        new
+                        {
+                            Id = new Guid("d6f666f3-ba1d-5e5a-b3a2-9c65291d45a3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\",\"ru\":\"\\u0410\\u0440\\u0430\",\"en\":\"Ara\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ara",
+                            SortOrder = 15
+                        },
+                        new
+                        {
+                            Id = new Guid("8dff5b61-675b-55cb-90fd-71cfedca5d42"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0563\\u0561\\u056E\",\"ru\":\"\\u0410\\u0440\\u0430\\u0433\\u0430\\u0446\",\"en\":\"Aragats\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "aragats",
+                            SortOrder = 16
+                        },
+                        new
+                        {
+                            Id = new Guid("5e8030dc-5803-5c34-82d9-092ae62638d9"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0563\\u0561\\u056E\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0440\\u0430\\u0433\\u0430\\u0446\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Aragatsavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "aragatsavan",
+                            SortOrder = 17
+                        },
+                        new
+                        {
+                            Id = new Guid("6dd1f449-6fa2-5255-a337-ba2f3ace04ee"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0563\\u0561\\u056E\\u0578\\u057F\\u0576\",\"ru\":\"\\u0410\\u0440\\u0430\\u0433\\u0430\\u0446\\u043E\\u0442\\u043D\",\"en\":\"Aragatsotn\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "aragatsotn",
+                            SortOrder = 18
+                        },
+                        new
+                        {
+                            Id = new Guid("02236d1b-d32e-55ae-a8f0-ed4249d26d9e"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0578\\u0582\\u0573\",\"ru\":\"\\u0410\\u0440\\u0443\\u0447\",\"en\":\"Aruch\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "aruch",
+                            SortOrder = 19
+                        },
+                        new
+                        {
+                            Id = new Guid("e74ed8bb-74eb-5d66-8f42-87bbd371d17a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u057F\\u0561\\u0577\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0440\\u0442\\u0430\\u0448\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Artashavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "artashavan",
+                            SortOrder = 20
+                        },
+                        new
+                        {
+                            Id = new Guid("538d736d-c261-5f67-bc9f-85f5123fa10c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u057F\\u0565\\u0576\\u056B\",\"ru\":\"\\u0410\\u0440\\u0442\\u0435\\u043D\\u0438\",\"en\":\"Arteni\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "arteni",
+                            SortOrder = 21
+                        },
+                        new
+                        {
+                            Id = new Guid("70fde0d4-0327-5816-b101-17e689495931"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0587\\u0578\\u0582\\u057F\",\"ru\":\"\\u0410\\u0440\\u0435\\u0432\\u0443\\u0442\",\"en\":\"Arevut\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "arevut",
+                            SortOrder = 22
+                        },
+                        new
+                        {
+                            Id = new Guid("7a56614e-0e7e-5bd7-86db-a340b0b7218a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0561\\u0566\\u0574\\u0561\\u0572\\u0562\\u0575\\u0578\\u0582\\u0580\",\"ru\":\"\\u0411\\u0430\\u0437\\u043C\\u0430\\u0445\\u0431\\u044E\\u0440\",\"en\":\"Bazmaghbyur\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "bazmaghbyur",
+                            SortOrder = 23
+                        },
+                        new
+                        {
+                            Id = new Guid("1294344f-0208-5d79-b40b-a9ca91089523"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0565\\u0580\\u0584\\u0561\\u057C\\u0561\\u057F\",\"ru\":\"\\u0411\\u0435\\u0440\\u043A\\u0430\\u0440\\u0430\\u0442\",\"en\":\"Berkarat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "berkarat",
+                            SortOrder = 24
+                        },
+                        new
+                        {
+                            Id = new Guid("3cf4f891-5e18-5e43-8361-e88ec9cc6089"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0575\\u0578\\u0582\\u0580\\u0561\\u056F\\u0561\\u0576\",\"ru\":\"\\u0411\\u044E\\u0440\\u0430\\u043A\\u0430\\u043D\",\"en\":\"Byurakan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "byurakan",
+                            SortOrder = 25
+                        },
+                        new
+                        {
+                            Id = new Guid("69a17692-8245-5071-8c18-13767991c563"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0561\\u057C\\u0576\\u0561\\u0570\\u0578\\u057E\\u056B\\u057F\",\"ru\":\"\\u0413\\u0430\\u0440\\u043D\\u0430\\u043E\\u0432\\u0438\\u0442\",\"en\":\"Garnahovit\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "garnahovit",
+                            SortOrder = 26
+                        },
+                        new
+                        {
+                            Id = new Guid("2a818d67-01b8-5c52-9957-86133aa46852"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u0572\\u0561\\u0564\\u056B\\u0580\",\"ru\":\"\\u0413\\u0435\\u0445\\u0430\\u0434\\u0438\\u0440\",\"en\":\"Geghadir\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "geghadir",
+                            SortOrder = 27
+                        },
+                        new
+                        {
+                            Id = new Guid("9fdefe60-a1fa-5d9d-9c95-120e2f49503c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u0572\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u0413\\u0435\\u0445\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Geghadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "geghadzor",
+                            SortOrder = 28
+                        },
+                        new
+                        {
+                            Id = new Guid("6bc3ed51-ce10-5e92-b17e-1c3345f16787"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u0572\\u0561\\u0580\\u0578\\u057F\",\"ru\":\"\\u0413\\u0435\\u0445\\u0430\\u0440\\u043E\\u0442\",\"en\":\"Gegharot\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "gegharot",
+                            SortOrder = 29
+                        },
+                        new
+                        {
+                            Id = new Guid("3fd81473-cccb-5fba-a8db-53c472b69b8e"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u057F\\u0561\\u0583\",\"ru\":\"\\u0413\\u0435\\u0442\\u0430\\u043F\",\"en\":\"Getap\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "getap",
+                            SortOrder = 30
+                        },
+                        new
+                        {
+                            Id = new Guid("a56bbab0-adb1-5c6b-9548-1c9fb766567e"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u0577\\u057F\\u0561\\u0564\\u0565\\u0574\",\"ru\":\"\\u0414\\u0430\\u0448\\u0442\\u0430\\u0434\\u0435\\u043C\",\"en\":\"Dashtadem\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "dashtadem",
+                            SortOrder = 31
+                        },
+                        new
+                        {
+                            Id = new Guid("b7c6049a-3ab9-574c-aefa-22da889b5191"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u057E\\u0569\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0414\\u0430\\u0432\\u0442\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Davtashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "davtashen",
+                            SortOrder = 32
+                        },
+                        new
+                        {
+                            Id = new Guid("482fd2f5-55c7-5599-a463-ecf3849aeaa6"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u056B\\u0561\\u0576\",\"ru\":\"\\u0414\\u0438\\u0430\\u043D\",\"en\":\"Dian\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "dian",
+                            SortOrder = 33
+                        },
+                        new
+                        {
+                            Id = new Guid("ba07e277-0da8-5bf6-9023-8bfed1f059c3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u057A\\u0580\\u0565\\u057E\\u0561\\u0576\\u0584\",\"ru\":\"\\u0414\\u043F\\u0440\\u0435\\u0432\\u0430\\u043D\\u043A\",\"en\":\"Dprevank\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "dprevank",
+                            SortOrder = 34
+                        },
+                        new
+                        {
+                            Id = new Guid("ff55e663-bc03-5dbc-aad5-32cffd012f5d"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0535\\u0572\\u056B\\u057A\\u0561\\u057F\\u0580\\u0578\\u0582\\u0577\",\"ru\":\"\\u0415\\u0445\\u0438\\u043F\\u0430\\u0442\\u0440\\u0443\\u0448\",\"en\":\"Yeghipatrush\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "yeghipatrush",
+                            SortOrder = 35
+                        },
+                        new
+                        {
+                            Id = new Guid("ed970a59-d03a-5e03-aed6-d204770b9102"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0535\\u0572\\u0576\\u056B\\u056F\",\"ru\":\"\\u0415\\u0445\\u043D\\u0438\\u043A\",\"en\":\"Yeghnik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "yeghnik",
+                            SortOrder = 36
+                        },
+                        new
+                        {
+                            Id = new Guid("b67800a9-15e2-5c96-9eec-12e9587d356b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0535\\u0580\\u0576\\u057B\\u0561\\u057F\\u0561\\u0583\",\"ru\":\"\\u0415\\u0440\\u043D\\u0434\\u0436\\u0430\\u0442\\u0430\\u043F\",\"en\":\"Yernjatap\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "yernjatap",
+                            SortOrder = 37
+                        },
+                        new
+                        {
+                            Id = new Guid("b7b96c25-e952-5326-a0ba-1d70cb18f3a0"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0536\\u0561\\u0580\\u056B\\u0576\\u057B\\u0561\",\"ru\":\"\\u0417\\u0430\\u0440\\u0438\\u043D\\u0434\\u0436\\u0430\",\"en\":\"Zarinja\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "zarinja",
+                            SortOrder = 38
+                        },
+                        new
+                        {
+                            Id = new Guid("d8f7aaa1-ddf9-5ac2-b07f-c9b8b8454f87"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0536\\u0578\\u057E\\u0561\\u057D\\u0561\\u0580\",\"ru\":\"\\u0417\\u043E\\u0432\\u0430\\u0441\\u0430\\u0440\",\"en\":\"Zovasar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "zovasar",
+                            SortOrder = 39
+                        },
+                        new
+                        {
+                            Id = new Guid("4d3109eb-c4e1-5bb2-879b-37653dab7703"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0539\\u0561\\u0569\\u0578\\u0582\\u056C\",\"ru\":\"\\u0422\\u0430\\u0442\\u0443\\u043B\",\"en\":\"Tatul\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tatul",
+                            SortOrder = 40
+                        },
+                        new
+                        {
+                            Id = new Guid("bcef089d-2145-5fa5-ba99-a1c1c8d69775"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0539\\u0565\\u0572\\u0565\\u0580\",\"ru\":\"\\u0422\\u0435\\u0445\\u0435\\u0440\",\"en\":\"Tegher\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tegher",
+                            SortOrder = 41
+                        },
+                        new
+                        {
+                            Id = new Guid("07606e42-749c-57ba-bfdf-85ca6117d229"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0539\\u0569\\u0578\\u0582\\u057B\\u0578\\u0582\\u0580\",\"ru\":\"\\u0422\\u0442\\u0443\\u0434\\u0436\\u0443\\u0440\",\"en\":\"Ttujur\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ttujur",
+                            SortOrder = 42
+                        },
+                        new
+                        {
+                            Id = new Guid("12433fe9-5c31-5c3d-84bd-70ea0dda8d8e"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0539\\u056C\\u056B\\u056F\",\"ru\":\"\\u0422\\u043B\\u0438\\u043A\",\"en\":\"Tlik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tlik",
+                            SortOrder = 43
+                        },
+                        new
+                        {
+                            Id = new Guid("d39363f6-6134-548b-bc66-2d0e1a1e0f2a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053B\\u0580\\u056B\\u0576\\u0564\",\"ru\":\"\\u0418\\u0440\\u0438\\u043D\\u0434\",\"en\":\"Irind\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "irind",
+                            SortOrder = 44
+                        },
+                        new
+                        {
+                            Id = new Guid("64368665-30c1-5d35-b20e-2003d3a402a3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0565\\u057C\\u0576\\u0561\\u057A\\u0561\\u0580\",\"ru\":\"\\u041B\\u0435\\u0440\\u043D\\u0430\\u043F\\u0430\\u0440\",\"en\":\"Lernapar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "lernapar",
+                            SortOrder = 45
+                        },
+                        new
+                        {
+                            Id = new Guid("5cd595cb-8e10-5429-8ecb-0908b3147f73"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0565\\u057C\\u0576\\u0561\\u057C\\u0578\\u057F\",\"ru\":\"\\u041B\\u0435\\u0440\\u043D\\u0430\\u0440\\u043E\\u0442\",\"en\":\"Lernarot\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "lernarot",
+                            SortOrder = 46
+                        },
+                        new
+                        {
+                            Id = new Guid("5bcba987-399c-5b51-b59c-af58df0bb800"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0582\\u057D\\u0561\\u0563\\u0575\\u0578\\u0582\\u0572\",\"ru\":\"\\u041B\\u0443\\u0441\\u0430\\u0433\\u044E\\u0445\",\"en\":\"Lusagyugh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "lusagyugh",
+                            SortOrder = 47
+                        },
+                        new
+                        {
+                            Id = new Guid("60b576ee-f510-5b5b-9d79-a6626df3a15b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0582\\u057D\\u0561\\u056F\\u0576\",\"ru\":\"\\u041B\\u0443\\u0441\\u0430\\u043A\\u043D\",\"en\":\"Lusakn\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "lusakn",
+                            SortOrder = 48
+                        },
+                        new
+                        {
+                            Id = new Guid("550a4281-1cdc-5f12-b698-a92dfd546e99"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0582\\u057D\\u0561\\u0572\\u0562\\u0575\\u0578\\u0582\\u0580\",\"ru\":\"\\u041B\\u0443\\u0441\\u0430\\u0445\\u0431\\u044E\\u0440\",\"en\":\"Lusaghbyur\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "lusaghbyur",
+                            SortOrder = 49
+                        },
+                        new
+                        {
+                            Id = new Guid("2469896b-1b9d-55e6-98eb-c43472748a92"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053D\\u0576\\u0578\\u0582\\u057D\\u056B\\u056F\",\"ru\":\"\\u0425\\u043D\\u0443\\u0441\\u0438\\u043A\",\"en\":\"Khnusik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "khnusik",
+                            SortOrder = 50
+                        },
+                        new
+                        {
+                            Id = new Guid("0fab38a8-3a35-5f3d-bb07-ea6f66d050fe"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053E\\u0561\\u0572\\u056F\\u0561\\u0570\\u0578\\u057E\\u056B\\u057F\",\"ru\":\"\\u0426\\u0430\\u0445\\u043A\\u0430\\u043E\\u0432\\u0438\\u0442\",\"en\":\"Tsaghkahovit\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tsaghkahovit",
+                            SortOrder = 51
+                        },
+                        new
+                        {
+                            Id = new Guid("3b31dd71-c38e-553e-b78f-c1ba4e752a7c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053E\\u0561\\u0572\\u056F\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0426\\u0430\\u0445\\u043A\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Tsaghkashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tsaghkashen",
+                            SortOrder = 52
+                        },
+                        new
+                        {
+                            Id = new Guid("e53c4c04-c3ae-5dc5-a81a-314046bca655"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053E\\u0561\\u0572\\u056F\\u0561\\u057D\\u0561\\u0580\",\"ru\":\"\\u0426\\u0430\\u0445\\u043A\\u0430\\u0441\\u0430\\u0440\",\"en\":\"Tsaghkasar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tsaghkasar",
+                            SortOrder = 53
+                        },
+                        new
+                        {
+                            Id = new Guid("f810885c-6da7-5120-94d3-cd7e3d6cc548"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053E\\u0561\\u0574\\u0561\\u0584\\u0561\\u057D\\u0561\\u0580\",\"ru\":\"\\u0426\\u0430\\u043C\\u0430\\u043A\\u0430\\u0441\\u0430\\u0440\",\"en\":\"Tsamakasar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tsamakasar",
+                            SortOrder = 54
+                        },
+                        new
+                        {
+                            Id = new Guid("f2c2a045-6283-50f6-a53f-5a1e4abb439f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053E\\u056B\\u056C\\u0584\\u0561\\u0580\",\"ru\":\"\\u0426\\u0438\\u043B\\u043A\\u0430\\u0440\",\"en\":\"Tsilkar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "tsilkar",
+                            SortOrder = 55
+                        },
+                        new
+                        {
+                            Id = new Guid("3044dd4d-bbf7-5a69-ad84-d309b8b210b1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0569\\u0576\\u0561\\u0572\\u0562\\u0575\\u0578\\u0582\\u0580\",\"ru\":\"\\u041A\\u0430\\u0442\\u043D\\u0430\\u0445\\u0431\\u044E\\u0440\",\"en\":\"Katnaghbyur\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "katnaghbyur",
+                            SortOrder = 56
+                        },
+                        new
+                        {
+                            Id = new Guid("e9f10d1d-062a-533f-af15-369bde010fe1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0575\\u0584\",\"ru\":\"\\u041A\\u0430\\u0439\\u043A\",\"en\":\"Kayk\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "kayk",
+                            SortOrder = 57
+                        },
+                        new
+                        {
+                            Id = new Guid("3683e64d-01e7-5ebe-99d0-e615070acd68"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0576\\u056B\\u0561\\u0577\\u056B\\u0580\",\"ru\":\"\\u041A\\u0430\\u043D\\u0438\\u0430\\u0448\\u0438\\u0440\",\"en\":\"Kaniashir\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "kaniashir",
+                            SortOrder = 58
+                        },
+                        new
+                        {
+                            Id = new Guid("dffefe45-4628-5aa1-944e-f514f4d43e2f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0576\\u0579\",\"ru\":\"\\u041A\\u0430\\u043D\\u0447\",\"en\":\"Kanch\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "kanch",
+                            SortOrder = 59
+                        },
+                        new
+                        {
+                            Id = new Guid("89a1ab45-75d3-5526-a126-b5a7876d5a45"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0580\\u0562\\u056B\",\"ru\":\"\\u041A\\u0430\\u0440\\u0431\\u0438\",\"en\":\"Karbi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "karbi",
+                            SortOrder = 60
+                        },
+                        new
+                        {
+                            Id = new Guid("c2d33bea-ffdf-50f6-b20b-bdb8e482bc71"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0580\\u056B\\u0576\",\"ru\":\"\\u041A\\u0430\\u0440\\u0438\\u043D\",\"en\":\"Karin\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "karin",
+                            SortOrder = 61
+                        },
+                        new
+                        {
+                            Id = new Guid("6ad91b38-02a5-5325-afd6-9d8d317e82cd"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0580\\u0574\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041A\\u0430\\u0440\\u043C\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Karmrashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "karmrashen",
+                            SortOrder = 62
+                        },
+                        new
+                        {
+                            Id = new Guid("f1a3b9bd-f023-5279-b92d-9533a53a338f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0584\\u0561\\u057E\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u041A\\u0430\\u043A\\u0430\\u0432\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Kakavadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "kakavadzor",
+                            SortOrder = 63
+                        },
+                        new
+                        {
+                            Id = new Guid("5b1be49e-9bb1-5464-b3ad-5c86e1b60636"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0578\\u0577\",\"ru\":\"\\u041A\\u043E\\u0448\",\"en\":\"Kosh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "kosh",
+                            SortOrder = 64
+                        },
+                        new
+                        {
+                            Id = new Guid("a4a1bda1-d6ef-5819-be2d-3360747285f8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u056F\\u0578\",\"ru\":\"\\u0410\\u043A\\u043E\",\"en\":\"Hako\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "hako",
+                            SortOrder = 65
+                        },
+                        new
+                        {
+                            Id = new Guid("6e9ade05-7917-557f-9267-fc99bd7f0c9c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u0580\\u0569\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0440\\u0442\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Hartavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "hartavan",
+                            SortOrder = 66
+                        },
+                        new
+                        {
+                            Id = new Guid("3b4b58ef-dcf4-5ed6-b1e9-b24d95b44dc3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u0581\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0410\\u0446\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Hatsashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "hatsashen",
+                            SortOrder = 67
+                        },
+                        new
+                        {
+                            Id = new Guid("014ff9d7-3df4-56a7-9fff-48dba75ce2a4"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0576\\u0561\\u0562\\u0565\\u0580\\u0564\",\"ru\":\"\\u041D\\u0430\\u0431\\u0435\\u0440\\u0434\",\"en\":\"Hnaberd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "hnaberd-aragatsotn",
+                            SortOrder = 68
+                        },
+                        new
+                        {
+                            Id = new Guid("ce6877bb-cba2-5966-9cea-26ef8f6b27c1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0541\\u0574\\u0576\\u0561\\u057D\\u0561\\u0580\",\"ru\":\"\\u0414\\u0437\\u043C\\u043D\\u0430\\u0441\\u0430\\u0440\",\"en\":\"Dzmnasar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "dzmnasar",
+                            SortOrder = 69
+                        },
+                        new
+                        {
+                            Id = new Guid("877f3744-5cf6-5e32-950f-51de2581f81a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0541\\u0578\\u0580\\u0561\\u0563\\u056C\\u0578\\u0582\\u056D\",\"ru\":\"\\u0414\\u0437\\u043E\\u0440\\u0430\\u0433\\u043B\\u0443\\u0445\",\"en\":\"Dzoraglukh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "dzoraglukh",
+                            SortOrder = 70
+                        },
+                        new
+                        {
+                            Id = new Guid("651e1636-6c21-547b-9cb6-6518f93ff173"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0541\\u0578\\u0580\\u0561\\u0563\\u0575\\u0578\\u0582\\u0572\",\"ru\":\"\\u0414\\u0437\\u043E\\u0440\\u0430\\u0433\\u044E\\u0445\",\"en\":\"Dzoragyugh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "dzoragyugh",
+                            SortOrder = 71
+                        },
+                        new
+                        {
+                            Id = new Guid("8939a693-2bf6-586f-aa3a-ca7e2305be3d"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0542\\u0561\\u0566\\u0561\\u0580\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0425\\u0430\\u0437\\u0430\\u0440\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Ghazaravan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ghazaravan",
+                            SortOrder = 72
+                        },
+                        new
+                        {
+                            Id = new Guid("5fb4c60f-795d-5715-b45c-6b57e8534741"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0543\\u0584\\u0576\\u0561\\u0572\",\"ru\":\"\\u0427\\u043A\\u043D\\u0430\\u0445\",\"en\":\"Chknagh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "chknagh",
+                            SortOrder = 73
+                        },
+                        new
+                        {
+                            Id = new Guid("714d0e20-3360-542f-b941-ecf7b9ee9f0f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0561\\u057D\\u057F\\u0561\\u0580\\u0561\",\"ru\":\"\\u041C\\u0430\\u0441\\u0442\\u0430\\u0440\\u0430\",\"en\":\"Mastara\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "mastara",
+                            SortOrder = 74
+                        },
+                        new
+                        {
+                            Id = new Guid("abf7e5cb-0b1c-50f2-94fa-d6415daad51a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0565\\u056C\\u056B\\u0584\\u0563\\u0575\\u0578\\u0582\\u0572\",\"ru\":\"\\u041C\\u0435\\u043B\\u0438\\u043A\\u0433\\u044E\\u0445\",\"en\":\"Melikgyugh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "melikgyugh",
+                            SortOrder = 75
+                        },
+                        new
+                        {
+                            Id = new Guid("05efe3e1-334d-57fb-81fb-e0666607ddf8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0565\\u056E\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u041C\\u0435\\u0446\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Metsadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "metsadzor",
+                            SortOrder = 76
+                        },
+                        new
+                        {
+                            Id = new Guid("2dca1947-a8fd-5511-8483-851a3a8dfe60"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u056B\\u057B\\u0576\\u0561\\u057F\\u0578\\u0582\\u0576\",\"ru\":\"\\u041C\\u0438\\u0434\\u0436\\u043D\\u0430\\u0442\\u0443\\u043D\",\"en\":\"Mijnatun\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "mijnatun",
+                            SortOrder = 77
+                        },
+                        new
+                        {
+                            Id = new Guid("2de143cd-6148-574d-b9e0-99caded10b90"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u056B\\u0580\\u0561\\u0584\",\"ru\":\"\\u041C\\u0438\\u0440\\u0430\\u043A\",\"en\":\"Mirak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "mirak",
+                            SortOrder = 78
+                        },
+                        new
+                        {
+                            Id = new Guid("acf174dd-3bdd-5748-a3b3-ddec80da9992"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0565\\u0580\\u0584\\u056B\\u0576 \\u0532\\u0561\\u0566\\u0574\\u0561\\u0562\\u0565\\u0580\\u0564\",\"ru\":\"\\u041D\\u0435\\u0440\\u043A\\u0438\\u043D \\u0411\\u0430\\u0437\\u043C\\u0430\\u0431\\u0435\\u0440\\u0434\",\"en\":\"Nerkin Bazmaberd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nerkin-bazmaberd",
+                            SortOrder = 79
+                        },
+                        new
+                        {
+                            Id = new Guid("00a4465c-b1c0-5d60-93ab-a7b20355bf3c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0565\\u0580\\u0584\\u056B\\u0576 \\u054D\\u0561\\u057D\\u0576\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041D\\u0435\\u0440\\u043A\\u0438\\u043D \\u0421\\u0430\\u0441\\u043D\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Nerkin Sasnashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nerkin-sasnashen",
+                            SortOrder = 80
+                        },
+                        new
+                        {
+                            Id = new Guid("f793ae57-5fce-5b0d-be48-674c55d19e33"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u056B\\u0563\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u041D\\u0438\\u0433\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Nigavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nigavan",
+                            SortOrder = 81
+                        },
+                        new
+                        {
+                            Id = new Guid("3032c355-d15b-5ec6-81f2-89eaa6907569"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u056B\\u0563\\u0561\\u057F\\u0578\\u0582\\u0576\",\"ru\":\"\\u041D\\u0438\\u0433\\u0430\\u0442\\u0443\\u043D\",\"en\":\"Nigatun\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nigatun",
+                            SortOrder = 82
+                        },
+                        new
+                        {
+                            Id = new Guid("e3610d1e-93a5-5ece-8fd1-1f9815c36047"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u0531\\u0574\\u0561\\u0576\\u0578\\u057D\",\"ru\":\"\\u041D\\u043E\\u0440 \\u0410\\u043C\\u0430\\u043D\\u043E\\u0441\",\"en\":\"Nor Amanos\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nor-amanos",
+                            SortOrder = 83
+                        },
+                        new
+                        {
+                            Id = new Guid("60f91c32-b650-538c-91d8-2cf37bbfc46c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u0531\\u0580\\u0569\\u056B\\u056F\",\"ru\":\"\\u041D\\u043E\\u0440 \\u0410\\u0440\\u0442\\u0438\\u043A\",\"en\":\"Nor Artik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nor-artik",
+                            SortOrder = 84
+                        },
+                        new
+                        {
+                            Id = new Guid("e56b37ec-5248-5e33-8a8f-7df8b9da99e1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u0535\\u0564\\u0565\\u057D\\u056B\\u0561\",\"ru\":\"\\u041D\\u043E\\u0440 \\u0415\\u0434\\u0435\\u0441\\u0438\\u0430\",\"en\":\"Nor Yedesia\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "nor-yedesia",
+                            SortOrder = 85
+                        },
+                        new
+                        {
+                            Id = new Guid("78426eac-3c61-536d-9b27-6f2fbee65d96"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041D\\u043E\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Norashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "norashen-aragatsotn",
+                            SortOrder = 86
+                        },
+                        new
+                        {
+                            Id = new Guid("c18dd1fd-bf63-54d4-bdd9-4ec1b33dcf7d"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0561\\u0574\\u056B\\u0580\\u0561\\u0574\",\"ru\":\"\\u0428\\u0430\\u043C\\u0438\\u0440\\u0430\\u043C\",\"en\":\"Shamiram\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "shamiram",
+                            SortOrder = 87
+                        },
+                        new
+                        {
+                            Id = new Guid("8bcdaace-a625-59e4-a61b-d51d470ccda8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0565\\u0576\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0428\\u0435\\u043D\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Shenavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "shenavan",
+                            SortOrder = 88
+                        },
+                        new
+                        {
+                            Id = new Guid("82213ff8-477b-54a3-a971-c40eddfe0450"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0565\\u0576\\u056F\\u0561\\u0576\\u056B\",\"ru\":\"\\u0428\\u0435\\u043D\\u043A\\u0430\\u043D\\u0438\",\"en\":\"Shenkani\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "shenkani",
+                            SortOrder = 89
+                        },
+                        new
+                        {
+                            Id = new Guid("143554fd-dd6d-58d6-baf6-e3bd2be6ccd0"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0572\\u0561\\u0580\\u0577\\u056B\\u056F\",\"ru\":\"\\u0428\\u0445\\u0430\\u0440\\u0448\\u0438\\u043A\",\"en\":\"Shgharshik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "shgharshik",
+                            SortOrder = 90
+                        },
+                        new
+                        {
+                            Id = new Guid("59b15bcd-fd94-59e2-83c0-2974d4da2065"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0578\\u0572\\u0561\\u056F\\u0576\",\"ru\":\"\\u0428\\u043E\\u0445\\u0430\\u043A\\u043D\",\"en\":\"Shoghakn\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "shoghakn",
+                            SortOrder = 91
+                        },
+                        new
+                        {
+                            Id = new Guid("e333da14-ce9a-50c2-a189-be5fac17280f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u057D\\u056F\\u0565\\u0569\\u0561\\u057D\",\"ru\":\"\\u0412\\u043E\\u0441\\u043A\\u0435\\u0442\\u0430\\u0441\",\"en\":\"Vosketas\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "vosketas",
+                            SortOrder = 92
+                        },
+                        new
+                        {
+                            Id = new Guid("feb9e0ee-25cc-501a-8afa-72279a60298c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u057D\\u056F\\u0565\\u0570\\u0561\\u057F\",\"ru\":\"\\u0412\\u043E\\u0441\\u043A\\u0435\\u0430\\u0442\",\"en\":\"Voskehat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "voskehat",
+                            SortOrder = 93
+                        },
+                        new
+                        {
+                            Id = new Guid("e2c896e5-703b-5d02-a1b9-8b5b627e3fe1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u057D\\u056F\\u0565\\u057E\\u0561\\u0566\",\"ru\":\"\\u0412\\u043E\\u0441\\u043A\\u0435\\u0432\\u0430\\u0437\",\"en\":\"Voskevaz\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "voskevaz",
+                            SortOrder = 94
+                        },
+                        new
+                        {
+                            Id = new Guid("58246618-fb31-53d0-9dfc-dd732eff87cc"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u0582\\u0577\\u056B\",\"ru\":\"\\u0423\\u0448\\u0438\",\"en\":\"Ushi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ushi",
+                            SortOrder = 95
+                        },
+                        new
+                        {
+                            Id = new Guid("d0dace92-bfc7-56c9-9238-371157a51409"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u0582\\u057B\\u0561\\u0576\",\"ru\":\"\\u0423\\u0434\\u0436\\u0430\\u043D\",\"en\":\"Ujan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ujan",
+                            SortOrder = 96
+                        },
+                        new
+                        {
+                            Id = new Guid("a4c0490a-f872-558d-a0db-12eec1806460"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0549\\u0561\\u0580\\u0579\\u0561\\u056F\\u056B\\u057D\",\"ru\":\"\\u0427\\u0430\\u0440\\u0447\\u0430\\u043A\\u0438\\u0441\",\"en\":\"Charchakis\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "charchakis",
+                            SortOrder = 97
+                        },
+                        new
+                        {
+                            Id = new Guid("2c16b3fa-38b5-5207-9433-d59a7251c325"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054A\\u0561\\u0580\\u057F\\u056B\\u0566\\u0561\\u056F\",\"ru\":\"\\u041F\\u0430\\u0440\\u0442\\u0438\\u0437\\u0430\\u043A\",\"en\":\"Partizak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "partizak",
+                            SortOrder = 98
+                        },
+                        new
+                        {
+                            Id = new Guid("dc87c9e7-e608-5c94-ab7e-ebceb3487f73"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054B\\u0561\\u0574\\u0577\\u056C\\u0578\\u0582\",\"ru\":\"\\u0414\\u0436\\u0430\\u043C\\u0448\\u043B\\u0443\",\"en\":\"Jamshlu\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "jamshlu",
+                            SortOrder = 99
+                        },
+                        new
+                        {
+                            Id = new Guid("8b78ef24-8d64-550a-8a6e-84e0ea933b00"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054B\\u0580\\u0561\\u0574\\u0562\\u0561\\u0580\",\"ru\":\"\\u0414\\u0436\\u0440\\u0430\\u043C\\u0431\\u0430\\u0440\",\"en\":\"Jrambar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "jrambar",
+                            SortOrder = 100
+                        },
+                        new
+                        {
+                            Id = new Guid("d00c6fa6-049c-502a-804c-4e25a9e45fac"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054C\\u0575\\u0561 \\u0539\\u0561\\u0566\\u0561\",\"ru\":\"\\u0420\\u044F \\u0422\\u0430\\u0437\\u0430\",\"en\":\"Rya Taza\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "rya-taza",
+                            SortOrder = 101
+                        },
+                        new
+                        {
+                            Id = new Guid("70b6c629-6a6f-54e9-9f54-61db25007bdc"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u0564\\u0578\\u0582\\u0576\\u0581\",\"ru\":\"\\u0421\\u0430\\u0434\\u0443\\u043D\\u0446\",\"en\":\"Sadunts\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "sadunts",
+                            SortOrder = 102
+                        },
+                        new
+                        {
+                            Id = new Guid("8275648c-9fd3-50de-91d0-8342ae085419"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u0572\\u0574\\u0578\\u057D\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0421\\u0430\\u0445\\u043C\\u043E\\u0441\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Saghmosavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "saghmosavan",
+                            SortOrder = 103
+                        },
+                        new
+                        {
+                            Id = new Guid("6ffe65c1-f95a-53ff-947e-048a60f1e50c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u057D\\u0578\\u0582\\u0576\\u056B\\u056F\",\"ru\":\"\\u0421\\u0430\\u0441\\u0443\\u043D\\u0438\\u043A\",\"en\":\"Sasunik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "sasunik",
+                            SortOrder = 104
+                        },
+                        new
+                        {
+                            Id = new Guid("26f709ea-0180-54d7-9ee7-6408660ed0d1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u0580\\u0561\\u056C\\u0561\\u0576\\u057B\",\"ru\":\"\\u0421\\u0430\\u0440\\u0430\\u043B\\u0430\\u043D\\u0434\\u0436\",\"en\":\"Saralanj\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "saralanj",
+                            SortOrder = 105
+                        },
+                        new
+                        {
+                            Id = new Guid("ff4117a5-5d26-5774-ba41-7013f426389a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u056B\\u057A\\u0561\\u0576\",\"ru\":\"\\u0421\\u0438\\u043F\\u0430\\u043D\",\"en\":\"Sipan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "sipan",
+                            SortOrder = 106
+                        },
+                        new
+                        {
+                            Id = new Guid("9760cd27-2777-5c01-806b-949dc907971b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0578\\u0580\\u056B\\u056F\",\"ru\":\"\\u0421\\u043E\\u0440\\u0438\\u043A\",\"en\":\"Sorik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "sorik",
+                            SortOrder = 107
+                        },
+                        new
+                        {
+                            Id = new Guid("34c8cdd2-34be-5dfd-a358-9f75d0c27ddd"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0578\\u0582\\u057D\\u0565\\u0580\",\"ru\":\"\\u0421\\u0443\\u0441\\u0435\\u0440\",\"en\":\"Suser\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "suser",
+                            SortOrder = 108
+                        },
+                        new
+                        {
+                            Id = new Guid("16d4a451-6ce2-5097-a97d-fff1300c4a63"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0561\\u0562\\u056C\\u0578\\u0582\\u0580\",\"ru\":\"\\u0412\\u0430\\u0440\\u0434\\u0430\\u0431\\u043B\\u0443\\u0440\",\"en\":\"Vardablur\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "vardablur",
+                            SortOrder = 109
+                        },
+                        new
+                        {
+                            Id = new Guid("ae844dac-df57-524d-93c1-5033909b9a61"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0565\\u0576\\u056B\\u057D\",\"ru\":\"\\u0412\\u0430\\u0440\\u0434\\u0435\\u043D\\u0438\\u0441\",\"en\":\"Vardenis\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "vardenis-aragatsotn",
+                            SortOrder = 110
+                        },
+                        new
+                        {
+                            Id = new Guid("b35abee8-0d06-5fbc-80b0-b30c4afc0111"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0565\\u0576\\u0578\\u0582\\u057F\",\"ru\":\"\\u0412\\u0430\\u0440\\u0434\\u0435\\u043D\\u0443\\u0442\",\"en\":\"Vardenut\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "vardenut",
+                            SortOrder = 111
+                        },
+                        new
+                        {
+                            Id = new Guid("7a607b40-1aac-5a21-8d31-e681c8bb3518"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u056B\\u0576 \\u0532\\u0561\\u0566\\u0574\\u0561\\u0562\\u0565\\u0580\\u0564\",\"ru\":\"\\u0412\\u0435\\u0440\\u0438\\u043D \\u0411\\u0430\\u0437\\u043C\\u0430\\u0431\\u0435\\u0440\\u0434\",\"en\":\"Verin Bazmaberd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "verin-bazmaberd",
+                            SortOrder = 112
+                        },
+                        new
+                        {
+                            Id = new Guid("7fc90b5a-f5c4-550d-8c12-01b879e4beba"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u056B\\u0576 \\u054D\\u0561\\u057D\\u0576\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0412\\u0435\\u0440\\u0438\\u043D \\u0421\\u0430\\u0441\\u043D\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Verin Sasnashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "verin-sasnashen",
+                            SortOrder = 113
+                        },
+                        new
+                        {
+                            Id = new Guid("fad55d0c-4e18-5a47-b838-fc556ce93915"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u056B\\u0576 \\u054D\\u0561\\u057D\\u0578\\u0582\\u0576\\u056B\\u056F\",\"ru\":\"\\u0412\\u0435\\u0440\\u0438\\u043D \\u0421\\u0430\\u0441\\u0443\\u043D\\u0438\\u043A\",\"en\":\"Verin Sasunik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "verin-sasunik",
+                            SortOrder = 114
+                        },
+                        new
+                        {
+                            Id = new Guid("74736870-23c5-5eb3-b460-c29bcec9b5a6"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0553\\u0561\\u0580\\u057A\\u056B\",\"ru\":\"\\u041F\\u0430\\u0440\\u043F\\u0438\",\"en\":\"Parpi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "parpi",
+                            SortOrder = 115
+                        },
+                        new
+                        {
+                            Id = new Guid("6677cc07-aeae-508e-8164-03e21e9b785e"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0554\\u0578\\u0582\\u0579\\u0561\\u056F\",\"ru\":\"\\u041A\\u0443\\u0447\\u0430\\u043A\",\"en\":\"Kuchak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "kuchak",
+                            SortOrder = 116
+                        },
+                        new
+                        {
+                            Id = new Guid("da18f8ae-8282-5c53-944b-a7569493d60a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0555\\u0569\\u0587\\u0561\\u0576\",\"ru\":\"\\u041E\\u0442\\u0435\\u0432\\u0430\\u043D\",\"en\":\"Otevan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "otevan",
+                            SortOrder = 117
+                        },
+                        new
+                        {
+                            Id = new Guid("02fab6c0-4667-5da5-bc11-864688661902"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0555\\u0570\\u0561\\u0576\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u041E\\u0430\\u043D\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Ohanavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "ohanavan",
+                            SortOrder = 118
+                        },
+                        new
+                        {
+                            Id = new Guid("3dbad1d2-721f-5d77-acb9-c35a6690d998"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0555\\u0577\\u0561\\u056F\\u0561\\u0576\",\"ru\":\"\\u041E\\u0448\\u0430\\u043A\\u0430\\u043D\",\"en\":\"Oshakan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "oshakan",
+                            SortOrder = 119
+                        },
+                        new
+                        {
+                            Id = new Guid("a1b7c3f5-46d1-503a-ae4f-ebe5a76e1dc6"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0555\\u0580\\u0563\\u0578\\u057E\",\"ru\":\"\\u041E\\u0440\\u0433\\u043E\\u0432\",\"en\":\"Orgov\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Slug = "orgov",
+                            SortOrder = 120
+                        },
+                        new
+                        {
+                            Id = new Guid("e23bd40f-b6b1-5d73-a4ac-24b9db82f71e"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0580\\u0561\\u057F\",\"ru\":\"\\u0410\\u0440\\u0430\\u0440\\u0430\\u0442\",\"en\":\"Ararat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "ararat",
+                            SortOrder = 121
+                        },
+                        new
+                        {
+                            Id = new Guid("4a59cd69-32b8-51c8-a8d7-d7e96c90f884"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u057F\\u0561\\u0577\\u0561\\u057F\",\"ru\":\"\\u0410\\u0440\\u0442\\u0430\\u0448\\u0430\\u0442\",\"en\":\"Artashat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "artashat",
+                            SortOrder = 122
                         },
                         new
                         {
                             Id = new Guid("019a0000-0000-7000-8000-000000000205"),
                             IsActive = true,
+                            Kind = "City",
                             Name = "{\"hy\":\"\\u0544\\u0561\\u057D\\u056B\\u057D\",\"ru\":\"\\u041C\\u0430\\u0441\\u0438\\u0441\",\"en\":\"Masis\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
                             Slug = "masis",
-                            SortOrder = 5
+                            SortOrder = 123
+                        },
+                        new
+                        {
+                            Id = new Guid("62d39bee-555b-53b1-a5f0-a4948317cd13"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0564\\u056B\",\"ru\":\"\\u0412\\u0435\\u0434\\u0438\",\"en\":\"Vedi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "vedi",
+                            SortOrder = 124
+                        },
+                        new
+                        {
+                            Id = new Guid("b3850ad2-7cbf-500a-8402-1d11a2188580"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0562\\u0578\\u057E\\u0575\\u0561\\u0576\",\"ru\":\"\\u0410\\u0431\\u043E\\u0432\\u044F\\u043D\",\"en\":\"Abovyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "abovyan-ararat",
+                            SortOrder = 125
+                        },
+                        new
+                        {
+                            Id = new Guid("5f1ad1ae-45b8-5472-8686-7e407a39a67c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0566\\u0561\\u057F\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0410\\u0437\\u0430\\u0442\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Azatashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "azatashen",
+                            SortOrder = 126
+                        },
+                        new
+                        {
+                            Id = new Guid("2a097690-9eae-54ae-a414-360f4dd8524b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0566\\u0561\\u057F\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0437\\u0430\\u0442\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Azatavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "azatavan",
+                            SortOrder = 127
+                        },
+                        new
+                        {
+                            Id = new Guid("41dda536-f6c7-5dab-b5ca-2febca2debb3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0575\\u0563\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0439\\u0433\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Aygavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "aygavan",
+                            SortOrder = 128
+                        },
+                        new
+                        {
+                            Id = new Guid("5252557a-2ad4-52f7-a317-a1f6e6c09d8a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0575\\u0563\\u0565\\u0566\\u0561\\u0580\\u0564\",\"ru\":\"\\u0410\\u0439\\u0433\\u0435\\u0437\\u0430\\u0440\\u0434\",\"en\":\"Aygezard\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "aygezard",
+                            SortOrder = 129
+                        },
+                        new
+                        {
+                            Id = new Guid("af7846bf-e5d1-5708-9bf2-53c28d9d40c4"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0575\\u0563\\u0565\\u057A\\u0561\\u057F\",\"ru\":\"\\u0410\\u0439\\u0433\\u0435\\u043F\\u0430\\u0442\",\"en\":\"Aygepat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "aygepat",
+                            SortOrder = 130
+                        },
+                        new
+                        {
+                            Id = new Guid("8c842bcf-135f-543d-8f9f-22362180490c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0575\\u0563\\u0565\\u057D\\u057F\\u0561\\u0576\",\"ru\":\"\\u0410\\u0439\\u0433\\u0435\\u0441\\u0442\\u0430\\u043D\",\"en\":\"Aygestan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "aygestan",
+                            SortOrder = 131
+                        },
+                        new
+                        {
+                            Id = new Guid("ffd6832b-2d22-51c3-90ad-e2f7a5bf6cbe"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0575\\u0576\\u0569\\u0561\\u057A\",\"ru\":\"\\u0410\\u0439\\u043D\\u0442\\u0430\\u043F\",\"en\":\"Ayntap\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "ayntap",
+                            SortOrder = 132
+                        },
+                        new
+                        {
+                            Id = new Guid("d3e3ac72-c8f3-5aa8-a854-1f0be4405469"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u057E\\u0577\\u0561\\u0580\",\"ru\":\"\\u0410\\u0432\\u0448\\u0430\\u0440\",\"en\":\"Avshar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "avshar",
+                            SortOrder = 133
+                        },
+                        new
+                        {
+                            Id = new Guid("0e82831b-8cad-5013-b222-29bcd6db6042"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u056C\\u0565\\u0566\",\"ru\":\"\\u0410\\u0440\\u0430\\u043B\\u0435\\u0437\",\"en\":\"Aralez\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "aralez",
+                            SortOrder = 134
+                        },
+                        new
+                        {
+                            Id = new Guid("e4744294-48a0-5f0b-ab73-aa7998911bfa"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0584\\u057D\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0410\\u0440\\u0430\\u043A\\u0441\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Araksavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "araksavan",
+                            SortOrder = 135
+                        },
+                        new
+                        {
+                            Id = new Guid("261a6566-81e4-5290-80e9-df86ebe7e2c5"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0562\\u0561\\u0569\",\"ru\":\"\\u0410\\u0440\\u0431\\u0430\\u0442\",\"en\":\"Arbat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "arbat",
+                            SortOrder = 136
+                        },
+                        new
+                        {
+                            Id = new Guid("0dcb91eb-7941-57d9-931c-484483083bda"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0563\\u0561\\u057E\\u0561\\u0576\\u0564\",\"ru\":\"\\u0410\\u0440\\u0433\\u0430\\u0432\\u0430\\u043D\\u0434\",\"en\":\"Argavand\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "argavand",
+                            SortOrder = 137
+                        },
+                        new
+                        {
+                            Id = new Guid("937a3222-8858-5bc9-bf4b-ff840f8e6552"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0574\\u0561\\u0577\",\"ru\":\"\\u0410\\u0440\\u043C\\u0430\\u0448\",\"en\":\"Armash\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "armash",
+                            SortOrder = 138
+                        },
+                        new
+                        {
+                            Id = new Guid("19ead0d3-3df0-5354-b750-c1d6df26bf60"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0587\\u0561\\u0562\\u0578\\u0582\\u0575\\u0580\",\"ru\":\"\\u0410\\u0440\\u0435\\u0432\\u0430\\u0431\\u0443\\u0439\\u0440\",\"en\":\"Arevabuyr\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "arevabuyr",
+                            SortOrder = 139
+                        },
+                        new
+                        {
+                            Id = new Guid("c29c3e7d-e723-5e00-806c-f05c02083ac7"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0587\\u0577\\u0561\\u057F\",\"ru\":\"\\u0410\\u0440\\u0435\\u0432\\u0448\\u0430\\u0442\",\"en\":\"Arevshat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "arevshat",
+                            SortOrder = 140
+                        },
+                        new
+                        {
+                            Id = new Guid("a932f5f6-bb9a-52c3-b532-c657b8470e96"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0561\\u0572\\u0580\\u0561\\u0574\\u0575\\u0561\\u0576\",\"ru\":\"\\u0411\\u0430\\u0445\\u0440\\u0430\\u043C\\u044F\\u043D\",\"en\":\"Baghramyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "baghramyan",
+                            SortOrder = 141
+                        },
+                        new
+                        {
+                            Id = new Guid("5b110bc4-c0de-50f3-b0ac-3c94b46140b8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0561\\u0580\\u0571\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0411\\u0430\\u0440\\u0434\\u0437\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Bardzrashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "bardzrashen",
+                            SortOrder = 142
+                        },
+                        new
+                        {
+                            Id = new Guid("44ffdce8-337d-5ea3-8e83-4ff4b25c362c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0565\\u0580\\u0564\\u056B\\u056F\",\"ru\":\"\\u0411\\u0435\\u0440\\u0434\\u0438\\u043A\",\"en\":\"Berdik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "berdik",
+                            SortOrder = 143
+                        },
+                        new
+                        {
+                            Id = new Guid("64f9be27-773e-57f6-9811-b84fe0d5ed3a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0565\\u0580\\u0584\\u0561\\u0576\\u0578\\u0582\\u0577\",\"ru\":\"\\u0411\\u0435\\u0440\\u043A\\u0430\\u043D\\u0443\\u0448\",\"en\":\"Berkanush\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "berkanush",
+                            SortOrder = 144
+                        },
+                        new
+                        {
+                            Id = new Guid("07b3a0f6-d8cb-5787-9af7-7888da49cb58"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0575\\u0578\\u0582\\u0580\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0411\\u044E\\u0440\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Byuravan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "byuravan",
+                            SortOrder = 145
+                        },
+                        new
+                        {
+                            Id = new Guid("9089d68f-7155-5197-b221-ef15e6a8a8e4"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0532\\u0578\\u0582\\u0580\\u0561\\u057D\\u057F\\u0561\\u0576\",\"ru\":\"\\u0411\\u0443\\u0440\\u0430\\u0441\\u0442\\u0430\\u043D\",\"en\":\"Burastan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "burastan",
+                            SortOrder = 146
+                        },
+                        new
+                        {
+                            Id = new Guid("bc13d566-ae47-53ec-ace1-fc53a17c803b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u0572\\u0561\\u0576\\u056B\\u057D\\u057F\",\"ru\":\"\\u0413\\u0435\\u0445\\u0430\\u043D\\u0438\\u0441\\u0442\",\"en\":\"Geghanist\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "geghanist",
+                            SortOrder = 147
+                        },
+                        new
+                        {
+                            Id = new Guid("fd28b13c-b141-5b89-8247-afabb3a731cd"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u057F\\u0561\\u0566\\u0561\\u057F\",\"ru\":\"\\u0413\\u0435\\u0442\\u0430\\u0437\\u0430\\u0442\",\"en\":\"Getazat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "getazat",
+                            SortOrder = 148
+                        },
+                        new
+                        {
+                            Id = new Guid("0bca866e-ade6-5ed7-9232-4cc3d8328b21"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u057F\\u0561\\u0583\\u0576\\u0575\\u0561\",\"ru\":\"\\u0413\\u0435\\u0442\\u0430\\u043F\\u043D\\u044F\",\"en\":\"Getapnya\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "getapnya",
+                            SortOrder = 149
+                        },
+                        new
+                        {
+                            Id = new Guid("e7e1a574-5ede-5560-b798-f07e9a0dd229"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u056B\\u0576\\u0565\\u057E\\u0565\\u057F\",\"ru\":\"\\u0413\\u0438\\u043D\\u0435\\u0432\\u0435\\u0442\",\"en\":\"Ginevet\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "ginevet",
+                            SortOrder = 150
+                        },
+                        new
+                        {
+                            Id = new Guid("b00cd8dd-bf1d-5e2c-818a-ffbb2f7cca52"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0533\\u0578\\u0580\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0413\\u043E\\u0440\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Goravan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "goravan",
+                            SortOrder = 151
+                        },
+                        new
+                        {
+                            Id = new Guid("e892b7e1-37f2-5e3b-a03a-9f1b468dea1f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u056C\\u0561\\u0580\",\"ru\":\"\\u0414\\u0430\\u043B\\u0430\\u0440\",\"en\":\"Dalar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "dalar",
+                            SortOrder = 152
+                        },
+                        new
+                        {
+                            Id = new Guid("c8d781c5-4893-5d08-9645-498d709c4d0c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u0577\\u057F\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0414\\u0430\\u0448\\u0442\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Dashtavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "dashtavan",
+                            SortOrder = 153
+                        },
+                        new
+                        {
+                            Id = new Guid("f1985998-5463-5a70-aee4-36ed2aea1821"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u0577\\u057F\\u0561\\u0584\\u0561\\u0580\",\"ru\":\"\\u0414\\u0430\\u0448\\u0442\\u0430\\u043A\\u0430\\u0440\",\"en\":\"Dashtakar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "dashtakar",
+                            SortOrder = 154
+                        },
+                        new
+                        {
+                            Id = new Guid("36ef1397-37ee-5542-b162-07691c2c8faf"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u0580\\u0561\\u056F\\u0565\\u0580\\u057F\",\"ru\":\"\\u0414\\u0430\\u0440\\u0430\\u043A\\u0435\\u0440\\u0442\",\"en\":\"Darakert\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "darakert",
+                            SortOrder = 155
+                        },
+                        new
+                        {
+                            Id = new Guid("42dc5b29-fe91-5608-93d1-712630751789"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u0580\\u0562\\u0576\\u056B\\u056F\",\"ru\":\"\\u0414\\u0430\\u0440\\u0431\\u043D\\u0438\\u043A\",\"en\":\"Darbnik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "darbnik",
+                            SortOrder = 156
+                        },
+                        new
+                        {
+                            Id = new Guid("6aebb208-6c1c-5813-a8e8-0a21c4423fe4"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0565\\u0572\\u0571\\u0578\\u0582\\u057F\",\"ru\":\"\\u0414\\u0435\\u0445\\u0434\\u0437\\u0443\\u0442\",\"en\":\"Deghdzut\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "deghdzut",
+                            SortOrder = 157
+                        },
+                        new
+                        {
+                            Id = new Guid("4fe1f71e-a19a-540c-bb6f-37eac034ba00"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u056B\\u057F\\u0561\\u056F\",\"ru\":\"\\u0414\\u0438\\u0442\\u0430\\u043A\",\"en\":\"Ditak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "ditak",
+                            SortOrder = 158
+                        },
+                        new
+                        {
+                            Id = new Guid("2843cf5f-2d88-5d92-b18e-74d4ffc5dbf9"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u0574\\u056B\\u057F\\u0580\\u0578\\u057E\",\"ru\":\"\\u0414\\u043C\\u0438\\u0442\\u0440\\u043E\\u0432\",\"en\":\"Dmitrov\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "dmitrov",
+                            SortOrder = 159
+                        },
+                        new
+                        {
+                            Id = new Guid("421bac50-c125-5533-af1a-0cc87eb4317f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0534\\u057E\\u056B\\u0576\",\"ru\":\"\\u0414\\u0432\\u0438\\u043D\",\"en\":\"Dvin\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "dvin",
+                            SortOrder = 160
+                        },
+                        new
+                        {
+                            Id = new Guid("ff56a4be-78a7-5f9a-b50f-357dd086751b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0535\\u0572\\u0565\\u0563\\u0576\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0415\\u0445\\u0435\\u0433\\u043D\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Yeghegnavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "yeghegnavan",
+                            SortOrder = 161
+                        },
+                        new
+                        {
+                            Id = new Guid("f417ce96-028d-51f8-8e52-b607ee2f3d5b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0535\\u0580\\u0561\\u057D\\u056D\",\"ru\":\"\\u0415\\u0440\\u0430\\u0441\\u0445\",\"en\":\"Yeraskh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "yeraskh",
+                            SortOrder = 162
+                        },
+                        new
+                        {
+                            Id = new Guid("97d83619-bfdf-54aa-9f07-34e818fe440b"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0536\\u0561\\u0576\\u0563\\u0561\\u056F\\u0561\\u057F\\u0578\\u0582\\u0576\",\"ru\":\"\\u0417\\u0430\\u043D\\u0433\\u0430\\u043A\\u0430\\u0442\\u0443\\u043D\",\"en\":\"Zangakatun\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "zangakatun",
+                            SortOrder = 163
+                        },
+                        new
+                        {
+                            Id = new Guid("ffbd3c44-1e5d-51f9-a4e4-c7bc3a1ce3fb"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0536\\u0578\\u0580\\u0561\\u056F\",\"ru\":\"\\u0417\\u043E\\u0440\\u0430\\u043A\",\"en\":\"Zorak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "zorak",
+                            SortOrder = 164
+                        },
+                        new
+                        {
+                            Id = new Guid("d277d5f3-3119-5de2-b057-0c24a9a923d6"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0561\\u0576\\u057B\\u0561\\u0566\\u0561\\u057F\",\"ru\":\"\\u041B\\u0430\\u043D\\u0434\\u0436\\u0430\\u0437\\u0430\\u0442\",\"en\":\"Lanjazat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "lanjazat",
+                            SortOrder = 165
+                        },
+                        new
+                        {
+                            Id = new Guid("b5a943bb-72c5-555a-8490-3ace00592a56"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0561\\u0576\\u057B\\u0561\\u0576\\u056B\\u057D\\u057F\",\"ru\":\"\\u041B\\u0430\\u043D\\u0434\\u0436\\u0430\\u043D\\u0438\\u0441\\u0442\",\"en\":\"Lanjanist\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "lanjanist",
+                            SortOrder = 166
+                        },
+                        new
+                        {
+                            Id = new Guid("fb24dac1-d4ca-5463-9a03-78704d821529"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0561\\u0576\\u057B\\u0561\\u057C\",\"ru\":\"\\u041B\\u0430\\u043D\\u0434\\u0436\\u0430\\u0440\",\"en\":\"Lanjar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "lanjar",
+                            SortOrder = 167
+                        },
+                        new
+                        {
+                            Id = new Guid("6d0a0938-76e9-5975-9627-6b42a9ac1969"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0582\\u057D\\u0561\\u0577\\u0578\\u0572\",\"ru\":\"\\u041B\\u0443\\u0441\\u0430\\u0448\\u043E\\u0445\",\"en\":\"Lusashogh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "lusashogh",
+                            SortOrder = 168
+                        },
+                        new
+                        {
+                            Id = new Guid("8c0c5e47-5489-58c9-a3d0-73c1cc6255e1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0582\\u057D\\u0561\\u057C\\u0561\\u057F\",\"ru\":\"\\u041B\\u0443\\u0441\\u0430\\u0440\\u0430\\u0442\",\"en\":\"Lusarat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "lusarat",
+                            SortOrder = 169
+                        },
+                        new
+                        {
+                            Id = new Guid("a8949b34-0ee7-5afa-94f4-e9e7da5a7ac4"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053D\\u0561\\u0579\\u0583\\u0561\\u0580\",\"ru\":\"\\u0425\\u0430\\u0447\\u043F\\u0430\\u0440\",\"en\":\"Khachpar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "khachpar",
+                            SortOrder = 170
+                        },
+                        new
+                        {
+                            Id = new Guid("7a7e50d5-ba7e-5041-b706-70ba74b5b4b3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0576\\u0561\\u0579\\u0578\\u0582\\u057F\",\"ru\":\"\\u041A\\u0430\\u043D\\u0430\\u0447\\u0443\\u0442\",\"en\":\"Kanachut\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "kanachut",
+                            SortOrder = 171
+                        },
+                        new
+                        {
+                            Id = new Guid("d2752cfe-6c6b-5f93-b704-e43badeac850"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u0584\\u0561\\u057E\\u0561\\u0562\\u0565\\u0580\\u0564\",\"ru\":\"\\u041A\\u0430\\u043A\\u0430\\u0432\\u0430\\u0431\\u0435\\u0440\\u0434\",\"en\":\"Kakavaberd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "kakavaberd",
+                            SortOrder = 172
+                        },
+                        new
+                        {
+                            Id = new Guid("acb31c57-be91-5d11-a68a-d75358cf7d9d"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u0575\\u0561\\u0576\\u056B\\u057D\\u057F\",\"ru\":\"\\u0410\\u044F\\u043D\\u0438\\u0441\\u0442\",\"en\":\"Hayanist\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "hayanist",
+                            SortOrder = 173
+                        },
+                        new
+                        {
+                            Id = new Guid("95bf00fe-32ed-55f6-ad93-ca788c0fb9a6"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0576\\u0561\\u0562\\u0565\\u0580\\u0564\",\"ru\":\"\\u041D\\u0430\\u0431\\u0435\\u0440\\u0434\",\"en\":\"Hnaberd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "hnaberd-ararat",
+                            SortOrder = 174
+                        },
+                        new
+                        {
+                            Id = new Guid("f253c8b0-e0c9-5745-bf72-65c807dfb04a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0578\\u057E\\u057F\\u0561\\u0577\\u0561\\u057F\",\"ru\":\"\\u041E\\u0432\\u0442\\u0430\\u0448\\u0430\\u0442\",\"en\":\"Hovtashat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "hovtashat",
+                            SortOrder = 175
+                        },
+                        new
+                        {
+                            Id = new Guid("74df2292-d88f-59b0-be1e-8dc2102d1236"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0540\\u0578\\u057E\\u057F\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041E\\u0432\\u0442\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Hovtashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "hovtashen",
+                            SortOrder = 176
+                        },
+                        new
+                        {
+                            Id = new Guid("d211e6d8-e1ae-54cc-881b-24d499b108ec"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0542\\u0578\\u0582\\u056F\\u0561\\u057D\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0425\\u0443\\u043A\\u0430\\u0441\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Ghukasavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "ghukasavan",
+                            SortOrder = 177
+                        },
+                        new
+                        {
+                            Id = new Guid("0c2cbad2-15eb-5e31-9a62-5cb3f3675c8c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0561\\u0580\\u0574\\u0561\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041C\\u0430\\u0440\\u043C\\u0430\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Marmarashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "marmarashen",
+                            SortOrder = 178
+                        },
+                        new
+                        {
+                            Id = new Guid("ef831d78-fdba-5928-ab42-866dd286a5a7"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u056D\\u0579\\u0575\\u0561\\u0576\",\"ru\":\"\\u041C\\u0445\\u0447\\u044F\\u043D\",\"en\":\"Mkhchyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "mkhchyan",
+                            SortOrder = 179
+                        },
+                        new
+                        {
+                            Id = new Guid("15532b03-34ea-5a39-b751-ddfbf590fea2"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0580\\u0563\\u0561\\u0576\\u0578\\u0582\\u0577\",\"ru\":\"\\u041C\\u0440\\u0433\\u0430\\u043D\\u0443\\u0448\",\"en\":\"Mrganush\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "mrganush",
+                            SortOrder = 180
+                        },
+                        new
+                        {
+                            Id = new Guid("553363a1-757e-5caf-9525-f860c50da5ae"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0580\\u0563\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u041C\\u0440\\u0433\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Mrgavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "mrgavan",
+                            SortOrder = 181
+                        },
+                        new
+                        {
+                            Id = new Guid("2cf43c58-48a6-541d-8242-ae9812e92e07"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0544\\u0580\\u0563\\u0561\\u057E\\u0565\\u057F\",\"ru\":\"\\u041C\\u0440\\u0433\\u0430\\u0432\\u0435\\u0442\",\"en\":\"Mrgavet\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "mrgavet",
+                            SortOrder = 182
+                        },
+                        new
+                        {
+                            Id = new Guid("10b7368c-32d3-52e7-ba09-3202057180a5"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0561\\u0580\\u0565\\u056F\",\"ru\":\"\\u041D\\u0430\\u0440\\u0435\\u043A\",\"en\":\"Narek\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "narek",
+                            SortOrder = 183
+                        },
+                        new
+                        {
+                            Id = new Guid("2c24c769-cd09-51cf-ad8f-5fb02987ccd2"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u056B\\u0566\\u0561\\u0574\\u056B\",\"ru\":\"\\u041D\\u0438\\u0437\\u0430\\u043C\\u0438\",\"en\":\"Nizami\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "nizami",
+                            SortOrder = 184
+                        },
+                        new
+                        {
+                            Id = new Guid("0428c381-46ce-5953-902f-fbcfc7e3b6ca"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0577\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u041D\\u0448\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Nshavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "nshavan",
+                            SortOrder = 185
+                        },
+                        new
+                        {
+                            Id = new Guid("727a69f5-b978-5668-bcdf-2913476650cf"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0575\\u0561\\u056F\\u0565\\u0580\\u057F\",\"ru\":\"\\u041D\\u043E\\u044F\\u043A\\u0435\\u0440\\u0442\",\"en\":\"Noyakert\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "noyakert",
+                            SortOrder = 186
+                        },
+                        new
+                        {
+                            Id = new Guid("ed6bb1ec-1360-5c1e-8f27-68bdbaf815b4"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u053D\\u0561\\u0580\\u0562\\u0565\\u0580\\u0564\",\"ru\":\"\\u041D\\u043E\\u0440 \\u0425\\u0430\\u0440\\u0431\\u0435\\u0440\\u0434\",\"en\":\"Nor Kharberd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "nor-kharberd",
+                            SortOrder = 187
+                        },
+                        new
+                        {
+                            Id = new Guid("b106dc3e-e248-5ab5-8c70-9dd757244d78"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u053F\\u0575\\u0561\\u0576\\u0584\",\"ru\":\"\\u041D\\u043E\\u0440 \\u041A\\u044F\\u043D\\u043A\",\"en\":\"Nor Kyank\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "nor-kyank",
+                            SortOrder = 188
+                        },
+                        new
+                        {
+                            Id = new Guid("b13ff228-88db-59c1-b08a-c9db9f593af3"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u053F\\u0575\\u0578\\u0582\\u0580\\u056B\\u0576\",\"ru\":\"\\u041D\\u043E\\u0440 \\u041A\\u044E\\u0440\\u0438\\u043D\",\"en\":\"Nor Kyurin\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "nor-kyurin",
+                            SortOrder = 189
+                        },
+                        new
+                        {
+                            Id = new Guid("be3f5d5e-4cbd-54b7-ad0f-cb2627f00bfa"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u0548\\u0582\\u0572\\u056B\",\"ru\":\"\\u041D\\u043E\\u0440 \\u0423\\u0445\\u0438\",\"en\":\"Nor Ughi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "nor-ughi",
+                            SortOrder = 190
+                        },
+                        new
+                        {
+                            Id = new Guid("b55dd564-d323-53c7-bb82-09a0871e7418"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580\\u0561\\u0562\\u0561\\u0581\",\"ru\":\"\\u041D\\u043E\\u0440\\u0430\\u0431\\u0430\\u0446\",\"en\":\"Norabats\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "norabats",
+                            SortOrder = 191
+                        },
+                        new
+                        {
+                            Id = new Guid("c9a1eb90-fb86-527e-974e-22cf238ec5bb"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580\\u0561\\u0574\\u0561\\u0580\\u0563\",\"ru\":\"\\u041D\\u043E\\u0440\\u0430\\u043C\\u0430\\u0440\\u0433\",\"en\":\"Noramarg\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "noramarg",
+                            SortOrder = 192
+                        },
+                        new
+                        {
+                            Id = new Guid("7760d494-7063-53b6-b993-f0b26130481f"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041D\\u043E\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Norashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "norashen-ararat",
+                            SortOrder = 193
+                        },
+                        new
+                        {
+                            Id = new Guid("6d8a15b8-e379-5f10-bfe4-c6e6f1965ab2"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0561\\u0570\\u0578\\u0582\\u0574\\u0575\\u0561\\u0576\",\"ru\":\"\\u0428\\u0430\\u0443\\u043C\\u044F\\u043D\",\"en\":\"Shahumyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "shahumyan",
+                            SortOrder = 194
+                        },
+                        new
+                        {
+                            Id = new Guid("d08240f6-ba2c-5ad8-a716-505c87bffdca"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0547\\u0561\\u0572\\u0561\\u0583\",\"ru\":\"\\u0428\\u0430\\u0445\\u0430\\u043F\",\"en\":\"Shaghap\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "shaghap",
+                            SortOrder = 195
+                        },
+                        new
+                        {
+                            Id = new Guid("6d9e9d52-f32e-5bfd-bc3d-908955430c86"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u057D\\u056F\\u0565\\u057F\\u0561\\u0583\",\"ru\":\"\\u0412\\u043E\\u0441\\u043A\\u0435\\u0442\\u0430\\u043F\",\"en\":\"Vosketap\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "vosketap",
+                            SortOrder = 196
+                        },
+                        new
+                        {
+                            Id = new Guid("97eb110a-6720-5b5c-94c1-6c7f72dfe543"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u057D\\u057F\\u0561\\u0576\",\"ru\":\"\\u0412\\u043E\\u0441\\u0442\\u0430\\u043D\",\"en\":\"Vostan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "vostan",
+                            SortOrder = 197
+                        },
+                        new
+                        {
+                            Id = new Guid("42bbe1d0-4214-5301-9635-df6d95b63379"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u0582\\u0580\\u0581\\u0561\\u056C\\u0561\\u0576\\u057B\",\"ru\":\"\\u0423\\u0440\\u0446\\u0430\\u043B\\u0430\\u043D\\u0434\\u0436\",\"en\":\"Urtsalanj\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "urtsalanj",
+                            SortOrder = 198
+                        },
+                        new
+                        {
+                            Id = new Guid("2e9115de-2372-58fa-811c-97a4934ce2f8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0548\\u0582\\u0580\\u0581\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u0423\\u0440\\u0446\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Urtsadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "urtsadzor",
+                            SortOrder = 199
+                        },
+                        new
+                        {
+                            Id = new Guid("9a167d4e-24f6-5ec9-a90e-c426f414cf08"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054A\\u0561\\u0580\\u0578\\u0582\\u0575\\u0580 \\u054D\\u0587\\u0561\\u056F\",\"ru\":\"\\u041F\\u0430\\u0440\\u0443\\u0439\\u0440 \\u0421\\u0435\\u0432\\u0430\\u043A\",\"en\":\"Paruyr Sevak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "paruyr-sevak",
+                            SortOrder = 200
+                        },
+                        new
+                        {
+                            Id = new Guid("a022782b-3594-5608-9634-43184cacea50"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054B\\u0580\\u0561\\u0570\\u0578\\u057E\\u056B\\u057F\",\"ru\":\"\\u0414\\u0436\\u0440\\u0430\\u043E\\u0432\\u0438\\u0442\",\"en\":\"Jrahovit\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "jrahovit",
+                            SortOrder = 201
+                        },
+                        new
+                        {
+                            Id = new Guid("060965dc-4c46-5ea9-8c86-7939cbbc6865"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054B\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0414\\u0436\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Jrashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "jrashen",
+                            SortOrder = 202
+                        },
+                        new
+                        {
+                            Id = new Guid("bfe3ed7e-fb20-5c07-98bd-549993105f4a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054C\\u0561\\u0576\\u0579\\u057A\\u0561\\u0580\",\"ru\":\"\\u0420\\u0430\\u043D\\u0447\\u043F\\u0430\\u0440\",\"en\":\"Ranchpar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "ranchpar",
+                            SortOrder = 203
+                        },
+                        new
+                        {
+                            Id = new Guid("4893ee72-6946-513c-a167-395b097a5cc8"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u0575\\u0561\\u0569-\\u0546\\u0578\\u057E\\u0561\",\"ru\":\"\\u0421\\u0430\\u044F\\u0442-\\u041D\\u043E\\u0432\\u0430\",\"en\":\"Sayat-Nova\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "sayat-nova",
+                            SortOrder = 204
+                        },
+                        new
+                        {
+                            Id = new Guid("07ab13ad-30a1-5535-8001-b6d5e85663f1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u056B\\u057D\",\"ru\":\"\\u0421\\u0438\\u0441\",\"en\":\"Sis\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "sis",
+                            SortOrder = 205
+                        },
+                        new
+                        {
+                            Id = new Guid("ccf98ec0-50c4-5452-9913-4b11d32aac1c"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u056B\\u057D\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0421\\u0438\\u0441\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Sisavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "sisavan",
+                            SortOrder = 206
+                        },
+                        new
+                        {
+                            Id = new Guid("019bcce5-73c2-5550-ab3a-e261255e9cb9"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u056B\\u0583\\u0561\\u0576\\u056B\\u056F\",\"ru\":\"\\u0421\\u0438\\u043F\\u0430\\u043D\\u0438\\u043A\",\"en\":\"Sipanik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "sipanik",
+                            SortOrder = 207
+                        },
+                        new
+                        {
+                            Id = new Guid("9c679348-37d3-5687-af04-72678096c966"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054D\\u0578\\u0582\\u0580\\u0565\\u0576\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0421\\u0443\\u0440\\u0435\\u043D\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Surenavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "surenavan",
+                            SortOrder = 208
+                        },
+                        new
+                        {
+                            Id = new Guid("94347404-c7cb-58e5-8ea7-9348c9a3afd1"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0576\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0412\\u0430\\u043D\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Vanashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "vanashen",
+                            SortOrder = 209
+                        },
+                        new
+                        {
+                            Id = new Guid("ebc2e3c0-1d34-5e60-8563-35618c9bc9c5"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0561\\u0577\\u0561\\u057F\",\"ru\":\"\\u0412\\u0430\\u0440\\u0434\\u0430\\u0448\\u0430\\u0442\",\"en\":\"Vardashat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "vardashat",
+                            SortOrder = 210
+                        },
+                        new
+                        {
+                            Id = new Guid("2e02a995-f5a0-5367-864c-5accc9db9b59"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0412\\u0430\\u0440\\u0434\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Vardashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "vardashen",
+                            SortOrder = 211
+                        },
+                        new
+                        {
+                            Id = new Guid("89c8f096-3be2-58ca-b68a-a1504e479549"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u056B\\u0576 \\u0531\\u0580\\u057F\\u0561\\u0577\\u0561\\u057F\",\"ru\":\"\\u0412\\u0435\\u0440\\u0438\\u043D \\u0410\\u0440\\u0442\\u0430\\u0448\\u0430\\u0442\",\"en\":\"Verin Artashat\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "verin-artashat",
+                            SortOrder = 212
+                        },
+                        new
+                        {
+                            Id = new Guid("ac35087c-9a86-5be9-89df-79af9edb1b0a"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u056B\\u0576 \\u0534\\u057E\\u056B\\u0576\",\"ru\":\"\\u0412\\u0435\\u0440\\u0438\\u043D \\u0414\\u0432\\u0438\\u043D\",\"en\":\"Verin Dvin\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "verin-dvin",
+                            SortOrder = 213
+                        },
+                        new
+                        {
+                            Id = new Guid("20a7119f-f3a4-56c3-bcbf-fb1522c9f3ae"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054F\\u0561\\u0583\\u0565\\u0580\\u0561\\u056F\\u0561\\u0576\",\"ru\":\"\\u0422\\u0430\\u043F\\u0435\\u0440\\u0430\\u043A\\u0430\\u043D\",\"en\":\"Taperakan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "taperakan",
+                            SortOrder = 214
+                        },
+                        new
+                        {
+                            Id = new Guid("eaefae52-3f16-56e2-a045-f292170a59cd"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u054F\\u056B\\u0563\\u0580\\u0561\\u0576\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u0422\\u0438\\u0433\\u0440\\u0430\\u043D\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Tigranashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "tigranashen",
+                            SortOrder = 215
+                        },
+                        new
+                        {
+                            Id = new Guid("139b0843-40f6-5557-b7e8-c33d654daf05"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0553\\u0578\\u0584\\u0580 \\u054E\\u0565\\u0564\\u056B\",\"ru\":\"\\u041F\\u043E\\u043A\\u0440 \\u0412\\u0435\\u0434\\u0438\",\"en\":\"Pokr Vedi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "pokr-vedi",
+                            SortOrder = 216
+                        },
+                        new
+                        {
+                            Id = new Guid("e1a462be-7f03-5032-8c45-14a330a27e65"),
+                            IsActive = true,
+                            Kind = "Village",
+                            Name = "{\"hy\":\"\\u0554\\u0561\\u0572\\u0581\\u0580\\u0561\\u0577\\u0565\\u0576\",\"ru\":\"\\u041A\\u0430\\u0445\\u0446\\u0440\\u0430\\u0448\\u0435\\u043D\",\"en\":\"Kaghtsrashen\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Slug = "kaghtsrashen",
+                            SortOrder = 217
+                        },
+                        new
+                        {
+                            Id = new Guid("d888beef-abf2-534a-b8ff-4a5575883334"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0574\\u0561\\u057E\\u056B\\u0580\",\"ru\":\"\\u0410\\u0440\\u043C\\u0430\\u0432\\u0438\\u0440\",\"en\":\"Armavir\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000404"),
+                            Slug = "armavir",
+                            SortOrder = 218
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000202"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0537\\u057B\\u0574\\u056B\\u0561\\u056E\\u056B\\u0576\",\"ru\":\"\\u042D\\u0447\\u043C\\u0438\\u0430\\u0434\\u0437\\u0438\\u043D\",\"en\":\"Ejmiatsin\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000404"),
+                            Slug = "ejmiatsin",
+                            SortOrder = 219
+                        },
+                        new
+                        {
+                            Id = new Guid("671d4e99-e9e9-56b3-8ae2-52406d463860"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0544\\u0565\\u056E\\u0561\\u0574\\u0578\\u0580\",\"ru\":\"\\u041C\\u0435\\u0446\\u0430\\u043C\\u043E\\u0440\",\"en\":\"Metsamor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000404"),
+                            Slug = "metsamor",
+                            SortOrder = 220
+                        },
+                        new
+                        {
+                            Id = new Guid("b230d8de-befd-54b7-882a-03a6e7f91590"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0533\\u0561\\u057E\\u0561\\u057C\",\"ru\":\"\\u0413\\u0430\\u0432\\u0430\\u0440\",\"en\":\"Gavar\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000405"),
+                            Slug = "gavar",
+                            SortOrder = 221
+                        },
+                        new
+                        {
+                            Id = new Guid("5854d40c-bded-5bbb-9662-c78d39526851"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0543\\u0561\\u0574\\u0562\\u0561\\u0580\\u0561\\u056F\",\"ru\":\"\\u0427\\u0430\\u043C\\u0431\\u0430\\u0440\\u0430\\u043A\",\"en\":\"Chambarak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000405"),
+                            Slug = "chambarak",
+                            SortOrder = 222
+                        },
+                        new
+                        {
+                            Id = new Guid("e16520c2-b078-50b4-8e4a-14adc0ad4f09"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0544\\u0561\\u0580\\u057F\\u0578\\u0582\\u0576\\u056B\",\"ru\":\"\\u041C\\u0430\\u0440\\u0442\\u0443\\u043D\\u0438\",\"en\":\"Martuni\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000405"),
+                            Slug = "martuni",
+                            SortOrder = 223
+                        },
+                        new
+                        {
+                            Id = new Guid("b7226c93-0337-5104-967f-a4259d74cd94"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054D\\u0587\\u0561\\u0576\",\"ru\":\"\\u0421\\u0435\\u0432\\u0430\\u043D\",\"en\":\"Sevan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000405"),
+                            Slug = "sevan",
+                            SortOrder = 224
+                        },
+                        new
+                        {
+                            Id = new Guid("a5207ca4-01ba-5506-8bfe-58557c6d58a6"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0565\\u0576\\u056B\\u057D\",\"ru\":\"\\u0412\\u0430\\u0440\\u0434\\u0435\\u043D\\u0438\\u0441\",\"en\":\"Vardenis\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000405"),
+                            Slug = "vardenis",
+                            SortOrder = 225
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000203"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0562\\u0578\\u057E\\u0575\\u0561\\u0576\",\"ru\":\"\\u0410\\u0431\\u043E\\u0432\\u044F\\u043D\",\"en\":\"Abovyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "abovyan",
+                            SortOrder = 226
+                        },
+                        new
+                        {
+                            Id = new Guid("73a2ee6f-100d-50c3-8222-9c10c77ffa8a"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0532\\u0575\\u0578\\u0582\\u0580\\u0565\\u0572\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0411\\u044E\\u0440\\u0435\\u0433\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Byureghavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "byureghavan",
+                            SortOrder = 227
+                        },
+                        new
+                        {
+                            Id = new Guid("dc538040-4f87-5fa6-805a-749a07bb1c31"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0535\\u0572\\u057E\\u0561\\u0580\\u0564\",\"ru\":\"\\u0415\\u0433\\u0432\\u0430\\u0440\\u0434\",\"en\":\"Yeghvard\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "yeghvard",
+                            SortOrder = 228
+                        },
+                        new
+                        {
+                            Id = new Guid("cf4b0ec9-4559-543b-82f8-de38dc0fd41d"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u053E\\u0561\\u0572\\u056F\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u0426\\u0430\\u0445\\u043A\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Tsaghkadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "tsaghkadzor",
+                            SortOrder = 229
+                        },
+                        new
+                        {
+                            Id = new Guid("58aaa51a-a682-5689-bc69-9a98f10ccb17"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0540\\u0580\\u0561\\u0566\\u0564\\u0561\\u0576\",\"ru\":\"\\u0420\\u0430\\u0437\\u0434\\u0430\\u043D\",\"en\":\"Hrazdan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "hrazdan",
+                            SortOrder = 230
+                        },
+                        new
+                        {
+                            Id = new Guid("e8101a0a-c031-5be4-9d92-2071f12b149e"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0580 \\u0540\\u0561\\u0573\\u0576\",\"ru\":\"\\u041D\\u043E\\u0440 \\u0410\\u0447\\u0438\\u043D\",\"en\":\"Nor Hachn\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "nor-hachn",
+                            SortOrder = 231
+                        },
+                        new
+                        {
+                            Id = new Guid("c2580a23-f796-58b2-ba4a-a004e9dac29b"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0549\\u0561\\u0580\\u0565\\u0576\\u0581\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0427\\u0430\\u0440\\u0435\\u043D\\u0446\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Charentsavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Slug = "charentsavan",
+                            SortOrder = 232
+                        },
+                        new
+                        {
+                            Id = new Guid("f9c0face-ba78-5c57-8d32-46de0bf807db"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u056C\\u0561\\u057E\\u0565\\u0580\\u0564\\u056B\",\"ru\":\"\\u0410\\u043B\\u0430\\u0432\\u0435\\u0440\\u0434\\u0438\",\"en\":\"Alaverdi\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "alaverdi",
+                            SortOrder = 233
+                        },
+                        new
+                        {
+                            Id = new Guid("e6cd397f-57db-568a-ad50-85db428e3383"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u056D\\u0569\\u0561\\u056C\\u0561\",\"ru\":\"\\u0410\\u0445\\u0442\\u0430\\u043B\\u0430\",\"en\":\"Akhtala\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "akhtala",
+                            SortOrder = 234
+                        },
+                        new
+                        {
+                            Id = new Guid("2c18fbaa-9d14-5d51-bf31-63bf5f02d28a"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0539\\u0578\\u0582\\u0574\\u0561\\u0576\\u0575\\u0561\\u0576\",\"ru\":\"\\u0422\\u0443\\u043C\\u0430\\u043D\\u044F\\u043D\",\"en\":\"Tumanyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "tumanyan",
+                            SortOrder = 235
+                        },
+                        new
+                        {
+                            Id = new Guid("42070bf9-87b2-54c2-89c7-f673703dcdec"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0547\\u0561\\u0574\\u056C\\u0578\\u0582\\u0572\",\"ru\":\"\\u0428\\u0430\\u043C\\u043B\\u0443\\u0433\",\"en\":\"Shamlugh\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "shamlugh",
+                            SortOrder = 236
+                        },
+                        new
+                        {
+                            Id = new Guid("39b551ae-28f7-5ec1-978e-31b20e088bd5"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054D\\u057A\\u056B\\u057F\\u0561\\u056F\",\"ru\":\"\\u0421\\u043F\\u0438\\u0442\\u0430\\u043A\",\"en\":\"Spitak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "spitak",
+                            SortOrder = 237
+                        },
+                        new
+                        {
+                            Id = new Guid("119bbbe1-2485-539c-a443-13a11b495457"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054D\\u057F\\u0565\\u0583\\u0561\\u0576\\u0561\\u057E\\u0561\\u0576\",\"ru\":\"\\u0421\\u0442\\u0435\\u043F\\u0430\\u043D\\u0430\\u0432\\u0430\\u043D\",\"en\":\"Stepanavan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "stepanavan",
+                            SortOrder = 238
+                        },
+                        new
+                        {
+                            Id = new Guid("5286d114-5a60-5bda-80f6-cfaef43ad2ff"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0576\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u0412\\u0430\\u043D\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Vanadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "vanadzor",
+                            SortOrder = 239
+                        },
+                        new
+                        {
+                            Id = new Guid("98f65241-8404-59f8-9305-756e2778a95b"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054F\\u0561\\u0577\\u056B\\u0580\",\"ru\":\"\\u0422\\u0430\\u0448\\u0438\\u0440\",\"en\":\"Tashir\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Slug = "tashir",
+                            SortOrder = 240
+                        },
+                        new
+                        {
+                            Id = new Guid("5434bca5-2cf9-5a14-87fd-03712fb824bd"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0569\\u056B\\u056F\",\"ru\":\"\\u0410\\u0440\\u0442\\u0438\\u043A\",\"en\":\"Artik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000408"),
+                            Slug = "artik",
+                            SortOrder = 241
+                        },
+                        new
+                        {
+                            Id = new Guid("a46beeae-7e7d-5076-b310-580c938430b6"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0533\\u0575\\u0578\\u0582\\u0574\\u0580\\u056B\",\"ru\":\"\\u0413\\u044E\\u043C\\u0440\\u0438\",\"en\":\"Gyumri\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000408"),
+                            Slug = "gyumri",
+                            SortOrder = 242
+                        },
+                        new
+                        {
+                            Id = new Guid("b437a401-6270-5525-b256-90d3ced0792e"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0544\\u0561\\u0580\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041C\\u0430\\u0440\\u0430\\u043B\\u0438\\u043A\",\"en\":\"Maralik\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000408"),
+                            Slug = "maralik",
+                            SortOrder = 243
+                        },
+                        new
+                        {
+                            Id = new Guid("07cba34c-db44-57c0-a1d3-8319a83a57f5"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0563\\u0561\\u0580\\u0561\\u056F\",\"ru\":\"\\u0410\\u0433\\u0430\\u0440\\u0430\\u043A\",\"en\":\"Agarak\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "agarak",
+                            SortOrder = 244
+                        },
+                        new
+                        {
+                            Id = new Guid("43d84ec9-40bc-5072-bf7a-ba5fa2b86a54"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0533\\u0578\\u0580\\u056B\\u057D\",\"ru\":\"\\u0413\\u043E\\u0440\\u0438\\u0441\",\"en\":\"Goris\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "goris",
+                            SortOrder = 245
+                        },
+                        new
+                        {
+                            Id = new Guid("18140e93-b939-59ee-b338-e8d6a95ace1c"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0534\\u0561\\u057D\\u057F\\u0561\\u056F\\u0565\\u0580\\u057F\",\"ru\":\"\\u0414\\u0430\\u0441\\u0442\\u0430\\u043A\\u0435\\u0440\\u0442\",\"en\":\"Dastakert\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "dastakert",
+                            SortOrder = 246
+                        },
+                        new
+                        {
+                            Id = new Guid("1b42820f-d057-53fd-b2b1-746cd6cd4501"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u053F\\u0561\\u057A\\u0561\\u0576\",\"ru\":\"\\u041A\\u0430\\u043F\\u0430\\u043D\",\"en\":\"Kapan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "kapan",
+                            SortOrder = 247
+                        },
+                        new
+                        {
+                            Id = new Guid("dc202fef-6d9f-57b9-b979-c7a5e258c552"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0544\\u0565\\u0572\\u0580\\u056B\",\"ru\":\"\\u041C\\u0435\\u0433\\u0440\\u0438\",\"en\":\"Meghri\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "meghri",
+                            SortOrder = 248
+                        },
+                        new
+                        {
+                            Id = new Guid("32a8a66f-48ee-51d3-9155-b8642edd77e6"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054D\\u056B\\u057D\\u056B\\u0561\\u0576\",\"ru\":\"\\u0421\\u0438\\u0441\\u0438\\u0430\\u043D\",\"en\":\"Sisian\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "sisian",
+                            SortOrder = 249
+                        },
+                        new
+                        {
+                            Id = new Guid("6900aa5a-d35f-55e1-a34d-35c709714043"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0554\\u0561\\u057B\\u0561\\u0580\\u0561\\u0576\",\"ru\":\"\\u041A\\u0430\\u0434\\u0436\\u0430\\u0440\\u0430\\u043D\",\"en\":\"Kajaran\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Slug = "kajaran",
+                            SortOrder = 250
+                        },
+                        new
+                        {
+                            Id = new Guid("07708016-2e87-5696-8a9e-2527698974d0"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0531\\u0575\\u0580\\u0578\\u0582\\u0574\",\"ru\":\"\\u0410\\u0439\\u0440\\u0443\\u043C\",\"en\":\"Ayrum\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000410"),
+                            Slug = "ayrum",
+                            SortOrder = 251
+                        },
+                        new
+                        {
+                            Id = new Guid("900d5fc3-f23c-51a3-83c3-20713de7c24d"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0532\\u0565\\u0580\\u0564\",\"ru\":\"\\u0411\\u0435\\u0440\\u0434\",\"en\":\"Berd\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000410"),
+                            Slug = "berd",
+                            SortOrder = 252
+                        },
+                        new
+                        {
+                            Id = new Guid("b5637593-6f15-5a45-809a-3adaa8d9eb3b"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0534\\u056B\\u056C\\u056B\\u057B\\u0561\\u0576\",\"ru\":\"\\u0414\\u0438\\u043B\\u0438\\u0436\\u0430\\u043D\",\"en\":\"Dilijan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000410"),
+                            Slug = "dilijan",
+                            SortOrder = 253
+                        },
+                        new
+                        {
+                            Id = new Guid("13039b50-9eac-5737-a9e6-3e36a43db088"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u053B\\u057B\\u0587\\u0561\\u0576\",\"ru\":\"\\u0418\\u0434\\u0436\\u0435\\u0432\\u0430\\u043D\",\"en\":\"Ijevan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000410"),
+                            Slug = "ijevan",
+                            SortOrder = 254
+                        },
+                        new
+                        {
+                            Id = new Guid("0e63faa9-a808-5d84-903c-28675f0d034d"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0546\\u0578\\u0575\\u0565\\u0574\\u0562\\u0565\\u0580\\u0575\\u0561\\u0576\",\"ru\":\"\\u041D\\u043E\\u0435\\u043C\\u0431\\u0435\\u0440\\u044F\\u043D\",\"en\":\"Noyemberyan\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000410"),
+                            Slug = "noyemberyan",
+                            SortOrder = 255
+                        },
+                        new
+                        {
+                            Id = new Guid("433e9a13-d92f-5d17-a729-ac5addb0675a"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u0535\\u0572\\u0565\\u0563\\u0576\\u0561\\u0571\\u0578\\u0580\",\"ru\":\"\\u0415\\u0445\\u0435\\u0433\\u043D\\u0430\\u0434\\u0437\\u043E\\u0440\",\"en\":\"Yeghegnadzor\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000411"),
+                            Slug = "yeghegnadzor",
+                            SortOrder = 256
+                        },
+                        new
+                        {
+                            Id = new Guid("a90b8fa7-1f22-5352-b331-da9469603242"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054B\\u0565\\u0580\\u0574\\u0578\\u0582\\u056F\",\"ru\":\"\\u0414\\u0436\\u0435\\u0440\\u043C\\u0443\\u043A\",\"en\":\"Jermuk\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000411"),
+                            Slug = "jermuk",
+                            SortOrder = 257
+                        },
+                        new
+                        {
+                            Id = new Guid("3ee46a93-cfde-5bf3-a599-9e74dcdacab2"),
+                            IsActive = true,
+                            Kind = "City",
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0575\\u0584\",\"ru\":\"\\u0412\\u0430\\u0439\\u043A\",\"en\":\"Vayk\"}",
+                            RegionId = new Guid("019a0000-0000-7000-8000-000000000411"),
+                            Slug = "vayk",
+                            SortOrder = 258
                         });
                 });
 
@@ -2049,6 +4602,116 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             Name = "{\"hy\":\"\\u0547\\u0565\\u0576\\u0563\\u0561\\u057E\\u056B\\u0569\",\"ru\":\"\\u0428\\u0435\\u043D\\u0433\\u0430\\u0432\\u0438\\u0442\",\"en\":\"Shengavit\"}",
                             Slug = "shengavit",
                             SortOrder = 12
+                        });
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Catalog.Region", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("slug");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id")
+                        .HasName("pk_regions");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_regions_slug");
+
+                    b.ToTable("regions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000401"),
+                            Name = "{\"hy\":\"\\u0535\\u0580\\u0587\\u0561\\u0576\",\"ru\":\"\\u0415\\u0440\\u0435\\u0432\\u0430\\u043D\",\"en\":\"Yerevan\"}",
+                            Slug = "yerevan",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000402"),
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0563\\u0561\\u056E\\u0578\\u057F\\u0576\",\"ru\":\"\\u0410\\u0440\\u0430\\u0433\\u0430\\u0446\\u043E\\u0442\\u043D\",\"en\":\"Aragatsotn\"}",
+                            Slug = "aragatsotn",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000403"),
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0561\\u0580\\u0561\\u057F\",\"ru\":\"\\u0410\\u0440\\u0430\\u0440\\u0430\\u0442\",\"en\":\"Ararat\"}",
+                            Slug = "ararat",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000404"),
+                            Name = "{\"hy\":\"\\u0531\\u0580\\u0574\\u0561\\u057E\\u056B\\u0580\",\"ru\":\"\\u0410\\u0440\\u043C\\u0430\\u0432\\u0438\\u0440\",\"en\":\"Armavir\"}",
+                            Slug = "armavir",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000405"),
+                            Name = "{\"hy\":\"\\u0533\\u0565\\u0572\\u0561\\u0580\\u0584\\u0578\\u0582\\u0576\\u056B\\u0584\",\"ru\":\"\\u0413\\u0435\\u0433\\u0430\\u0440\\u043A\\u0443\\u043D\\u0438\\u043A\",\"en\":\"Gegharkunik\"}",
+                            Slug = "gegharkunik",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000406"),
+                            Name = "{\"hy\":\"\\u053F\\u0578\\u057F\\u0561\\u0575\\u0584\",\"ru\":\"\\u041A\\u043E\\u0442\\u0430\\u0439\\u043A\",\"en\":\"Kotayk\"}",
+                            Slug = "kotayk",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000407"),
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u057C\\u056B\",\"ru\":\"\\u041B\\u043E\\u0440\\u0438\",\"en\":\"Lori\"}",
+                            Slug = "lori",
+                            SortOrder = 7
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000408"),
+                            Name = "{\"hy\":\"\\u0547\\u056B\\u0580\\u0561\\u056F\",\"ru\":\"\\u0428\\u0438\\u0440\\u0430\\u043A\",\"en\":\"Shirak\"}",
+                            Slug = "shirak",
+                            SortOrder = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000409"),
+                            Name = "{\"hy\":\"\\u054D\\u0575\\u0578\\u0582\\u0576\\u056B\\u0584\",\"ru\":\"\\u0421\\u044E\\u043D\\u0438\\u043A\",\"en\":\"Syunik\"}",
+                            Slug = "syunik",
+                            SortOrder = 9
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000410"),
+                            Name = "{\"hy\":\"\\u054F\\u0561\\u057E\\u0578\\u0582\\u0577\",\"ru\":\"\\u0422\\u0430\\u0432\\u0443\\u0448\",\"en\":\"Tavush\"}",
+                            Slug = "tavush",
+                            SortOrder = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("019a0000-0000-7000-8000-000000000411"),
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0575\\u0578\\u0581 \\u0571\\u0578\\u0580\",\"ru\":\"\\u0412\\u0430\\u0439\\u043E\\u0446 \\u0414\\u0437\\u043E\\u0440\",\"en\":\"Vayots Dzor\"}",
+                            Slug = "vayots-dzor",
+                            SortOrder = 11
                         });
                 });
 
@@ -3491,7 +6154,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("CityId")
+                    b.Property<Guid?>("CityId")
                         .HasColumnType("uuid")
                         .HasColumnName("city_id");
 
@@ -3503,22 +6166,32 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("partner_profile_id");
 
+                    b.Property<Guid?>("RegionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("region_id");
+
                     b.HasKey("Id")
                         .HasName("pk_partner_areas");
 
                     b.HasIndex("DistrictId")
                         .HasDatabaseName("ix_partner_areas_district_id");
 
+                    b.HasIndex("RegionId")
+                        .HasDatabaseName("ix_partner_areas_region_id");
+
                     b.HasIndex("CityId", "DistrictId")
                         .HasDatabaseName("ix_partner_areas_city_id_district_id");
 
-                    b.HasIndex("PartnerProfileId", "CityId", "DistrictId")
+                    b.HasIndex("PartnerProfileId", "RegionId", "CityId", "DistrictId")
                         .IsUnique()
-                        .HasDatabaseName("ix_partner_areas_partner_profile_id_city_id_district_id");
+                        .HasDatabaseName("ix_partner_areas_partner_profile_id_region_id_city_id_district~");
 
-                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("PartnerProfileId", "CityId", "DistrictId"), false);
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("PartnerProfileId", "RegionId", "CityId", "DistrictId"), false);
 
-                    b.ToTable("partner_areas", (string)null);
+                    b.ToTable("partner_areas", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_partner_areas_region_or_city", "(region_id IS NOT NULL AND city_id IS NULL AND district_id IS NULL) OR (region_id IS NULL AND city_id IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("HomeServices.Domain.Partners.PartnerMedia", b =>
@@ -4364,6 +7037,15 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_categories_categories_parent_id");
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Catalog.City", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Catalog.Region", null)
+                        .WithMany()
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_cities_regions_region_id");
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Catalog.District", b =>
                 {
                     b.HasOne("HomeServices.Domain.Catalog.City", null)
@@ -4639,7 +7321,6 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
                         .HasConstraintName("fk_partner_areas_cities_city_id");
 
                     b.HasOne("HomeServices.Domain.Catalog.District", null)
@@ -4654,6 +7335,12 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_partner_areas_partner_profiles_partner_profile_id");
+
+                    b.HasOne("HomeServices.Domain.Catalog.Region", null)
+                        .WithMany()
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_partner_areas_regions_region_id");
                 });
 
             modelBuilder.Entity("HomeServices.Domain.Partners.PartnerMedia", b =>

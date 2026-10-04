@@ -101,6 +101,16 @@ public class PublicPartnersTests
     }
 
     [Fact]
+    public async Task Partners_serving_a_whole_region_match_its_towns_and_show_the_region()
+    {
+        var ararat = Approved("All of Ararat", p => p.SetAreas([AreaChoice.WholeRegion(_data.Ararat.Id)]));
+
+        (await SearchAsync(new SearchPartners(City: "masis"))).Items.ShouldHaveSingleItem().Slug.ShouldBe(ararat.Slug);
+        (await SearchAsync(new SearchPartners(City: "yerevan"))).Items.ShouldBeEmpty();
+        (await SearchAsync(new SearchPartners())).Items.Single(i => i.Slug == ararat.Slug).Cities.ShouldBe(new[] { "Արարատ" });
+    }
+
+    [Fact]
     public async Task A_district_partner_does_not_match_another_district()
     {
         var arabkir = _data.Yerevan.AddDistrict("arabkir", PartnerTestData.Text("Արաբկիր"), 3);

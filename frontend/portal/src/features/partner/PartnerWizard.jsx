@@ -25,7 +25,7 @@ const SAVED_STEPS = ['type', 'services', 'areas', 'about']
  * work examples attach as they upload; the last step sends the profile for review. The step is in the
  * address (?step=areas), so a refresh or the back button keeps your place. Mount it with a `key` per profile.
  */
-export default function PartnerWizard({ profile, categories, cities, onDone }) {
+export default function PartnerWizard({ profile, categories, cities, regions = [], onDone }) {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
   const [form, setForm] = useState(() => fromProfile(profile))
@@ -105,10 +105,10 @@ export default function PartnerWizard({ profile, categories, cities, onDone }) {
         <Card title={t(`partner.steps.${step}`)}>
           {step === 'type' && <TypeStep form={form} set={set} errorFor={errorFor} typeLocked={approved} />}
           {step === 'services' && <ServicesStep form={form} set={set} categories={categories} errorFor={errorFor} />}
-          {step === 'areas' && <AreasStep form={form} set={set} cities={cities} errorFor={errorFor} />}
+          {step === 'areas' && <AreasStep form={form} set={set} cities={cities} regions={regions} errorFor={errorFor} />}
           {step === 'about' && <AboutStep form={form} set={set} errorFor={errorFor} />}
           {step === 'work' && <MediaStep profile={profile} showErrors={showErrors} />}
-          {step === 'review' && <ReviewStep profile={profile} categories={categories} cities={cities} goTo={goTo} />}
+          {step === 'review' && <ReviewStep profile={profile} categories={categories} cities={cities} regions={regions} goTo={goTo} />}
         </Card>
 
         {generalError && <Alert tone="danger" title={generalError} />}

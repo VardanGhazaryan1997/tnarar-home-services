@@ -8,8 +8,8 @@ namespace HomeServices.Application.Requests;
 
 /// <summary>
 /// Which partners can receive a request. The distribution rule: approved partners (owner not blocked) who
-/// offer the request's category or its parent category, and work in its city — the whole city, or the
-/// request's district. The customer's own profile never receives it.
+/// offer the request's category or its parent category, and work where it is — its whole region, the whole
+/// town or village, or the request's district. The customer's own profile never receives it.
 /// </summary>
 internal static class RequestMatching
 {
@@ -33,11 +33,17 @@ internal static class RequestMatching
         var customerId = request.CustomerId;
         var cityId = request.CityId;
         var districtId = request.DistrictId;
+        var regionId = await db.Cities.AsNoTracking()
+            .Where(c => c.Id == cityId)
+            .Select(c => c.RegionId)
+            .SingleOrDefaultAsync(cancellationToken);
 
         var matches = await Receiving(db)
             .Where(p => p.UserId != customerId)
             .Where(p => p.Services.Any(s => categoryIds.Contains(s.CategoryId)))
-            .Where(p => p.Areas.Any(a => a.CityId == cityId && (districtId == null || a.DistrictId == null || a.DistrictId == districtId)))
+            .Where(p => p.Areas.Any(a =>
+                (regionId != null && a.RegionId == regionId)
+                || (a.CityId == cityId && (districtId == null || a.DistrictId == null || a.DistrictId == districtId))))
             .Select(p => p.Id)
             .ToListAsync(cancellationToken);
 

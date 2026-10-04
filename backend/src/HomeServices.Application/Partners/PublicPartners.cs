@@ -16,7 +16,7 @@ namespace HomeServices.Application.Partners;
 
 /// <summary>
 /// Approved partners for visitors. Filters are slugs: <see cref="Category"/> includes its subcategories;
-/// <see cref="District"/> needs <see cref="City"/>, and partners serving the whole city match any district.
+/// <see cref="District"/> needs <see cref="City"/>; partners serving the whole city, or its whole region, match any district.
 /// An unknown or hidden category or place gives an empty list. Newest approvals first.
 /// </summary>
 public sealed record SearchPartners(
@@ -40,7 +40,14 @@ public sealed record PublicMediaDto(string Kind, string? Caption, string Url, st
 
 public sealed record PublicCategoryDto(string Slug, string Name);
 
-public sealed record PublicAreaDto(string CitySlug, string CityName, string? DistrictSlug, string? DistrictName);
+/// <summary>A place a partner works: a whole region (<see cref="RegionSlug"/> only), or a town or village with an optional district.</summary>
+public sealed record PublicAreaDto(
+    string? CitySlug,
+    string? CityName,
+    string? DistrictSlug,
+    string? DistrictName,
+    string? RegionSlug = null,
+    string? RegionName = null);
 
 /// <summary>A partner in search results. <see cref="Cover"/> is the first work example. <see cref="Id"/> is what a direct request is sent to.</summary>
 public sealed record PublicPartnerCardDto(
@@ -126,8 +133,11 @@ public sealed class SearchPartnersHandler(IAppDbContext db, ICurrentLanguage lan
                 return empty;
             }
 
+            var cityId = city.Id;
+            var regionId = city.RegionId;
             partners = partners.Where(p => p.Areas.Any(a =>
-                a.CityId == city.Id && (districtId == null || a.DistrictId == null || a.DistrictId == districtId)));
+                (regionId != null && a.RegionId == regionId)
+                || (a.CityId == cityId && (districtId == null || a.DistrictId == null || a.DistrictId == districtId))));
         }
 
         if (query.Type is { } type)
@@ -169,7 +179,7 @@ public sealed class SearchPartnersHandler(IAppDbContext db, ICurrentLanguage lan
                 await lookup.AvatarAsync(files, partner, cancellationToken),
                 workExamples.Count == 0 ? null : await PublicPartnerLookup.MediaAsync(files, workExamples[0].File, workExamples[0].Media, cancellationToken),
                 lookup.Categories(partner),
-                lookup.Areas(partner).Select(a => a.CityName).Distinct().ToList(),
+                lookup.Areas(partner).Select(a => (a.CityName ?? a.RegionName)!).Distinct().ToList(),
                 workExamples.Count,
                 rating.Rating,
                 rating.ReviewCount));
@@ -248,13 +258,20 @@ internal sealed class PublicPartnerLookup
 {
     private readonly Dictionary<Guid, Category> _categories;
     private readonly Dictionary<Guid, City> _cities;
+    private readonly Dictionary<Guid, Region> _regions;
     private readonly Dictionary<Guid, StoredFile> _files;
     private readonly ICurrentLanguage _language;
 
-    private PublicPartnerLookup(Dictionary<Guid, Category> categories, Dictionary<Guid, City> cities, Dictionary<Guid, StoredFile> files, ICurrentLanguage language)
+    private PublicPartnerLookup(
+        Dictionary<Guid, Category> categories,
+        Dictionary<Guid, City> cities,
+        Dictionary<Guid, Region> regions,
+        Dictionary<Guid, StoredFile> files,
+        ICurrentLanguage language)
     {
         _categories = categories;
         _cities = cities;
+        _regions = regions;
         _files = files;
         _language = language;
     }
@@ -262,7 +279,8 @@ internal sealed class PublicPartnerLookup
     public static async Task<PublicPartnerLookup> LoadAsync(IAppDbContext db, ICurrentLanguage language, IReadOnlyCollection<PartnerProfile> partners, CancellationToken cancellationToken)
     {
         var categoryIds = partners.SelectMany(p => p.Services.Select(s => s.CategoryId)).Distinct().ToList();
-        var cityIds = partners.SelectMany(p => p.Areas.Select(a => a.CityId)).Distinct().ToList();
+        var cityIds = partners.SelectMany(p => p.Areas.Where(a => a.CityId != null).Select(a => a.CityId!.Value)).Distinct().ToList();
+        var regionIds = partners.SelectMany(p => p.Areas.Where(a => a.RegionId != null).Select(a => a.RegionId!.Value)).Distinct().ToList();
 
         // Only what visitors may see: the avatar and work examples, never documents.
         var fileIds = partners
@@ -278,10 +296,13 @@ internal sealed class PublicPartnerLookup
             .Include(c => c.Districts)
             .Where(c => cityIds.Contains(c.Id) && c.IsActive)
             .ToDictionaryAsync(c => c.Id, cancellationToken);
+        var regions = regionIds.Count == 0
+            ? new Dictionary<Guid, Region>()
+            : await db.Regions.AsNoTracking().Where(r => regionIds.Contains(r.Id)).ToDictionaryAsync(r => r.Id, cancellationToken);
         var files = await db.Files.AsNoTracking()
             .Where(f => fileIds.Contains(f.Id) && f.Status == FileStatus.Ready)
             .ToDictionaryAsync(f => f.Id, cancellationToken);
-        return new PublicPartnerLookup(categories, cities, files, language);
+        return new PublicPartnerLookup(categories, cities, regions, files, language);
     }
 
     public static async Task<PublicMediaDto> MediaAsync(FileDtoFactory files, StoredFile file, PartnerMedia? media, CancellationToken cancellationToken)
@@ -311,16 +332,27 @@ internal sealed class PublicPartnerLookup
             .Select(c => new PublicCategoryDto(c.Slug, Localize(c.Name)))
             .ToList();
 
+    /// <summary>Whole regions first, then towns and villages with their districts.</summary>
     public IReadOnlyList<PublicAreaDto> Areas(PartnerProfile partner) =>
+    [
+        .. partner.Areas
+            .Select(a => a.RegionId is { } regionId ? _regions.GetValueOrDefault(regionId) : null)
+            .OfType<Region>()
+            .OrderBy(r => r.SortOrder)
+            .Select(r => new PublicAreaDto(null, null, null, null, r.Slug, Localize(r.Name))),
+        .. CityAreas(partner),
+    ];
+
+    private IEnumerable<PublicAreaDto> CityAreas(PartnerProfile partner) =>
         partner.Areas
-            .Select(a => (Area: a, City: _cities.GetValueOrDefault(a.CityId)))
+            .Where(a => a.CityId is not null)
+            .Select(a => (Area: a, City: _cities.GetValueOrDefault(a.CityId!.Value)))
             .Where(x => x.City is not null)
             .Select(x => (x.Area, City: x.City!, District: x.City!.Districts.FirstOrDefault(d => d.Id == x.Area.DistrictId && d.IsActive)))
             .Where(x => x.Area.DistrictId is null || x.District is not null)
             .OrderBy(x => x.City.SortOrder)
             .ThenBy(x => x.District?.SortOrder ?? -1)
-            .Select(x => new PublicAreaDto(x.City.Slug, Localize(x.City.Name), x.District?.Slug, x.District is null ? null : Localize(x.District.Name)))
-            .ToList();
+            .Select(x => new PublicAreaDto(x.City.Slug, Localize(x.City.Name), x.District?.Slug, x.District is null ? null : Localize(x.District.Name)));
 
     private string Localize(LocalizedText text) => text.Get(_language.Code, _language.DefaultCode);
 }

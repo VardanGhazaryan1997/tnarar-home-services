@@ -35,6 +35,8 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
     public DbSet<Category> Categories => Set<Category>();
 
+    public DbSet<Region> Regions => Set<Region>();
+
     public DbSet<City> Cities => Set<City>();
 
     public DbSet<District> Districts => Set<District>();
@@ -97,7 +99,7 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var type in new[] { typeof(Language), typeof(Category), typeof(City), typeof(District), typeof(User), typeof(OtpCode), typeof(RefreshToken), typeof(StaffUser), typeof(StaffRefreshToken), typeof(Role), typeof(AuditLogEntry), typeof(StoredFile), typeof(PartnerProfile), typeof(PartnerArea), typeof(PartnerMedia), typeof(PartnerStatusChange), typeof(UiTranslation), typeof(StaticPage), typeof(FaqItem), typeof(ServiceRequest), typeof(RequestRecipient), typeof(RequestMedia), typeof(Offer), typeof(OfferItem), typeof(OfferPaymentStage), typeof(Order), typeof(OrderStage), typeof(OrderStatusChange), typeof(OrderChangeRequest), typeof(Conversation), typeof(Message), typeof(MessageAttachment), typeof(Payment), typeof(Review), typeof(Notification), typeof(CommissionRate), typeof(CommissionObligation), typeof(CommissionStatement), typeof(Settlement) })
+        foreach (var type in new[] { typeof(Language), typeof(Category), typeof(Region), typeof(City), typeof(District), typeof(User), typeof(OtpCode), typeof(RefreshToken), typeof(StaffUser), typeof(StaffRefreshToken), typeof(Role), typeof(AuditLogEntry), typeof(StoredFile), typeof(PartnerProfile), typeof(PartnerArea), typeof(PartnerMedia), typeof(PartnerStatusChange), typeof(UiTranslation), typeof(StaticPage), typeof(FaqItem), typeof(ServiceRequest), typeof(RequestRecipient), typeof(RequestMedia), typeof(Offer), typeof(OfferItem), typeof(OfferPaymentStage), typeof(Order), typeof(OrderStage), typeof(OrderStatusChange), typeof(OrderChangeRequest), typeof(Conversation), typeof(Message), typeof(MessageAttachment), typeof(Payment), typeof(Review), typeof(Notification), typeof(CommissionRate), typeof(CommissionObligation), typeof(CommissionStatement), typeof(Settlement) })
         {
             modelBuilder.Entity(type).Ignore(nameof(Entity.DomainEvents));
         }

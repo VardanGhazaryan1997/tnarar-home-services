@@ -20,6 +20,34 @@ public class CityTests
     }
 
     [Fact]
+    public void A_place_is_a_town_by_default_and_can_be_put_in_a_region_as_a_village()
+    {
+        var region = Guid.CreateVersion7();
+        var town = City.Create("masis", Text("Մասիս"), 5);
+        var village = City.Create("dalar", Text("Դալար"), 6, region, SettlementKind.Village);
+
+        town.Kind.ShouldBe(SettlementKind.City);
+        town.RegionId.ShouldBeNull();
+        village.Kind.ShouldBe(SettlementKind.Village);
+        village.RegionId.ShouldBe(region);
+
+        town.PlaceIn(region, SettlementKind.City);
+        town.RegionId.ShouldBe(region);
+        Should.Throw<DomainException>(() => town.PlaceIn(region, (SettlementKind)7)).Code.ShouldBe("city.kind_invalid");
+    }
+
+    [Fact]
+    public void A_region_needs_a_valid_slug_and_a_name()
+    {
+        var region = Region.Create(" Vayots-Dzor ", Text("Վայոց ձոր"), 11);
+
+        region.Slug.ShouldBe("vayots-dzor");
+        region.SortOrder.ShouldBe(11);
+        Should.Throw<DomainException>(() => Region.Create("vayots dzor", Text("x"), 1)).Code.ShouldBe("region.slug_invalid");
+        Should.Throw<DomainException>(() => Region.Create("lori", LocalizedText.Empty, 1)).Code.ShouldBe("region.name_required");
+    }
+
+    [Fact]
     public void Slug_must_be_valid_and_name_must_not_be_empty()
     {
         Should.Throw<DomainException>(() => City.Create("new york", Text("x"), 1)).Code.ShouldBe("city.slug_invalid");

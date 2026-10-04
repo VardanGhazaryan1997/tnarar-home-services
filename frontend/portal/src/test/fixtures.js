@@ -5,9 +5,15 @@ export const CATEGORIES = [
   { id: 'cat-heating', slug: 'heating', name: 'Heating', icon: null, children: [{ id: 'cat-boilers', slug: 'boilers', name: 'Boilers', icon: null, children: [] }] },
 ]
 
+export const REGIONS = [
+  { id: 'region-yerevan', slug: 'yerevan', name: 'Yerevan' },
+  { id: 'region-ararat', slug: 'ararat', name: 'Ararat' },
+]
+
 export const CITIES = [
-  { id: 'city-yerevan', slug: 'yerevan', name: 'Yerevan', districts: [{ id: 'dist-kentron', slug: 'kentron', name: 'Kentron' }] },
-  { id: 'city-masis', slug: 'masis', name: 'Masis', districts: [] },
+  { id: 'city-yerevan', slug: 'yerevan', name: 'Yerevan', regionId: 'region-yerevan', kind: 'City', districts: [{ id: 'dist-kentron', slug: 'kentron', name: 'Kentron' }] },
+  { id: 'city-masis', slug: 'masis', name: 'Masis', regionId: 'region-ararat', kind: 'City', districts: [] },
+  { id: 'city-dalar', slug: 'dalar', name: 'Dalar', regionId: 'region-ararat', kind: 'Village', districts: [] },
 ]
 
 export const PLACE = { categoryId: 'cat-plumbing', categoryName: 'Plumbing', cityId: 'city-yerevan', cityName: 'Yerevan', districtId: 'dist-kentron', districtName: 'Kentron' }

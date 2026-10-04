@@ -28,7 +28,8 @@ public sealed class PartnerTestData
         Kentron = Yerevan.AddDistrict("kentron", Text("Կենտրոն"), 1);
         ClosedDistrict = Yerevan.AddDistrict("closed", Text("Փակ"), 2);
         Yerevan.SetDistrictActive(ClosedDistrict.Id, false);
-        Masis = City.Create("masis", Text("Մասիս"), 2);
+        Ararat = Region.Create("ararat", Text("Արարատ"), 3);
+        Masis = City.Create("masis", Text("Մասիս"), 2, Ararat.Id);
         ClosedCity = City.Create("closed-city", Text("Փակ"), 3);
         ClosedCity.Deactivate();
 
@@ -36,6 +37,7 @@ public sealed class PartnerTestData
         OtherUser = Domain.Identity.User.Register(PhoneNumber.Parse("+37477654321"));
 
         Db.Categories.AddRange(Plumbing, Heating, Hidden, Boilers);
+        Db.Regions.Add(Ararat);
         Db.Cities.AddRange(Yerevan, Masis, ClosedCity);
         Db.Users.AddRange(User, OtherUser);
         Db.SaveChanges();
@@ -57,6 +59,9 @@ public sealed class PartnerTestData
     public Category Boilers { get; }
 
     public City Yerevan { get; }
+
+    /// <summary>The region <see cref="Masis"/> is in.</summary>
+    public Region Ararat { get; }
 
     public District Kentron { get; }
 

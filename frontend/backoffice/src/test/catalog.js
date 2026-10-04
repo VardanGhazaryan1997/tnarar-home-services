@@ -33,6 +33,11 @@ export const CATEGORIES = [
   },
 ]
 
+export const REGIONS = [
+  { id: 'region-yerevan', slug: 'yerevan', name: { hy: 'Երևան', en: 'Yerevan' }, sortOrder: 1 },
+  { id: 'region-ararat', slug: 'ararat', name: { hy: 'Արարատ', en: 'Ararat' }, sortOrder: 2 },
+]
+
 export const CITIES = [
   {
     id: 'city-yerevan',
@@ -40,9 +45,11 @@ export const CITIES = [
     name: { hy: 'Երևան', en: 'Yerevan' },
     sortOrder: 1,
     isActive: true,
+    regionId: 'region-yerevan',
+    kind: 'City',
     districts: [
       { id: 'district-kentron', cityId: 'city-yerevan', slug: 'kentron', name: { hy: 'Կենտրոն', en: 'Kentron' }, sortOrder: 1, isActive: true },
     ],
   },
-  { id: 'city-masis', slug: 'masis', name: { hy: 'Մասիս' }, sortOrder: 2, isActive: false, districts: [] },
+  { id: 'city-masis', slug: 'masis', name: { hy: 'Մասիս' }, sortOrder: 2, isActive: false, regionId: 'region-ararat', kind: 'City', districts: [] },
 ]

@@ -13,6 +13,7 @@ public class PartnerProfileTests
     private static readonly Guid Kentron = Guid.CreateVersion7();
     private static readonly Guid Arabkir = Guid.CreateVersion7();
     private static readonly Guid Masis = Guid.CreateVersion7();
+    private static readonly Guid Ararat = Guid.CreateVersion7();
     private static readonly string LongAbout = new('a', PartnerProfile.AboutMinLengthToSubmit);
 
     private static PartnerProfile Draft() => PartnerProfile.Create(UserId, PartnerType.Specialist, "Aram Plumbing");
@@ -130,7 +131,7 @@ public class PartnerProfileTests
 
         profile.SetAreas([(Yerevan, Kentron), (Yerevan, null), (Masis, null), (Masis, null)]);
 
-        profile.Areas.Select(a => (a.CityId, a.DistrictId)).ShouldBe(new (Guid, Guid?)[] { (Yerevan, null), (Masis, null) }, ignoreOrder: true);
+        profile.Areas.Select(a => (a.CityId, a.DistrictId)).ShouldBe(new (Guid?, Guid?)[] { (Yerevan, null), (Masis, null) }, ignoreOrder: true);
         profile.Areas.ShouldAllBe(a => a.PartnerProfileId == profile.Id);
     }
 
@@ -143,8 +144,31 @@ public class PartnerProfileTests
 
         profile.SetAreas([(Yerevan, Kentron), (Masis, null)]);
 
-        profile.Areas.Select(a => (a.CityId, a.DistrictId)).ShouldBe(new (Guid, Guid?)[] { (Yerevan, Kentron), (Masis, null) }, ignoreOrder: true);
+        profile.Areas.Select(a => (a.CityId, a.DistrictId)).ShouldBe(new (Guid?, Guid?)[] { (Yerevan, Kentron), (Masis, null) }, ignoreOrder: true);
         profile.Areas.ShouldContain(kentron);
+    }
+
+    [Fact]
+    public void A_partner_can_serve_whole_regions_next_to_towns_and_districts()
+    {
+        var profile = Draft();
+
+        profile.SetAreas([AreaChoice.WholeRegion(Ararat), AreaChoice.WholeRegion(Ararat), AreaChoice.District(Yerevan, Kentron), AreaChoice.WholeCity(Masis)]);
+
+        profile.Areas.Select(a => (a.RegionId, a.CityId, a.DistrictId)).ShouldBe(
+            new (Guid?, Guid?, Guid?)[] { (Ararat, null, null), (null, Yerevan, Kentron), (null, Masis, null) },
+            ignoreOrder: true);
+    }
+
+    [Fact]
+    public void An_area_is_a_region_or_a_city_never_both_or_neither()
+    {
+        var profile = Draft();
+
+        foreach (var invalid in new[] { new AreaChoice(Ararat, Masis, null), new AreaChoice(Ararat, null, Kentron), new AreaChoice(null, null, null), new AreaChoice(null, null, Kentron) })
+        {
+            Should.Throw<DomainException>(() => profile.SetAreas([invalid])).Code.ShouldBe("partner.area_invalid");
+        }
     }
 
     [Fact]

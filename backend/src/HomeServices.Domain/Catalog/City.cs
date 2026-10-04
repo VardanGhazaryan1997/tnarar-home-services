@@ -3,7 +3,9 @@ using HomeServices.Domain.Localization;
 
 namespace HomeServices.Domain.Catalog;
 
-/// <summary>A city the platform serves, with optional districts (Yerevan has 12).</summary>
+/// <summary>
+/// A town or village the platform serves, in a <see cref="Region"/>, with optional districts (Yerevan has 12).
+/// </summary>
 public sealed class City : Entity, IAudited
 {
     private readonly List<District> _districts = [];
@@ -20,18 +22,34 @@ public sealed class City : Entity, IAudited
 
     public bool IsActive { get; private set; }
 
+    /// <summary>The region it is in; null for places staff added without one.</summary>
+    public Guid? RegionId { get; private set; }
+
+    public SettlementKind Kind { get; private set; }
+
     public IReadOnlyCollection<District> Districts => _districts.AsReadOnly();
 
-    public static City Create(string slug, LocalizedText name, int sortOrder)
+    public static City Create(string slug, LocalizedText name, int sortOrder, Guid? regionId = null, SettlementKind kind = SettlementKind.City)
     {
         EnsureNamed(name);
+        EnsureKind(kind);
         return new City
         {
             Slug = Common.Slug.Normalize(slug, "city.slug_invalid"),
             Name = name,
             SortOrder = sortOrder,
             IsActive = true,
+            RegionId = regionId,
+            Kind = kind,
         };
+    }
+
+    /// <summary>Sets the region (null for none) and whether it is a town or a village. The caller checks the region exists.</summary>
+    public void PlaceIn(Guid? regionId, SettlementKind kind)
+    {
+        EnsureKind(kind);
+        RegionId = regionId;
+        Kind = kind;
     }
 
     /// <summary>Changes slug, name and position. The caller checks that no other city uses the slug.</summary>
@@ -82,6 +100,14 @@ public sealed class City : Entity, IAudited
         if (_districts.Exists(d => d.Slug == slug && d.Id != exceptId))
         {
             throw new DomainException("district.slug_taken", $"'{slug}' already exists in this city.");
+        }
+    }
+
+    private static void EnsureKind(SettlementKind kind)
+    {
+        if (!Enum.IsDefined(kind))
+        {
+            throw new DomainException("city.kind_invalid", "Unknown kind of place.");
         }
     }
 

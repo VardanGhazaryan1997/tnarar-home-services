@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button/Button'
 import Card from '@/components/ui/Card/Card'
 import { SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
-import { categoryOptions, useCategories, useCities } from '@/features/catalog/catalogApi'
+import { categoryOptions, cityOptionGroups, useCategories, useCities, useRegions } from '@/features/catalog/catalogApi'
 import PhotoPicker from '@/features/files/PhotoPicker'
 import { useFileUploads } from '@/features/files/useFileUploads'
 import { useLocalizedPath } from '@/i18n/hooks'
@@ -51,6 +51,7 @@ export default function NewRequestPage() {
   const partnerName = params.get('name')
   const categories = useCategories()
   const cities = useCities()
+  const regions = useRegions()
   const uploads = useFileUploads()
   const [createRequest, creating] = useCreateRequestMutation()
   const [step, setStep] = useState(0)
@@ -161,7 +162,7 @@ export default function NewRequestPage() {
                   label={t('requests.fields.city')}
                   required
                   placeholder={t('requests.choose')}
-                  options={(cities.data ?? []).map((city) => ({ value: city.id, label: city.name }))}
+                  options={cityOptionGroups(cities.data, regions.data)}
                   value={form.cityId}
                   onChange={(event) => setForm((current) => ({ ...current, cityId: event.target.value, districtId: '' }))}
                   error={errorFor('cityId')}

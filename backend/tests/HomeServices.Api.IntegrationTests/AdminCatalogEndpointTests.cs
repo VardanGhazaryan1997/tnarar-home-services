@@ -118,9 +118,14 @@ public class AdminCatalogEndpointTests(ApiFactory factory)
         var client = CatalogManager();
         var name = new Dictionary<string, string> { ["hy"] = "Գյումրի", ["en"] = "Gyumri" };
 
-        var cityResponse = await client.PostAsJsonAsync(Cities, new { slug = NewSlug("gyumri"), name, sortOrder = 10 });
+        var lori = (await client.GetFromJsonAsync<List<AdminRegionDto>>("/api/v1/admin/catalog/regions"))!.Single(r => r.Slug == "lori");
+        var cityResponse = await client.PostAsJsonAsync(Cities, new { slug = NewSlug("town"), name, sortOrder = 10, regionId = lori.Id, kind = "Village" });
         cityResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         var city = (await cityResponse.Content.ReadFromJsonAsync<AdminCityDto>())!;
+        city.RegionId.ShouldBe(lori.Id);
+        city.Kind.ShouldBe("Village");
+        (await client.PostAsJsonAsync(Cities, new { slug = NewSlug("town"), name, sortOrder = 10, regionId = Guid.NewGuid() }))
+            .StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 
         var districtResponse = await client.PostAsJsonAsync($"{Cities}/{city.Id}/districts", new { slug = "center", name, sortOrder = 1 });
         districtResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -129,12 +134,14 @@ public class AdminCatalogEndpointTests(ApiFactory factory)
         (await client.PutAsJsonAsync($"{Cities}/{city.Id}/districts/{district.Id}", new { slug = "kentron", name, sortOrder = 2 }))
             .StatusCode.ShouldBe(HttpStatusCode.OK);
         (await client.PostAsync($"{Cities}/{city.Id}/districts/{district.Id}/deactivate", null)).StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await client.PutAsJsonAsync($"{Cities}/{city.Id}", new { slug = city.Slug, name, sortOrder = 11 })).StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await client.PutAsJsonAsync($"{Cities}/{city.Id}", new { slug = city.Slug, name, sortOrder = 11, regionId = lori.Id, kind = "City" })).StatusCode.ShouldBe(HttpStatusCode.OK);
         (await client.PostAsync($"{Cities}/{city.Id}/deactivate", null)).StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var saved = (await client.GetFromJsonAsync<List<AdminCityDto>>(Cities))!.Single(c => c.Id == city.Id);
         saved.IsActive.ShouldBeFalse();
         saved.SortOrder.ShouldBe(11);
+        saved.Kind.ShouldBe("City");
+        saved.RegionId.ShouldBe(lori.Id);
         var savedDistrict = saved.Districts.ShouldHaveSingleItem();
         savedDistrict.Slug.ShouldBe("kentron");
         savedDistrict.IsActive.ShouldBeFalse();

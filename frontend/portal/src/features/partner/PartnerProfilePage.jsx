@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import PageHeader from '@/components/PageHeader/PageHeader'
 import QueryState from '@/components/QueryState/QueryState'
-import { useCategories, useCities } from '@/features/catalog/catalogApi'
+import { useCategories, useCities, useRegions } from '@/features/catalog/catalogApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { useGetMyPartnerProfileQuery } from './partnerProfileApi'
 import PartnerWizard from './PartnerWizard'
@@ -22,6 +22,7 @@ export default function PartnerProfilePage() {
   const query = useGetMyPartnerProfileQuery()
   const categories = useCategories()
   const cities = useCities()
+  const regions = useRegions()
   const [editing, setEditing] = useState(false)
   const [notice, setNotice] = useState(null)
   const missing = query.error?.status === 404
@@ -42,6 +43,7 @@ export default function PartnerProfilePage() {
               profile={profile}
               categories={categories.data}
               cities={cities.data}
+              regions={regions.data ?? []}
               onDone={(result) => {
                 setEditing(false)
                 setNotice(result)
@@ -49,7 +51,7 @@ export default function PartnerProfilePage() {
               }}
             />
           ) : (
-            <ProfileStatus profile={profile} categories={categories.data} cities={cities.data} notice={notice} onEdit={() => setEditing(true)} />
+            <ProfileStatus profile={profile} categories={categories.data} cities={cities.data} regions={regions.data ?? []} notice={notice} onEdit={() => setEditing(true)} />
           )
         }}
       </QueryState>

@@ -15,10 +15,14 @@ import PartnerReviews from './PartnerReviews'
 import { usePartner } from './publicApi'
 import styles from './PartnerPage.module.scss'
 
-/** Areas grouped by city: "Yerevan: Kentron, Arabkir" or "Yerevan (whole city)". */
+/** Areas grouped by place: "Ararat (whole region)", "Yerevan: Kentron, Arabkir" or "Yerevan (whole city)". */
 function groupAreas(areas) {
   const cities = new Map()
   areas.forEach((area) => {
+    if (!area.citySlug) {
+      cities.set(`region-${area.regionSlug}`, { name: area.regionName, whole: true, region: true, districts: [] })
+      return
+    }
     const city = cities.get(area.citySlug) ?? { name: area.cityName, whole: false, districts: [] }
     if (area.districtSlug) city.districts.push(area.districtName)
     else city.whole = true
@@ -116,7 +120,7 @@ export default function PartnerPage() {
                         <span>
                           <strong>{city.name}</strong>
                           <br />
-                          <span className={styles['partner-page__muted']}>{city.whole ? t('public.profile.wholeCity') : city.districts.join(', ')}</span>
+                          <span className={styles['partner-page__muted']}>{city.region ? t('public.profile.wholeRegion') : city.whole ? t('public.profile.wholeCity') : city.districts.join(', ')}</span>
                         </span>
                       </li>
                     ))}

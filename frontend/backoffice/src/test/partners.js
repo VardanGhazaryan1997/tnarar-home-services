@@ -1,4 +1,4 @@
-import { CATEGORIES, CITIES } from './catalog'
+import { CATEGORIES, CITIES, REGIONS } from './catalog'
 
 const pick = (name, language) => name[language] ?? name.hy
 
@@ -7,6 +7,9 @@ export const publicCategories = (language = 'hy') => {
   const map = (category) => ({ id: category.id, slug: category.slug, name: pick(category.name, language), icon: category.icon, children: category.children.map(map) })
   return CATEGORIES.map(map)
 }
+
+/** GET /regions (public): regions with names in one language. */
+export const publicRegions = (language = 'hy') => REGIONS.map((region) => ({ id: region.id, slug: region.slug, name: pick(region.name, language) }))
 
 /** GET /cities (public): cities and districts with names in one language. */
 export const publicCities = (language = 'hy') =>

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { CATEGORIES, CITIES, page } from './fixtures'
+import { CATEGORIES, CITIES, page, REGIONS } from './fixtures'
 
 export const ACTIVE_LANGUAGES = [
   { code: 'hy', name: 'Armenian', nativeName: 'Հայերեն', isDefault: true },
@@ -14,6 +14,7 @@ export const handlers = [
   http.get('*/api/v1/languages', () => HttpResponse.json(ACTIVE_LANGUAGES)),
   http.get('*/api/v1/categories', () => HttpResponse.json(CATEGORIES)),
   http.get('*/api/v1/cities', () => HttpResponse.json(CITIES)),
+  http.get('*/api/v1/regions', () => HttpResponse.json(REGIONS)),
   http.get('*/api/v1/partners', () => HttpResponse.json(page([]))),
   http.get('*/api/v1/pages', () => HttpResponse.json([])),
   http.get('*/api/v1/faqs', () => HttpResponse.json([])),

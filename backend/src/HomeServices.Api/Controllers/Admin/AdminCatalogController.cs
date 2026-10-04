@@ -1,6 +1,7 @@
 using HomeServices.Api.Authorization;
 using HomeServices.Application.Catalog;
 using HomeServices.Application.Messaging;
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Staff;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,9 @@ public sealed class AdminCatalogController : ControllerBase
     public sealed record CategoryRequest(string Slug, Dictionary<string, string> Name, string? Icon, Guid? ParentId, int SortOrder);
 
     public sealed record PlaceRequest(string Slug, Dictionary<string, string> Name, int SortOrder);
+
+    /// <summary>A town or village: its fields plus the region (null for none) and whether it is a town or a village.</summary>
+    public sealed record CityRequest(string Slug, Dictionary<string, string> Name, int SortOrder, Guid? RegionId = null, SettlementKind Kind = SettlementKind.City);
 
     // ---------- Categories ----------
 
@@ -76,7 +80,14 @@ public sealed class AdminCatalogController : ControllerBase
         return NoContent();
     }
 
-    // ---------- Cities and districts ----------
+    // ---------- Regions, cities and districts ----------
+
+    /// <summary>Yerevan and the regions.</summary>
+    [HttpGet("regions")]
+    public Task<IReadOnlyList<AdminRegionDto>> GetRegions(
+        [FromServices] IQueryHandler<GetAdminRegions, IReadOnlyList<AdminRegionDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminRegions(), cancellationToken);
 
     /// <summary>All cities with their districts, inactive ones included.</summary>
     [HttpGet("cities")]
@@ -87,20 +98,20 @@ public sealed class AdminCatalogController : ControllerBase
 
     [HttpPost("cities")]
     public async Task<ActionResult<AdminCityDto>> CreateCityAsync(
-        PlaceRequest request,
+        CityRequest request,
         [FromServices] ICommandHandler<CreateCity, AdminCityDto> handler,
         CancellationToken cancellationToken) =>
         StatusCode(
             StatusCodes.Status201Created,
-            await handler.HandleAsync(new CreateCity(request.Slug, request.Name, request.SortOrder), cancellationToken));
+            await handler.HandleAsync(new CreateCity(request.Slug, request.Name, request.SortOrder, request.RegionId, request.Kind), cancellationToken));
 
     [HttpPut("cities/{id:guid}")]
     public Task<AdminCityDto> UpdateCity(
         Guid id,
-        PlaceRequest request,
+        CityRequest request,
         [FromServices] ICommandHandler<UpdateCity, AdminCityDto> handler,
         CancellationToken cancellationToken) =>
-        handler.HandleAsync(new UpdateCity(id, request.Slug, request.Name, request.SortOrder), cancellationToken);
+        handler.HandleAsync(new UpdateCity(id, request.Slug, request.Name, request.SortOrder, request.RegionId, request.Kind), cancellationToken);
 
     [HttpPost("cities/{id:guid}/activate")]
     public Task<AdminCityDto> ActivateCity(

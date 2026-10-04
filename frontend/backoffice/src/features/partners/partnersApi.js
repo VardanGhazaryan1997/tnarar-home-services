@@ -50,6 +50,9 @@ export const partnersApi = baseApi.enhanceEndpoints({ addTagTypes: ['Partners', 
     getPlaceNames: build.query({
       query: (language) => ({ url: '/cities', headers: { 'Accept-Language': language } }),
     }),
+    getRegionNames: build.query({
+      query: (language) => ({ url: '/regions', headers: { 'Accept-Language': language } }),
+    }),
   }),
 })
 
@@ -59,4 +62,5 @@ export const {
   useDecideOnPartnerMutation,
   useGetCategoryNamesQuery,
   useGetPlaceNamesQuery,
+  useGetRegionNamesQuery,
 } = partnersApi

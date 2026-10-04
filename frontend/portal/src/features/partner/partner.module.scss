@@ -363,6 +363,37 @@
     font-weight: $font-weight-semibold;
   }
 
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__places {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__empty {
+    @include text-muted;
+  }
+
   &__districts {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

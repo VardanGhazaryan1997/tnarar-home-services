@@ -20,25 +20,46 @@ public sealed class PartnerService : IAudited
     public Guid CategoryId { get; private set; }
 }
 
-/// <summary>Where the partner works: a whole city (no district) or one district of it.</summary>
+/// <summary>
+/// Where the partner works: a whole region (<see cref="RegionId"/> only), a whole town or village (<see cref="CityId"/>,
+/// no district) or one district of it.
+/// </summary>
 public sealed class PartnerArea : Entity, IAudited
 {
     private PartnerArea()
     {
     }
 
-    internal PartnerArea(Guid partnerProfileId, Guid cityId, Guid? districtId)
+    internal PartnerArea(Guid partnerProfileId, AreaChoice choice)
     {
         PartnerProfileId = partnerProfileId;
-        CityId = cityId;
-        DistrictId = districtId;
+        RegionId = choice.RegionId;
+        CityId = choice.CityId;
+        DistrictId = choice.DistrictId;
     }
 
     public Guid PartnerProfileId { get; private set; }
 
-    public Guid CityId { get; private set; }
+    public Guid? RegionId { get; private set; }
+
+    public Guid? CityId { get; private set; }
 
     public Guid? DistrictId { get; private set; }
+
+    internal AreaChoice Choice => new(RegionId, CityId, DistrictId);
+}
+
+/// <summary>One place a partner chooses to work in: a region, a town or village, or a district of one.</summary>
+public readonly record struct AreaChoice(Guid? RegionId, Guid? CityId, Guid? DistrictId)
+{
+    public static AreaChoice WholeRegion(Guid regionId) => new(regionId, null, null);
+
+    public static AreaChoice WholeCity(Guid cityId) => new(null, cityId, null);
+
+    public static AreaChoice District(Guid cityId, Guid districtId) => new(null, cityId, districtId);
+
+    /// <summary>Exactly a region, or a city with an optional district.</summary>
+    public bool IsValid => RegionId is not null ? CityId is null && DistrictId is null : CityId is not null;
 }
 
 /// <summary>A work example or document: a stored file attached to the profile.</summary>

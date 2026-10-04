@@ -96,6 +96,19 @@ public class PartnerProfileHandlerTests
     }
 
     [Fact]
+    public async Task A_whole_region_replaces_the_towns_chosen_inside_it()
+    {
+        var dto = await SaveAsync(_data.ValidSave() with
+        {
+            Areas = [new PartnerAreaDto(null, null, _data.Ararat.Id), new PartnerAreaDto(_data.Masis.Id, null), new PartnerAreaDto(_data.Yerevan.Id, null)],
+        });
+
+        dto.Areas.ShouldBe(new[] { new PartnerAreaDto(null, null, _data.Ararat.Id), new PartnerAreaDto(_data.Yerevan.Id, null) }, ignoreOrder: true);
+        var saved = await ReloadAsync();
+        saved.Areas.Select(a => (a.RegionId, a.CityId)).ShouldBe(new (Guid?, Guid?)[] { (_data.Ararat.Id, null), (null, _data.Yerevan.Id) }, ignoreOrder: true);
+    }
+
+    [Fact]
     public async Task The_avatar_comes_with_a_signed_link()
     {
         var avatar = _data.GivenFile();

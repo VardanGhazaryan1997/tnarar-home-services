@@ -41,6 +41,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<Category> Categories => Set<Category>();
 
+    public DbSet<Region> Regions => Set<Region>();
+
     public DbSet<City> Cities => Set<City>();
 
     public DbSet<District> Districts => Set<District>();

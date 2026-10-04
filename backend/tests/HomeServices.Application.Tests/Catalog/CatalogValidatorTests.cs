@@ -1,5 +1,7 @@
 using HomeServices.Application.Catalog;
 using HomeServices.Application.Tests.Support;
+using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Localization;
 
 namespace HomeServices.Application.Tests.Catalog;
 
@@ -82,6 +84,20 @@ public class CatalogValidatorTests
     }
 
     [Fact]
+    public async Task A_town_or_village_needs_a_known_region_and_kind()
+    {
+        await using var db = InMemoryAppDbContext.Create();
+        var lori = Region.Create("lori", LocalizedText.Empty.With("hy", "Լոռի"), 7);
+        db.Regions.Add(lori);
+        await db.SaveChangesAsync();
+        var validator = new CreateCityValidator(new FakeLanguageCatalog(), db);
+
+        (await validator.ValidateAsync(new CreateCity("dsegh", ValidName, 1, lori.Id, SettlementKind.Village))).IsValid.ShouldBeTrue();
+        (await validator.ValidateAsync(new CreateCity("dsegh", ValidName, 1, Guid.NewGuid(), (SettlementKind)9)))
+            .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "kind.invalid", "region.invalid" }, ignoreOrder: true);
+    }
+
+    [Fact]
     public async Task Update_and_place_commands_use_the_same_rules()
     {
         var languages = new FakeLanguageCatalog();
@@ -89,9 +105,9 @@ public class CatalogValidatorTests
 
         (await new UpdateCategoryValidator(languages).ValidateAsync(new UpdateCategory(Guid.NewGuid(), "bad slug", ValidName, null, null, 1)))
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "slug.invalid" });
-        (await new CreateCityValidator(languages).ValidateAsync(new CreateCity("masis", noDefault, 1)))
+        (await new CreateCityValidator(languages, InMemoryAppDbContext.Create()).ValidateAsync(new CreateCity("masis", noDefault, 1)))
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "name.default_language_required" });
-        (await new UpdateCityValidator(languages).ValidateAsync(new UpdateCity(Guid.NewGuid(), "masis", ValidName, -1)))
+        (await new UpdateCityValidator(languages, InMemoryAppDbContext.Create()).ValidateAsync(new UpdateCity(Guid.NewGuid(), "masis", ValidName, -1)))
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "sort_order.invalid" });
         (await new AddDistrictValidator(languages).ValidateAsync(new AddDistrict(Guid.NewGuid(), "x y", ValidName, 1)))
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "slug.invalid" });

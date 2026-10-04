@@ -1,4 +1,4 @@
-import { App, Form, Input, InputNumber, Modal } from 'antd'
+import { App, Form, Input, InputNumber, Modal, Radio, Select } from 'antd'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyApiError } from './formErrors'
@@ -7,10 +7,11 @@ import NameFields from './NameFields'
 import { useCatalogLanguages } from './useCatalogLanguages'
 
 /**
- * Creates or edits a city or district. `place` is the row being edited (or null to create).
- * `onSave(body)` runs the right mutation and returns its promise.
+ * Creates or edits a town/village or a district. `place` is the row being edited (or null to create).
+ * `onSave(body)` runs the right mutation and returns its promise. With `regions` (towns and villages only), the
+ * form also asks for the region and whether the place is a town or a village.
  */
-export default function PlaceFormModal({ open, title, place, onSave, onClose }) {
+export default function PlaceFormModal({ open, title, place, regions, regionName = (region) => region.slug, onSave, onClose }) {
   const { t } = useTranslation()
   const { message } = App.useApp()
   const [form] = Form.useForm()
@@ -23,7 +24,10 @@ export default function PlaceFormModal({ open, title, place, onSave, onClose }) 
     if (open) slugEdited.current = Boolean(place)
   }, [open, place])
 
-  const initialValues = place ? { slug: place.slug, name: place.name, sortOrder: place.sortOrder } : { slug: '', name: {}, sortOrder: 0 }
+  const placement = Boolean(regions)
+  const initialValues = place
+    ? { slug: place.slug, name: place.name, sortOrder: place.sortOrder, regionId: place.regionId ?? null, kind: place.kind ?? 'City' }
+    : { slug: '', name: {}, sortOrder: 0, regionId: null, kind: 'City' }
 
   const handleValuesChange = (changed) => {
     if ('slug' in changed) slugEdited.current = true
@@ -40,6 +44,7 @@ export default function PlaceFormModal({ open, title, place, onSave, onClose }) 
         slug: values.slug.trim(),
         name: cleanNames({ ...(place?.name ?? {}), ...values.name }),
         sortOrder: values.sortOrder ?? 0,
+        ...(placement ? { regionId: values.regionId ?? null, kind: values.kind } : {}),
       })
       message.success(t(place ? 'catalog.saved' : 'catalog.created'))
       onClose()
@@ -74,6 +79,25 @@ export default function PlaceFormModal({ open, title, place, onSave, onClose }) 
         >
           <Input maxLength={64} />
         </Form.Item>
+        {placement && (
+          <>
+            <Form.Item name="regionId" label={t('catalog.form.region')}>
+              <Select
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                placeholder={t('catalog.cities.noRegion')}
+                options={regions.map((region) => ({ value: region.id, label: regionName(region) }))}
+              />
+            </Form.Item>
+            <Form.Item name="kind" label={t('catalog.form.kind')}>
+              <Radio.Group
+                optionType="button"
+                options={['City', 'Village'].map((kind) => ({ value: kind, label: t(`catalog.cities.kinds.${kind}`) }))}
+              />
+            </Form.Item>
+          </>
+        )}
         <Form.Item name="sortOrder" label={t('catalog.form.sortOrder')} extra={t('catalog.form.sortOrderHelp')}>
           <InputNumber min={0} precision={0} style={{ width: '100%' }} />
         </Form.Item>

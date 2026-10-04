@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using HomeServices.Api.Authorization;
 using HomeServices.Api.Chat;
 using HomeServices.Api.Commissions;
+using HomeServices.Api.Demo;
 using HomeServices.Api.Errors;
 using HomeServices.Api.Files;
 using HomeServices.Api.Identity;
@@ -97,6 +98,12 @@ if (builder.Environment.IsProduction() && !string.IsNullOrEmpty(builder.Configur
     throw new InvalidOperationException("Auth:FixedOtpCode is for staging and must not be set in Production.");
 }
 
+// Demo partners are invented; they must never appear on the live site.
+if (builder.Environment.IsProduction() && builder.Configuration.GetValue<bool>(DemoDataBootstrapper.SettingName))
+{
+    throw new InvalidOperationException($"{DemoDataBootstrapper.SettingName} is for staging and development and must not be on in Production.");
+}
+
 var app = builder.Build();
 
 // Request logging is outermost so it records the final status code (after error handling).
@@ -120,6 +127,9 @@ if (app.Environment.IsDevelopment())
 
 // First Super Admin from configuration (no-op when not configured or when staff already exist).
 await app.Services.BootstrapSuperAdminAsync(app.Configuration);
+
+// Demo companies and specialists for staging and development (no-op unless "DemoData:SeedPartners" is true).
+await app.Services.SeedDemoDataAsync(app.Configuration);
 
 app.UseMiddleware<RequestLanguageMiddleware>();
 app.UseAuthentication();

@@ -48,7 +48,9 @@ public sealed record AdminCityDto(
     IReadOnlyDictionary<string, string> Name,
     int SortOrder,
     bool IsActive,
-    IReadOnlyList<AdminDistrictDto> Districts)
+    IReadOnlyList<AdminDistrictDto> Districts,
+    Guid? RegionId = null,
+    string Kind = "City")
 {
     public static AdminCityDto From(City city) =>
         new(
@@ -61,5 +63,14 @@ public sealed record AdminCityDto(
                 .OrderBy(d => d.SortOrder)
                 .ThenBy(d => d.Slug, StringComparer.Ordinal)
                 .Select(AdminDistrictDto.From)
-                .ToList());
+                .ToList(),
+            city.RegionId,
+            city.Kind.ToString());
+}
+
+/// <summary>A region with every translation, for the Back Office.</summary>
+public sealed record AdminRegionDto(Guid Id, string Slug, IReadOnlyDictionary<string, string> Name, int SortOrder)
+{
+    public static AdminRegionDto From(Region region) =>
+        new(region.Id, region.Slug, AdminCategoryDto.Translations(region.Name), region.SortOrder);
 }

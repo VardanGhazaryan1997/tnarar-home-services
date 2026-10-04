@@ -49,18 +49,31 @@ export function TextField({ label, hint, error, required, optionalText, classNam
   )
 }
 
-/** A labelled native select. `options`: [{ value, label }]; `placeholder` adds an empty first option. */
+/**
+ * A labelled native select. `options`: [{ value, label }], or groups [{ label, options: [{ value, label }] }] shown as
+ * option groups; `placeholder` adds an empty first option.
+ */
 export function SelectField({ label, hint, error, required, optionalText, className, options, placeholder, ...selectProps }) {
   return (
     <Field label={label} hint={hint} error={error} required={required} optionalText={optionalText} className={className}>
       {(aria) => (
         <select className={b('field__control', { select: true })} {...aria} {...selectProps}>
           {placeholder !== undefined && <option value="">{placeholder}</option>}
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+          {options.map((option) =>
+            option.options ? (
+              <optgroup key={`group-${option.label}`} label={option.label}>
+                {option.options.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </optgroup>
+            ) : (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ),
+          )}
         </select>
       )}
     </Field>

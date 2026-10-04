@@ -52,9 +52,14 @@ internal sealed class PartnerAreaConfiguration : IEntityTypeConfiguration<Partne
     {
         builder.ToTable("PartnerAreas");
 
-        // A whole city (district null) counts once, like any district.
-        builder.HasIndex(a => new { a.PartnerProfileId, a.CityId, a.DistrictId }).IsUnique().AreNullsDistinct(false);
+        // A whole region or a whole city (nulls) counts once, like any district.
+        builder.HasIndex(a => new { a.PartnerProfileId, a.RegionId, a.CityId, a.DistrictId }).IsUnique().AreNullsDistinct(false);
         builder.HasIndex(a => new { a.CityId, a.DistrictId });
+        builder.HasIndex(a => a.RegionId);
+        builder.ToTable(t => t.HasCheckConstraint(
+            "ck_partner_areas_region_or_city",
+            "(region_id IS NOT NULL AND city_id IS NULL AND district_id IS NULL) OR (region_id IS NULL AND city_id IS NOT NULL)"));
+        builder.HasOne<Region>().WithMany().HasForeignKey(a => a.RegionId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<City>().WithMany().HasForeignKey(a => a.CityId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<District>().WithMany().HasForeignKey(a => a.DistrictId).OnDelete(DeleteBehavior.Restrict);
     }

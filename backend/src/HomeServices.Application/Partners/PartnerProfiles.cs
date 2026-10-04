@@ -73,21 +73,27 @@ public sealed class SaveMyPartnerProfileValidator : AbstractValidator<SaveMyPart
             .When(x => x.AvatarFileId is not null);
     }
 
-    // Every city is active; every district is active and in its city.
+    // Each area is a region, or an active town or village with an optional district that is active and in it.
     private static async Task<bool> AreasExistAsync(IAppDbContext db, IReadOnlyList<PartnerAreaDto> areas, CancellationToken cancellationToken)
     {
-        if (areas.Any(a => a is null))
+        if (areas.Any(a => a is null || !new AreaChoice(a.RegionId, a.CityId, a.DistrictId).IsValid))
         {
             return false;
         }
 
-        var cityIds = areas.Select(a => a.CityId).Distinct().ToList();
+        var regionIds = areas.Where(a => a.RegionId is not null).Select(a => a.RegionId!.Value).Distinct().ToList();
+        if (await db.Regions.CountAsync(r => regionIds.Contains(r.Id), cancellationToken) != regionIds.Count)
+        {
+            return false;
+        }
+
+        var cityIds = areas.Where(a => a.CityId is not null).Select(a => a.CityId!.Value).Distinct().ToList();
         var cities = await db.Cities.AsNoTracking()
             .Include(c => c.Districts)
             .Where(c => cityIds.Contains(c.Id) && c.IsActive)
             .ToListAsync(cancellationToken);
 
-        return areas.All(area => cities.FirstOrDefault(c => c.Id == area.CityId) is { } city
+        return areas.Where(a => a.CityId is not null).All(area => cities.FirstOrDefault(c => c.Id == area.CityId) is { } city
             && (area.DistrictId is not { } districtId || city.Districts.Any(d => d.Id == districtId && d.IsActive)));
     }
 }
@@ -136,7 +142,7 @@ public sealed class SaveMyPartnerProfileHandler(IAppDbContext db, ICurrentUser c
 
         profile.UpdateDetails(command.Type, command.DisplayName, command.About, command.YearsOfExperience, command.AvatarFileId);
         profile.SetServices(command.CategoryIds);
-        profile.SetAreas(command.Areas.Select(a => (a.CityId, a.DistrictId)));
+        profile.SetAreas(await PartnerAreas.ToChoicesAsync(db, command.Areas, cancellationToken));
         await db.SaveChangesAsync(cancellationToken);
         return await MyPartnerProfile.ToDtoAsync(db, dtos, profile, cancellationToken);
     }
@@ -212,6 +218,30 @@ internal static class MyPartnerProfile
 
         var files = await db.Files.AsNoTracking().Where(f => fileIds.Contains(f.Id)).ToDictionaryAsync(f => f.Id, cancellationToken);
         return await dtos.CreateAsync(profile, files, cancellationToken);
+    }
+}
+
+internal static class PartnerAreas
+{
+    /// <summary>
+    /// The chosen areas as <see cref="AreaChoice"/>s. A whole region covers its towns and villages, so places inside a
+    /// chosen region are dropped.
+    /// </summary>
+    public static async Task<List<AreaChoice>> ToChoicesAsync(IAppDbContext db, IReadOnlyList<PartnerAreaDto> areas, CancellationToken cancellationToken)
+    {
+        var regionIds = areas.Where(a => a.RegionId is not null).Select(a => a.RegionId!.Value).ToHashSet();
+        var cityIds = areas.Where(a => a.CityId is not null).Select(a => a.CityId!.Value).Distinct().ToList();
+        var cityRegions = regionIds.Count == 0
+            ? new Dictionary<Guid, Guid?>()
+            : await db.Cities.AsNoTracking()
+                .Where(c => cityIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.RegionId, cancellationToken);
+
+        return areas
+            .Where(a => a.CityId is not { } cityId
+                || !(cityRegions.TryGetValue(cityId, out var regionId) && regionId is { } r && regionIds.Contains(r)))
+            .Select(a => new AreaChoice(a.RegionId, a.CityId, a.DistrictId))
+            .ToList();
     }
 }
 

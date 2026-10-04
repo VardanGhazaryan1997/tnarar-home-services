@@ -9,7 +9,7 @@ import { SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
 import Pagination from '@/components/ui/Pagination/Pagination'
 import Spinner from '@/components/ui/Spinner/Spinner'
-import { useCategories, useCities } from '@/features/catalog/catalogApi'
+import { cityOptionGroups, useCategories, useCities, useRegions } from '@/features/catalog/catalogApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
 import { findCategory } from './categories'
@@ -32,6 +32,7 @@ export default function SearchPage() {
   const [params, setParams] = useSearchParams()
   const categories = useCategories()
   const cities = useCities()
+  const regions = useRegions()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const city = params.get('city') ?? ''
   const district = params.get('district') ?? ''
@@ -136,7 +137,7 @@ export default function SearchPage() {
             <SelectField
               label={t('public.search.city')}
               placeholder={t('public.search.anyCity')}
-              options={(cities.data ?? []).map((item) => ({ value: item.slug, label: item.name }))}
+              options={cityOptionGroups(cities.data, regions.data, (item) => item.slug)}
               value={city}
               onChange={(event) => update({ city: event.target.value, district: '' })}
             />

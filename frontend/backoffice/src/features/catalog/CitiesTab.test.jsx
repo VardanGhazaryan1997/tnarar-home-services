@@ -47,9 +47,21 @@ describe('Cities tab', () => {
     await user.click(await screen.findByRole('tab', { name: hy.catalog.tabs.cities }))
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/catalog/cities'))
-    const table = (await screen.findByText('Երևան')).closest('table')
+    // "Երևան" is both the city and its region.
+    const table = (await screen.findAllByText('Երևան'))[0].closest('table')
     expect(within(table).getByText('Մասիս')).toBeInTheDocument()
     expect(within(table).getByText(hy.catalog.status.hidden)).toBeInTheDocument()
+  })
+
+  it('shows each place\'s region and type and filters by name', async () => {
+    const user = userEvent.setup()
+    const table = await openTab()
+
+    expect(await within(table).findByText('Արարատ')).toBeInTheDocument()
+    expect(within(table).getAllByText(hy.catalog.cities.kinds.City)).toHaveLength(2)
+    await user.type(screen.getByLabelText(hy.catalog.cities.search), 'masis')
+    await waitFor(() => expect(within(table).queryByText('Երևան')).not.toBeInTheDocument())
+    expect(within(table).getByText('Մասիս')).toBeInTheDocument()
   })
 
   it("shows a city's districts when expanded", async () => {
@@ -73,7 +85,7 @@ describe('Cities tab', () => {
     await user.click(within(form).getByRole('button', { name: hy.catalog.form.save }))
 
     await waitFor(() => expect(requests).toHaveLength(1))
-    expect(requests[0].body).toEqual({ slug: 'gyumri', name: { hy: 'Գյումրի', en: 'Gyumri' }, sortOrder: 0 })
+    expect(requests[0].body).toEqual({ slug: 'gyumri', name: { hy: 'Գյումրի', en: 'Gyumri' }, sortOrder: 0, regionId: null, kind: 'City' })
     expect(await screen.findByText(hy.catalog.created)).toBeInTheDocument()
   })
 
@@ -89,7 +101,7 @@ describe('Cities tab', () => {
 
     await waitFor(() => expect(requests).toHaveLength(1))
     expect(requests[0].url).toBe('/api/v1/admin/catalog/cities/city-masis')
-    expect(requests[0].body).toEqual({ slug: 'masis', name: { hy: 'Մասիս', en: 'Masis' }, sortOrder: 2 })
+    expect(requests[0].body).toEqual({ slug: 'masis', name: { hy: 'Մասիս', en: 'Masis' }, sortOrder: 2, regionId: 'region-ararat', kind: 'City' })
   })
 
   it('shows and hides cities', async () => {

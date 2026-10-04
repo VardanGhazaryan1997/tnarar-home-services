@@ -35,8 +35,18 @@ public class CatalogEndpointTests(ApiFactory factory)
 
         var cities = (await client.GetFromJsonAsync<List<CityDto>>("/api/v1/cities"))!;
 
-        cities.Select(c => c.Name).ShouldBe(new[] { "Yerevan", "Ejmiatsin", "Abovyan", "Ashtarak", "Masis" });
-        cities[0].Districts.Count.ShouldBe(12);
-        cities[0].Districts.ShouldContain(d => d.Name == "Kentron");
+        var regions = (await client.GetFromJsonAsync<List<RegionDto>>("/api/v1/regions"))!;
+
+        regions.Count.ShouldBe(11);
+        regions[0].Name.ShouldBe("Yerevan");
+        var yerevan = cities.Single(c => c.Slug == "yerevan");
+        yerevan.Name.ShouldBe("Yerevan");
+        yerevan.RegionId.ShouldBe(regions[0].Id);
+        cities.Select(c => c.Name).ShouldContain("Ejmiatsin");
+        cities.Select(c => c.Name).ShouldContain("Gyumri");
+        cities.ShouldContain(c => c.Kind == "Village");
+        cities.Single(c => c.Slug == "gyumri").RegionId.ShouldBe(regions.Single(r => r.Slug == "shirak").Id);
+        yerevan.Districts.Count.ShouldBe(12);
+        yerevan.Districts.ShouldContain(d => d.Name == "Kentron");
     }
 }

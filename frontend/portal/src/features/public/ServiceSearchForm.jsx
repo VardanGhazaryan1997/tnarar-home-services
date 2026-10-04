@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import Button from '@/components/ui/Button/Button'
 import { SelectField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
-import { useCategories, useCities } from '@/features/catalog/catalogApi'
+import { cityOptionGroups, useCategories, useCities, useRegions } from '@/features/catalog/catalogApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { searchPath } from './searchLinks'
 import styles from './ServiceSearchForm.module.scss'
@@ -16,6 +16,7 @@ export default function ServiceSearchForm() {
   const path = useLocalizedPath()
   const categories = useCategories()
   const cities = useCities()
+  const regions = useRegions()
   const [category, setCategory] = useState('')
   const [city, setCity] = useState('')
 
@@ -42,7 +43,7 @@ export default function ServiceSearchForm() {
       <SelectField
         label={t('public.search.where')}
         placeholder={t('public.search.anyCity')}
-        options={(cities.data ?? []).map((item) => ({ value: item.slug, label: item.name }))}
+        options={cityOptionGroups(cities.data, regions.data, (item) => item.slug)}
         value={city}
         onChange={(event) => setCity(event.target.value)}
         className={styles['service-search__field']}

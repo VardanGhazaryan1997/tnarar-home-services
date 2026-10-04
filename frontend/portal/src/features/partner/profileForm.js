@@ -51,7 +51,7 @@ export function toPayload(form) {
     about: form.about.trim(),
     avatarFileId: form.avatarFileId,
     categoryIds: form.categoryIds,
-    areas: form.areas.map((area) => ({ cityId: area.cityId, districtId: area.districtId ?? null })),
+    areas: form.areas.map((area) => ({ regionId: area.regionId ?? null, cityId: area.cityId ?? null, districtId: area.districtId ?? null })),
   }
 }
 
@@ -70,8 +70,38 @@ export function stepErrors(step, form) {
   return errors
 }
 
-/** True when the area list covers this city or district. */
+/** True when the area list has this city (whole) or this district of it. */
 export const hasArea = (areas, cityId, districtId = null) => areas.some((area) => area.cityId === cityId && (area.districtId ?? null) === districtId)
+
+/** True when the area list has this whole region. */
+export const hasRegion = (areas, regionId) => areas.some((area) => area.regionId === regionId)
+
+/** Adds (or removes) a whole region; adding drops the towns, villages and districts chosen inside it. */
+export function withRegion(areas, regionId, places, on) {
+  const inside = new Set(places.map((city) => city.id))
+  const rest = areas.filter((area) => area.regionId !== regionId && !inside.has(area.cityId))
+  return on ? [...rest, { regionId, cityId: null, districtId: null }] : rest
+}
+
+/** Adds (or removes) a whole town or village; adding drops its districts. */
+export function withCity(areas, cityId, on) {
+  const rest = areas.filter((area) => area.cityId !== cityId)
+  return on ? [...rest, { regionId: null, cityId, districtId: null }] : rest
+}
+
+/** Adds (or removes) one district of a city. */
+export function withDistrict(areas, cityId, districtId, on) {
+  const rest = areas.filter((area) => !(area.cityId === cityId && area.districtId === districtId))
+  return on ? [...rest, { regionId: null, cityId, districtId }] : rest
+}
+
+/** Cities grouped by region, in the regions' order; places without a known region come last. */
+export function groupPlaces(cities = [], regions = []) {
+  const groups = regions.map((region) => ({ region, places: cities.filter((city) => city.regionId === region.id) }))
+  const known = new Set(regions.map((region) => region.id))
+  const other = cities.filter((city) => !known.has(city.regionId))
+  return [...groups.filter((group) => group.places.length), ...(other.length ? [{ region: null, places: other }] : [])]
+}
 
 const MB = 1024 * 1024
 
@@ -81,9 +111,13 @@ export const IMAGE_TYPES = { 'image/jpeg': 10 * MB, 'image/png': 10 * MB, 'image
 /** Documents (ID, license, registration): photos or PDFs. */
 export const DOCUMENT_TYPES = { ...IMAGE_TYPES, 'application/pdf': 10 * MB }
 
-/** Area names: "Yerevan" for the whole city, "Yerevan — Kentron" for a district. */
-export function areaNames(areas, cities = []) {
+/** Area names: "Ararat (whole region)"-style region names, "Yerevan" for a whole city, "Yerevan — Kentron" for a district. */
+export function areaNames(areas, cities = [], regions = [], regionLabel = (name) => name) {
   return areas.map((area) => {
+    if (area.regionId) {
+      const region = regions.find((item) => item.id === area.regionId)
+      return region ? regionLabel(region.name) : ''
+    }
     const city = cities.find((item) => item.id === area.cityId)
     const district = city?.districts.find((item) => item.id === area.districtId)
     return district ? `${city.name} — ${district.name}` : (city?.name ?? '')

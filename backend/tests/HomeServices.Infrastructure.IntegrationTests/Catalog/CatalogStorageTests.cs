@@ -32,13 +32,30 @@ public class CatalogStorageTests(PostgresFixture db)
     }
 
     [Fact]
-    public async Task Migrations_seed_the_five_launch_cities_and_Yerevans_districts()
+    public async Task Migrations_seed_the_regions_towns_villages_and_Yerevans_districts()
     {
         await using var context = await MigratedContext("catalog_cities");
 
+        var regions = await context.Regions.OrderBy(r => r.SortOrder).ToListAsync();
         var cities = await context.Cities.Include(c => c.Districts).OrderBy(c => c.SortOrder).ToListAsync();
 
-        cities.Select(c => c.Slug).ShouldBe(new[] { "yerevan", "ejmiatsin", "abovyan", "ashtarak", "masis" });
+        regions.Count.ShouldBe(11);
+        regions[0].Slug.ShouldBe("yerevan");
+        regions.Single(r => r.Slug == "vayots-dzor").Name.Get("ru", "hy").ShouldBe("Вайоц Дзор");
+
+        cities.Count.ShouldBe(258);
+        cities.Count(c => c.Kind == SettlementKind.City).ShouldBe(49);
+        cities.ShouldAllBe(c => c.IsActive && c.RegionId != null && regions.Any(r => r.Id == c.RegionId));
+        cities.Select(c => c.Slug).Distinct().Count().ShouldBe(cities.Count);
+
+        // The launch cities keep their ids and slugs.
+        cities[0].Slug.ShouldBe("yerevan");
+        cities[0].Id.ShouldBe(new Guid("019a0000-0000-7000-8000-000000000201"));
+        cities.Single(c => c.Slug == "ejmiatsin").RegionId.ShouldBe(regions.Single(r => r.Slug == "armavir").Id);
+        cities.Single(c => c.Slug == "masis").Id.ShouldBe(new Guid("019a0000-0000-7000-8000-000000000205"));
+        cities.Single(c => c.Slug == "gyumri").Name.Get("en", "hy").ShouldBe("Gyumri");
+        cities.ShouldContain(c => c.Kind == SettlementKind.Village && c.RegionId == regions.Single(r => r.Slug == "aragatsotn").Id);
+
         cities[0].Districts.Count.ShouldBe(12);
         cities[0].Districts.ShouldContain(d => d.Slug == "kentron" && d.Name.Get("hy", "hy") == "Կենտրոն");
         cities.Skip(1).ShouldAllBe(c => c.Districts.Count == 0);
@@ -47,7 +64,7 @@ public class CatalogStorageTests(PostgresFixture db)
     [Fact]
     public async Task A_city_and_its_new_districts_are_saved_together()
     {
-        var city = City.Create("gyumri", Text("Գյումրի"), 9);
+        var city = City.Create($"town-{Guid.NewGuid():N}"[..20], Text("Քաղաք"), 9);
         city.AddDistrict("center", Text("Կենտրոն"), 1);
 
         await using (var context = db.CreateContext())

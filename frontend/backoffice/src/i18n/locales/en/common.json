@@ -365,7 +365,9 @@
       "sortOrder": "Order",
       "sortOrderHelp": "Lower numbers come first",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "region": "Region",
+      "kind": "Town or village"
     },
     "categories": {
       "help": "Categories customers browse and partners offer. Up to two levels.",
@@ -382,11 +384,20 @@
       "deleteHelp": "It disappears from the website. Categories with subcategories can't be deleted."
     },
     "cities": {
-      "help": "Cities the platform serves. Hide a city instead of deleting it.",
-      "add": "Add city",
-      "edit": "Edit city",
+      "help": "Towns and villages the platform serves, grouped by region. Hide a place instead of deleting it.",
+      "add": "Add town or village",
+      "edit": "Edit town or village",
       "districtCount": "Districts",
-      "empty": "No cities yet"
+      "empty": "No places yet",
+      "region": "Region",
+      "kind": "Type",
+      "noRegion": "No region",
+      "allRegions": "All regions",
+      "search": "Search by name or slug",
+      "kinds": {
+        "City": "Town",
+        "Village": "Village"
+      }
     },
     "districts": {
       "addTo": "Add district to {{city}}",
@@ -459,7 +470,8 @@
       "history": "History",
       "system": "System",
       "reviewComment": "Comment for the partner",
-      "years": "{{count}} yrs"
+      "years": "{{count}} yrs",
+      "wholeRegion": "{{region}} (whole region)"
     },
     "decisions": {
       "comment": "Comment for the partner",

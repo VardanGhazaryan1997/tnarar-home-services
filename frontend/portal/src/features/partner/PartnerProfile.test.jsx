@@ -103,15 +103,24 @@ describe('Partner onboarding', () => {
     await user.click(continueButton())
     expect(screen.getByText(en.partner.errors.areas)).toBeInTheDocument()
     await user.click(screen.getByRole('checkbox', { name: 'Kentron' }))
+    // Ararat's places are behind a toggle; a whole region replaces the places chosen inside it.
+    await user.click(screen.getByRole('button', { name: t(en.partner.showPlaces, { count: 2 }) }))
     await user.click(screen.getByRole('checkbox', { name: 'Masis' }))
+    await user.click(screen.getByRole('checkbox', { name: t(en.partner.wholeRegion, { region: 'Ararat' }) }))
+    expect(screen.queryByRole('checkbox', { name: 'Masis' })).not.toBeInTheDocument()
+    expect(screen.getByText(t(en.partner.coversRegion, { region: 'Ararat' }))).toBeInTheDocument()
     await user.click(screen.getByRole('checkbox', { name: t(en.partner.wholeCity, { city: 'Yerevan' }) }))
     expect(screen.queryByRole('checkbox', { name: 'Kentron' })).not.toBeInTheDocument()
+    // Search lists matching places across regions.
+    await user.type(screen.getByLabelText(en.partner.searchPlaces), 'dal')
+    expect(screen.getByRole('checkbox', { name: 'Dalar · Ararat' })).toBeInTheDocument()
+    await user.clear(screen.getByLabelText(en.partner.searchPlaces))
     await user.click(continueButton())
 
     await stepTitle('about')
     expect(api.saves[2].areas).toEqual([
-      { cityId: 'city-masis', districtId: null },
-      { cityId: 'city-yerevan', districtId: null },
+      { regionId: 'region-ararat', cityId: null, districtId: null },
+      { regionId: null, cityId: 'city-yerevan', districtId: null },
     ])
     await user.type(screen.getByLabelText(en.partner.fields.about), 'We build.')
     await user.click(continueButton())

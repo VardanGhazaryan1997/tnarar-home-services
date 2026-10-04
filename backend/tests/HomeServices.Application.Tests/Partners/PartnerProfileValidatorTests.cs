@@ -98,7 +98,7 @@ public class PartnerProfileValidatorTests
         errors.ShouldContain("Areas:areas.too_many");
     }
 
-    public static TheoryData<string> InvalidAreas => new() { "closed city", "closed district", "district of another city", "unknown city", "missing" };
+    public static TheoryData<string> InvalidAreas => new() { "closed city", "closed district", "district of another city", "unknown city", "missing", "unknown region", "region and city", "nothing" };
 
     [Theory]
     [MemberData(nameof(InvalidAreas))]
@@ -110,11 +110,20 @@ public class PartnerProfileValidatorTests
             "closed district" => new PartnerAreaDto(_data.Yerevan.Id, _data.ClosedDistrict.Id),
             "district of another city" => new PartnerAreaDto(_data.Masis.Id, _data.Kentron.Id),
             "unknown city" => new PartnerAreaDto(Guid.NewGuid(), null),
+            "unknown region" => new PartnerAreaDto(null, null, Guid.NewGuid()),
+            "region and city" => new PartnerAreaDto(_data.Masis.Id, null, _data.Ararat.Id),
+            "nothing" => new PartnerAreaDto(null, null),
             _ => null!,
         };
 
         (await ErrorsAsync(_data.ValidSave() with { Areas = [new PartnerAreaDto(_data.Yerevan.Id, null), area] }))
             .ShouldBe(new[] { "Areas:areas.invalid" });
+    }
+
+    [Fact]
+    public async Task A_whole_region_is_a_valid_area()
+    {
+        (await ErrorsAsync(_data.ValidSave() with { Areas = [new PartnerAreaDto(null, null, _data.Ararat.Id)] })).ShouldBeEmpty();
     }
 
     [Fact]

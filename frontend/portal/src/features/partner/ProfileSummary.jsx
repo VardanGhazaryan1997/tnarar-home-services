@@ -8,7 +8,7 @@ import { areaNames } from './profileForm'
 import styles from './partner.module.scss'
 
 /** The profile as the team will review it, section by section. `onEdit(step)` adds an Edit link to each. */
-export default function ProfileSummary({ profile, categories, cities, onEdit }) {
+export default function ProfileSummary({ profile, categories, cities, regions = [], onEdit }) {
   const { t } = useTranslation()
   const names = new Map(allCategories(categories).map((category) => [category.id, category.name]))
 
@@ -62,7 +62,7 @@ export default function ProfileSummary({ profile, categories, cities, onEdit }) 
         t('partner.steps.areas'),
         profile.areas.length ? (
           <ul className={styles['profile-summary__tags']}>
-            {areaNames(profile.areas, cities).map((name) => (
+            {areaNames(profile.areas, cities, regions, (name) => t('partner.wholeRegion', { region: name })).map((name) => (
               <li key={name}>
                 <Tag>{name}</Tag>
               </li>

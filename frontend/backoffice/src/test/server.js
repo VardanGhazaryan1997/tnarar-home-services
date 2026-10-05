@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { sessionFor } from './auth'
-import { CATEGORIES, CITIES, REGIONS } from './catalog'
+import { CATEGORIES, CITIES, REGIONS, WORK_ITEMS } from './catalog'
 import { AUDIT_ENTRIES, auditPage } from './audit'
 import { FAQS, PAGES } from './content'
 import { ADMIN_LANGUAGES, NAMESPACES, TEXTS, textsPage } from './translations'
@@ -24,6 +24,7 @@ export const handlers = [
   http.get('*/api/v1/admin/catalog/categories', () => HttpResponse.json(CATEGORIES)),
   http.get('*/api/v1/admin/catalog/cities', () => HttpResponse.json(CITIES)),
   http.get('*/api/v1/admin/catalog/regions', () => HttpResponse.json(REGIONS)),
+  http.get('*/api/v1/admin/catalog/work-items', () => HttpResponse.json(WORK_ITEMS)),
   http.get('*/api/v1/categories', ({ request }) => HttpResponse.json(publicCategories(request.headers.get('Accept-Language') ?? 'hy'))),
   http.get('*/api/v1/cities', ({ request }) => HttpResponse.json(publicCities(request.headers.get('Accept-Language') ?? 'hy'))),
   http.get('*/api/v1/regions', ({ request }) => HttpResponse.json(publicRegions(request.headers.get('Accept-Language') ?? 'hy'))),

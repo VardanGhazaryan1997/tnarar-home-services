@@ -46,7 +46,8 @@ public sealed record AdminWorkItemDto(
     bool IsActive,
     int? PriceMin = null,
     int? PriceTypical = null,
-    int? PriceMax = null)
+    int? PriceMax = null,
+    bool IsPriceLocked = false)
 {
     public static AdminWorkItemDto From(WorkItem item) =>
         new(
@@ -60,7 +61,8 @@ public sealed record AdminWorkItemDto(
             item.IsActive,
             item.PriceMin,
             item.PriceTypical,
-            item.PriceMax);
+            item.PriceMax,
+            item.IsPriceLocked);
 }
 
 /// <summary>The fields a staff member edits on a work item.</summary>
@@ -84,6 +86,9 @@ public interface IWorkItemFields
     int? PriceTypical { get; }
 
     int? PriceMax { get; }
+
+    /// <summary>True to keep the staff price range fixed (partner prices won't adjust it).</summary>
+    bool IsPriceLocked { get; }
 }
 
 public sealed record CreateWorkItem(
@@ -95,7 +100,8 @@ public sealed record CreateWorkItem(
     int SortOrder,
     int? PriceMin = null,
     int? PriceTypical = null,
-    int? PriceMax = null) : ICommand<AdminWorkItemDto>, IWorkItemFields;
+    int? PriceMax = null,
+    bool IsPriceLocked = false) : ICommand<AdminWorkItemDto>, IWorkItemFields;
 
 public sealed record UpdateWorkItem(
     Guid Id,
@@ -107,7 +113,8 @@ public sealed record UpdateWorkItem(
     int SortOrder,
     int? PriceMin = null,
     int? PriceTypical = null,
-    int? PriceMax = null) : ICommand<AdminWorkItemDto>, IWorkItemFields;
+    int? PriceMax = null,
+    bool IsPriceLocked = false) : ICommand<AdminWorkItemDto>, IWorkItemFields;
 
 /// <summary>Shows or hides a work item on the Portal.</summary>
 public sealed record SetWorkItemActive(Guid Id, bool IsActive) : ICommand<AdminWorkItemDto>;
@@ -206,6 +213,7 @@ public sealed class CreateWorkItemHandler(IAppDbContext db) : ICommandHandler<Cr
 
         var item = WorkItem.Create(command.CategoryId, command.Slug, LocalizedText.From(command.Name), command.Unit, command.Surface, command.SortOrder);
         item.SetPrice(WorkItemPrices.From(command));
+        item.LockPrice(command.IsPriceLocked);
         db.WorkItems.Add(item);
         await db.SaveChangesAsync(cancellationToken);
         return AdminWorkItemDto.From(item);
@@ -226,6 +234,7 @@ public sealed class UpdateWorkItemHandler(IAppDbContext db) : ICommandHandler<Up
 
         item.Update(command.CategoryId, command.Slug, LocalizedText.From(command.Name), command.Unit, command.Surface, command.SortOrder);
         item.SetPrice(WorkItemPrices.From(command));
+        item.LockPrice(command.IsPriceLocked);
         await db.SaveChangesAsync(cancellationToken);
         return AdminWorkItemDto.From(item);
     }

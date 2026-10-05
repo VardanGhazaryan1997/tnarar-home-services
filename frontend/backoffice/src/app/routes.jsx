@@ -137,6 +137,7 @@ export const routes = [
                     children: [
                       { index: true, element: <Navigate replace to="categories" /> },
                       { path: 'categories', lazy: page(() => import('@/features/catalog/CategoriesTab')) },
+                      { path: 'work-items', lazy: page(() => import('@/features/catalog/WorkItemsTab')) },
                       { path: 'cities', lazy: page(() => import('@/features/catalog/CitiesTab')) },
                     ],
                   },

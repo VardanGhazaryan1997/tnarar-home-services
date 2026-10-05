@@ -103,4 +103,17 @@ public class WorkItemTests
         new PriceRange(0, 0, 0).IsValid.ShouldBeTrue();
         new PriceRange(5000, 5000, 5000).IsValid.ShouldBeTrue();
     }
+
+    [Fact]
+    public void Staff_can_lock_and_unlock_the_price_range()
+    {
+        var item = WorkItem.Create(Guid.NewGuid(), "wall-plastering", Plastering, WorkUnit.SquareMeter, WorkSurface.Wall, 1);
+        item.IsPriceLocked.ShouldBeFalse();
+
+        item.LockPrice(true);
+        item.IsPriceLocked.ShouldBeTrue();
+
+        item.LockPrice(false);
+        item.IsPriceLocked.ShouldBeFalse();
+    }
 }

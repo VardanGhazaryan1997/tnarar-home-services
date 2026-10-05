@@ -156,11 +156,12 @@ public class WorkItemsEndpointTests(ApiFactory factory)
 
         var created = (await (await client.PostAsJsonAsync(
                 Admin,
-                new { categoryId = plastering.Id, slug, name = new { hy = "Գին" }, unit = "Piece", surface = "None", sortOrder = 1, priceMin = 100, priceTypical = 200, priceMax = 300 }))
+                new { categoryId = plastering.Id, slug, name = new { hy = "Գին" }, unit = "Piece", surface = "None", sortOrder = 1, priceMin = 100, priceTypical = 200, priceMax = 300, isPriceLocked = true }))
             .Content.ReadFromJsonAsync<AdminWorkItemDto>(Json))!;
         try
         {
             (created.PriceMin, created.PriceTypical, created.PriceMax).ShouldBe((100, 200, 300));
+            created.IsPriceLocked.ShouldBeTrue();
         }
         finally
         {

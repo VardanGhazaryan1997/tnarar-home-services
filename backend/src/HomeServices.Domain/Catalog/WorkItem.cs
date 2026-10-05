@@ -39,6 +39,12 @@ public sealed class WorkItem : SoftDeletableEntity, IAudited
     /// <summary>Highest usual labour price per unit in AMD.</summary>
     public int? PriceMax { get; private set; }
 
+    /// <summary>
+    /// True when staff fixed the price range: partners' own prices won't move it (the market range is worked out from
+    /// partner prices once enough partners priced the item).
+    /// </summary>
+    public bool IsPriceLocked { get; private set; }
+
     /// <summary>The staff price range, or null when the item has no prices yet.</summary>
     public PriceRange? Price => PriceMin is { } min && PriceTypical is { } typical && PriceMax is { } max ? new PriceRange(min, typical, max) : null;
 
@@ -79,6 +85,9 @@ public sealed class WorkItem : SoftDeletableEntity, IAudited
         PriceTypical = price?.Typical;
         PriceMax = price?.Max;
     }
+
+    /// <summary>Fixes the staff price range (true) or lets partner prices adjust it (false).</summary>
+    public void LockPrice(bool locked) => IsPriceLocked = locked;
 
     public void Activate() => IsActive = true;
 

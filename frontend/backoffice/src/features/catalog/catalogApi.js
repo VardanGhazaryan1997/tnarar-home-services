@@ -3,7 +3,7 @@ import { baseApi } from '@/api/baseApi'
 const BASE = '/admin/catalog'
 
 /** Back Office catalog management (needs catalog.manage). See backend/README "Managing the catalog". */
-export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories', 'Cities'] }).injectEndpoints({
+export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories', 'Cities', 'WorkItems'] }).injectEndpoints({
   endpoints: (build) => ({
     getCategories: build.query({
       query: () => `${BASE}/categories`,
@@ -27,6 +27,27 @@ export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories',
     deleteCategory: build.mutation({
       query: (id) => ({ url: `${BASE}/categories/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Categories'],
+    }),
+
+    getWorkItems: build.query({
+      query: () => `${BASE}/work-items`,
+      providesTags: ['WorkItems'],
+    }),
+    createWorkItem: build.mutation({
+      query: (body) => ({ url: `${BASE}/work-items`, method: 'POST', body }),
+      invalidatesTags: ['WorkItems'],
+    }),
+    updateWorkItem: build.mutation({
+      query: ({ id, ...body }) => ({ url: `${BASE}/work-items/${id}`, method: 'PUT', body }),
+      invalidatesTags: ['WorkItems'],
+    }),
+    setWorkItemActive: build.mutation({
+      query: ({ id, isActive }) => ({ url: `${BASE}/work-items/${id}/${isActive ? 'activate' : 'deactivate'}`, method: 'POST' }),
+      invalidatesTags: ['WorkItems'],
+    }),
+    deleteWorkItem: build.mutation({
+      query: (id) => ({ url: `${BASE}/work-items/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['WorkItems'],
     }),
 
     getRegions: build.query({
@@ -72,6 +93,11 @@ export const {
   useUpdateCategoryMutation,
   useSetCategoryActiveMutation,
   useDeleteCategoryMutation,
+  useGetWorkItemsQuery,
+  useCreateWorkItemMutation,
+  useUpdateWorkItemMutation,
+  useSetWorkItemActiveMutation,
+  useDeleteWorkItemMutation,
   useGetRegionsQuery,
   useGetCitiesQuery,
   useCreateCityMutation,

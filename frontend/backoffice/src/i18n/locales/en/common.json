@@ -148,7 +148,9 @@
       "parent_not_found": "The parent category no longer exists",
       "too_deep": "A subcategory can't have subcategories",
       "parent_invalid": "A category can't be its own parent",
-      "has_subcategories": "Move or delete its subcategories first"
+      "has_subcategories": "Move or delete its subcategories first",
+      "required": "Choose a subcategory",
+      "has_work_items": "Move or delete its work items first"
     },
     "city": {
       "not_found": "This city no longer exists. Refresh the page.",
@@ -333,11 +335,28 @@
     },
     "reference": {
       "too_long": "The reference is too long."
+    },
+    "work_item": {
+      "not_found": "This work item no longer exists. Refresh the page.",
+      "slug_taken": "Another work item already uses this slug",
+      "category_not_found": "This subcategory no longer exists",
+      "category_not_subcategory": "Choose a subcategory, not a main category"
+    },
+    "price": {
+      "incomplete": "Enter all three prices, or none",
+      "invalid": "Prices must go lowest ≤ usual ≤ highest"
+    },
+    "unit": {
+      "invalid": "Choose a unit"
+    },
+    "surface": {
+      "invalid": "Choose a surface"
     }
   },
   "catalog": {
     "tabs": {
       "categories": "Categories",
+      "work-items": "Work items",
       "cities": "Cities and districts"
     },
     "columns": {
@@ -408,7 +427,56 @@
     "saved": "Saved",
     "deleted": "Deleted",
     "hiddenDone": "Hidden from the website",
-    "shownDone": "Shown on the website"
+    "shownDone": "Shown on the website",
+    "workItems": {
+      "help": "Units of work partners price and customers estimate, each under a subcategory, with the usual labour price.",
+      "add": "Add work item",
+      "edit": "Edit work item",
+      "empty": "No work items match",
+      "category": "Category",
+      "allCategories": "All categories",
+      "allIn": "All in {{name}}",
+      "subcategory": "Subcategory",
+      "subcategoryRequired": "Choose a subcategory",
+      "search": "Search by name or slug",
+      "count": "{{shown}} of {{total}}",
+      "statuses": {
+        "all": "All",
+        "active": "Visible",
+        "hidden": "Hidden",
+        "unpriced": "Without a price"
+      },
+      "unit": "Unit",
+      "surface": "Surface",
+      "surfaceHelp": "Used to work out quantities from room sizes",
+      "units": {
+        "SquareMeter": "m²",
+        "RunningMeter": "Running m",
+        "Piece": "Piece",
+        "Point": "Point",
+        "CubicMeter": "m³",
+        "Hour": "Hour",
+        "Fixed": "Fixed"
+      },
+      "surfaces": {
+        "None": "None",
+        "Floor": "Floor",
+        "Wall": "Walls",
+        "Ceiling": "Ceiling"
+      },
+      "price": "Labour price",
+      "priceMin": "Lowest price",
+      "priceTypical": "Usual price",
+      "priceMax": "Highest price",
+      "priceIncomplete": "Enter all three prices, or none",
+      "priceOrder": "Lowest ≤ usual ≤ highest",
+      "noPrice": "No price",
+      "lock": "Lock this price range",
+      "locked": "Price range locked",
+      "lockHelp": "Partners' own prices won't change a locked range",
+      "deleteConfirm": "Delete \"{{name}}\"?",
+      "deleteHelp": "It disappears from price lists and estimates. To keep it for later, hide it instead."
+    }
   },
   "partners": {
     "queue": "Review queue",
@@ -967,7 +1035,8 @@
       "StaffUserRole": "Staff role",
       "CommissionRate": "Commission rate",
       "CommissionStatement": "Commission statement",
-      "Settlement": "Commission payment"
+      "Settlement": "Commission payment",
+      "WorkItem": "Work item"
     }
   },
   "common": {

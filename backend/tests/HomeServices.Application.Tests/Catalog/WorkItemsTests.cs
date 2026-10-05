@@ -263,15 +263,17 @@ public class WorkItemsTests
         var plastering = await GivenCategory("plastering", 1, renovation);
 
         var created = await new CreateWorkItemHandler(_db).HandleAsync(
-            new CreateWorkItem(plastering.Id, "wall-plastering", PlasteringName, WorkUnit.SquareMeter, WorkSurface.Wall, 1, 2500, 3500, 5000),
+            new CreateWorkItem(plastering.Id, "wall-plastering", PlasteringName, WorkUnit.SquareMeter, WorkSurface.Wall, 1, 2500, 3500, 5000, IsPriceLocked: true),
             CancellationToken.None);
 
         (created.PriceMin, created.PriceTypical, created.PriceMax).ShouldBe((2500, 3500, 5000));
+        created.IsPriceLocked.ShouldBeTrue();
         var shown = (await Public()).ShouldHaveSingleItem();
         (shown.PriceMin, shown.PriceTypical, shown.PriceMax).ShouldBe((2500, 3500, 5000));
 
         var cleared = await Update(created.Id, plastering.Id);
         cleared.PriceTypical.ShouldBeNull();
+        cleared.IsPriceLocked.ShouldBeFalse();
         (await Public()).ShouldHaveSingleItem().PriceMin.ShouldBeNull();
     }
 

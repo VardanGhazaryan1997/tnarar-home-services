@@ -2,9 +2,9 @@ import { Tabs, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 
-const TABS = ['categories', 'cities']
+const TABS = ['categories', 'work-items', 'cities']
 
-/** Catalog section: categories and cities, one tab each (/catalog/categories, /catalog/cities). */
+/** Catalog section: categories, work items and cities, one tab each (/catalog/categories, /catalog/work-items, /catalog/cities). */
 export default function CatalogPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()

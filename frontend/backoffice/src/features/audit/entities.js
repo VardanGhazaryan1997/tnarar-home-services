@@ -1,7 +1,7 @@
 /** Audited entity types (server class names) and where each one is shown in the Back Office. */
 export const ENTITY_TYPES = [
   'PartnerProfile', 'User', 'StaffUser', 'Role', 'Category', 'City', 'District', 'StaticPage', 'FaqItem', 'Language',
-  'PartnerService', 'PartnerArea', 'PartnerMedia', 'StaffUserRole', 'CommissionRate', 'CommissionStatement', 'Settlement',
+  'PartnerService', 'PartnerArea', 'PartnerMedia', 'StaffUserRole', 'CommissionRate', 'CommissionStatement', 'Settlement', 'WorkItem',
 ]
 
 const PAGES = {

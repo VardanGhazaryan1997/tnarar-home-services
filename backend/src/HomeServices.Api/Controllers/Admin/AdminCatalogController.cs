@@ -28,7 +28,8 @@ public sealed class AdminCatalogController : ControllerBase
         int SortOrder,
         int? PriceMin = null,
         int? PriceTypical = null,
-        int? PriceMax = null);
+        int? PriceMax = null,
+        bool IsPriceLocked = false);
 
     public sealed record PlaceRequest(string Slug, Dictionary<string, string> Name, int SortOrder);
 
@@ -118,7 +119,7 @@ public sealed class AdminCatalogController : ControllerBase
             await handler.HandleAsync(
                 new CreateWorkItem(
                     request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder,
-                    request.PriceMin, request.PriceTypical, request.PriceMax),
+                    request.PriceMin, request.PriceTypical, request.PriceMax, request.IsPriceLocked),
                 cancellationToken));
 
     [HttpPut("work-items/{id:guid}")]
@@ -130,7 +131,7 @@ public sealed class AdminCatalogController : ControllerBase
         handler.HandleAsync(
             new UpdateWorkItem(
                 id, request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder,
-                request.PriceMin, request.PriceTypical, request.PriceMax),
+                request.PriceMin, request.PriceTypical, request.PriceMax, request.IsPriceLocked),
             cancellationToken);
 
     /// <summary>Shows the work item on the Portal again.</summary>

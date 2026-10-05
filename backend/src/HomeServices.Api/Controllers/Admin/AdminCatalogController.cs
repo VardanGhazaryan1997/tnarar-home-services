@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HomeServices.Api.Controllers.Admin;
 
 /// <summary>
-/// Back Office management of service categories, cities and districts (needs <c>catalog.manage</c>).
+/// Back Office management of service categories, work items, cities and districts (needs <c>catalog.manage</c>).
 /// Names are sent per language: <c>{ "hy": "…", "ru": "…", "en": "…" }</c>; the default language is required.
 /// </summary>
 [ApiController]
@@ -17,6 +17,8 @@ namespace HomeServices.Api.Controllers.Admin;
 public sealed class AdminCatalogController : ControllerBase
 {
     public sealed record CategoryRequest(string Slug, Dictionary<string, string> Name, string? Icon, Guid? ParentId, int SortOrder);
+
+    public sealed record WorkItemRequest(Guid CategoryId, string Slug, Dictionary<string, string> Name, WorkUnit Unit, WorkSurface Surface, int SortOrder);
 
     public sealed record PlaceRequest(string Slug, Dictionary<string, string> Name, int SortOrder);
 
@@ -77,6 +79,69 @@ public sealed class AdminCatalogController : ControllerBase
         CancellationToken cancellationToken)
     {
         await handler.HandleAsync(new DeleteCategory(id), cancellationToken);
+        return NoContent();
+    }
+
+    // ---------- Work items ----------
+
+    /// <summary>
+    /// Work items in catalog order, hidden ones included. <paramref name="categoryId"/> may be a main category (its
+    /// subcategories' items); <paramref name="search"/> matches the slug or any name.
+    /// </summary>
+    [HttpGet("work-items")]
+    public Task<IReadOnlyList<AdminWorkItemDto>> GetWorkItems(
+        [FromQuery] Guid? categoryId,
+        [FromQuery] string? search,
+        [FromQuery] bool? isActive,
+        [FromServices] IQueryHandler<GetAdminWorkItems, IReadOnlyList<AdminWorkItemDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminWorkItems(categoryId, search, isActive), cancellationToken);
+
+    /// <summary>Adds a work item under a subcategory.</summary>
+    [HttpPost("work-items")]
+    public async Task<ActionResult<AdminWorkItemDto>> CreateWorkItemAsync(
+        WorkItemRequest request,
+        [FromServices] ICommandHandler<CreateWorkItem, AdminWorkItemDto> handler,
+        CancellationToken cancellationToken) =>
+        StatusCode(
+            StatusCodes.Status201Created,
+            await handler.HandleAsync(
+                new CreateWorkItem(request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder),
+                cancellationToken));
+
+    [HttpPut("work-items/{id:guid}")]
+    public Task<AdminWorkItemDto> UpdateWorkItem(
+        Guid id,
+        WorkItemRequest request,
+        [FromServices] ICommandHandler<UpdateWorkItem, AdminWorkItemDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(
+            new UpdateWorkItem(id, request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder),
+            cancellationToken);
+
+    /// <summary>Shows the work item on the Portal again.</summary>
+    [HttpPost("work-items/{id:guid}/activate")]
+    public Task<AdminWorkItemDto> ActivateWorkItem(
+        Guid id,
+        [FromServices] ICommandHandler<SetWorkItemActive, AdminWorkItemDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetWorkItemActive(id, IsActive: true), cancellationToken);
+
+    /// <summary>Hides the work item on the Portal.</summary>
+    [HttpPost("work-items/{id:guid}/deactivate")]
+    public Task<AdminWorkItemDto> DeactivateWorkItem(
+        Guid id,
+        [FromServices] ICommandHandler<SetWorkItemActive, AdminWorkItemDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetWorkItemActive(id, IsActive: false), cancellationToken);
+
+    [HttpDelete("work-items/{id:guid}")]
+    public async Task<IActionResult> DeleteWorkItemAsync(
+        Guid id,
+        [FromServices] ICommandHandler<DeleteWorkItem, bool> handler,
+        CancellationToken cancellationToken)
+    {
+        await handler.HandleAsync(new DeleteWorkItem(id), cancellationToken);
         return NoContent();
     }
 

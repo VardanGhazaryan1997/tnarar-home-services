@@ -144,6 +144,11 @@ public sealed class DeleteCategoryHandler(IAppDbContext db) : ICommandHandler<De
             throw new DomainException("category.has_subcategories", "Move or delete its subcategories first.");
         }
 
+        if (await db.WorkItems.AnyAsync(w => w.CategoryId == category.Id, cancellationToken))
+        {
+            throw new DomainException("category.has_work_items", "Move or delete its work items first.");
+        }
+
         // Partner profiles (task T23) will also block deleting a category that is in use.
         db.Categories.Remove(category);
         await db.SaveChangesAsync(cancellationToken);

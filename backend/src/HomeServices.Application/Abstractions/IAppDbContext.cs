@@ -30,6 +30,8 @@ public interface IAppDbContext
 
     DbSet<Category> Categories { get; }
 
+    DbSet<WorkItem> WorkItems { get; }
+
     DbSet<Region> Regions { get; }
 
     DbSet<City> Cities { get; }

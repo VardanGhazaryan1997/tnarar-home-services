@@ -8,7 +8,7 @@ namespace HomeServices.Infrastructure.IntegrationTests.Localization;
 public class LanguageStorageTests(PostgresFixture db)
 {
     [Fact]
-    public async Task Armenian_Russian_and_English_are_seeded_by_migrations_with_Armenian_as_default()
+    public async Task Armenian_Russian_English_Arabic_Persian_and_Hindi_are_seeded_by_migrations_with_Armenian_as_default()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(db.ConnectionStringFor("language_seed")).Options;
         await using var context = new AppDbContext(options);
@@ -16,7 +16,7 @@ public class LanguageStorageTests(PostgresFixture db)
 
         var languages = await context.Languages.OrderBy(l => l.SortOrder).ToListAsync();
 
-        languages.Select(l => l.Code).ShouldBe(new[] { "hy", "ru", "en" });
+        languages.Select(l => l.Code).ShouldBe(new[] { "hy", "ru", "en", "ar", "fa", "hi" });
         languages.ShouldAllBe(l => l.IsActive);
         languages.Single(l => l.IsDefault).Code.ShouldBe("hy");
         languages[0].NativeName.ShouldBe("Հայերեն");

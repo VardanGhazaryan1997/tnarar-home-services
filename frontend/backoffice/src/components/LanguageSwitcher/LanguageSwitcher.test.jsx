@@ -51,6 +51,29 @@ describe('LanguageSwitcher', () => {
     expect(await screen.findByRole('option', { name: 'Français' })).toBeInTheDocument()
   })
 
+  it('leaves out the languages offered in the Portal only', async () => {
+    server.use(
+      http.get('*/api/v1/languages', () =>
+        HttpResponse.json([
+          { code: 'hy', name: 'Armenian', nativeName: 'Հայերեն', isDefault: true },
+          { code: 'en', name: 'English', nativeName: 'English', isDefault: false },
+          { code: 'ar', name: 'Arabic', nativeName: 'العربية', isDefault: false },
+          { code: 'fa', name: 'Persian', nativeName: 'فارسی', isDefault: false },
+          { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', isDefault: false },
+        ]),
+      ),
+    )
+    const user = userEvent.setup()
+    renderRoute('/')
+
+    await openSwitcher(user)
+
+    expect(await screen.findByRole('option', { name: 'English' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'العربية' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'فارسی' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'हिन्दी' })).not.toBeInTheDocument()
+  })
+
   it('offers the bundled languages when the language list cannot be loaded', async () => {
     server.use(http.get('*/api/v1/languages', () => new HttpResponse(null, { status: 500 })))
     const user = userEvent.setup()

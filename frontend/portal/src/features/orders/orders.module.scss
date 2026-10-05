@@ -77,10 +77,10 @@
   }
 
   &__quote {
-    padding-left: space(3);
+    padding-inline-start: space(3);
     margin-top: space(2);
     white-space: pre-line;
-    border-left: 3px solid $color-border-strong;
+    border-inline-start: 3px solid $color-border-strong;
   }
 
   &__actions {
@@ -118,8 +118,7 @@
     &::before {
       position: absolute;
       top: 13px;
-      right: 50%;
-      left: -50%;
+      inset-inline: -50% 50%;
       height: 2px;
       content: '';
       background: $color-border;
@@ -369,7 +368,7 @@
       position: absolute;
       top: 14px;
       bottom: 0;
-      left: 5px;
+      inset-inline-start: 5px;
       width: 2px;
       content: '';
       background: $color-border;
@@ -567,7 +566,7 @@
     padding: space(3);
     margin-top: space(1);
     background: $color-surface-sunken;
-    border-left: 3px solid $color-tuff;
+    border-inline-start: 3px solid $color-tuff;
     border-radius: $radius-sm;
   }
 

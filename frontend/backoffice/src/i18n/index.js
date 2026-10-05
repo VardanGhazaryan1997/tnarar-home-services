@@ -10,7 +10,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import HttpBackend from 'i18next-http-backend'
 import { initReactI18next } from 'react-i18next'
 import { API_BASE_URL, resolveBaseUrl } from '@/api/config'
-import { BUNDLED_LANGUAGES, DEFAULT_LANGUAGE, normalizeLanguage, STORAGE_KEY } from './languages'
+import { backOfficeLanguage, BUNDLED_LANGUAGES, DEFAULT_LANGUAGE, STORAGE_KEY } from './languages'
 import en from './locales/en/common.json'
 import hy from './locales/hy/common.json'
 import ru from './locales/ru/common.json'
@@ -54,7 +54,7 @@ i18n
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: STORAGE_KEY,
       caches: ['localStorage'],
-      convertDetectedLanguage: normalizeLanguage,
+      convertDetectedLanguage: backOfficeLanguage,
     },
     backend: {
       // Texts for languages added in the Back Office (GET /api/v1/i18n/{lng}/backoffice). Missing texts

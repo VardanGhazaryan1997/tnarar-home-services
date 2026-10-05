@@ -15,13 +15,15 @@ public class LanguagesEndpointTests(ApiFactory factory)
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var languages = (await response.Content.ReadFromJsonAsync<List<LanguageDto>>())!;
-        languages.Select(l => l.Code).ShouldBe(new[] { "hy", "ru", "en" });
+        languages.Select(l => l.Code).ShouldBe(new[] { "hy", "ru", "en", "ar", "fa", "hi" });
         languages[0].ShouldBe(new LanguageDto("hy", "Armenian", "Հայերեն", IsDefault: true));
     }
 
     [Theory]
     [InlineData("ru-RU,ru;q=0.9,en;q=0.8", "ru")]
     [InlineData("en", "en")]
+    [InlineData("fa-IR,fa;q=0.9", "fa")]
+    [InlineData("ar", "ar")]
     [InlineData("fr", "hy")]
     [InlineData(null, "hy")]
     public async Task Responds_in_the_language_negotiated_from_Accept_Language(string? acceptLanguage, string expected)

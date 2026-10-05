@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ICON_PATHS } from '@/components/ui/Icon/icons'
+import { intlLocale } from '@/i18n/languages'
 import { bem } from '@/shared/bem'
 import styles from './Stars.module.scss'
 
@@ -19,7 +20,7 @@ function Star({ filled, size }) {
 export default function Stars({ value, size = 16, className }) {
   const { t, i18n } = useTranslation()
   const rounded = Math.round(value)
-  const label = t('reviews.ratingLabel', { rating: value.toLocaleString(i18n.language, { maximumFractionDigits: 1 }) })
+  const label = t('reviews.ratingLabel', { rating: value.toLocaleString(intlLocale(i18n.language), { maximumFractionDigits: 1 }) })
   return (
     <span className={[styles.stars, className].filter(Boolean).join(' ')} role="img" aria-label={label}>
       {STARS.map((star) => (

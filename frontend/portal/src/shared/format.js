@@ -1,8 +1,10 @@
+import { intlLocale } from '@/i18n/languages'
+
 /** "12 Oct 2026" in the UI language. Accepts ISO strings or Dates; empty for null. */
 export function formatDate(value, lng, options = { day: 'numeric', month: 'short', year: 'numeric' }) {
   if (!value) return ''
   const date = typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(`${value}T00:00:00`) : new Date(value)
-  return new Intl.DateTimeFormat(lng, options).format(date)
+  return new Intl.DateTimeFormat(intlLocale(lng), options).format(date)
 }
 
 /** "12 Oct 2026, 14:30" in the UI language. */
@@ -11,7 +13,7 @@ export const formatDateTime = (value, lng) =>
 
 /** "150 000 ֏" — amounts are whole drams. */
 export function formatMoney(amount, lng) {
-  return `${new Intl.NumberFormat(lng, { maximumFractionDigits: 0 }).format(amount)} ֏`
+  return `${new Intl.NumberFormat(intlLocale(lng), { maximumFractionDigits: 0 }).format(amount)} ֏`
 }
 
 /** "10 000 – 30 000 ֏", "from 10 000 ֏", "up to 30 000 ֏", or null when there's no budget. */

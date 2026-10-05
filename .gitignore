@@ -45,3 +45,5 @@ desktop.ini
 .docker-data/
 logs/
 *.log
+
+__pycache__/

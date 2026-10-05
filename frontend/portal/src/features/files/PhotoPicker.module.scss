@@ -77,9 +77,8 @@
 
   &__error {
     position: absolute;
-    right: 0;
+    inset-inline: 0;
     bottom: 0;
-    left: 0;
     padding: 2px space(1);
     font-size: $font-size-xs;
     color: $color-white;
@@ -92,7 +91,7 @@
 
     position: absolute;
     top: space(1);
-    right: space(1);
+    inset-inline-end: space(1);
     display: grid;
     place-items: center;
     width: 28px;

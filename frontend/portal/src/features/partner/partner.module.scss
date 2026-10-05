@@ -78,7 +78,7 @@
       height: auto;
       min-height: $touch-target;
       padding: space(2);
-      text-align: left;
+      text-align: start;
       background: none;
       border-radius: $radius;
 
@@ -548,7 +548,7 @@
 
     position: absolute;
     top: space(1);
-    right: space(1);
+    inset-inline-end: space(1);
     display: grid;
     place-items: center;
     width: 32px;
@@ -713,7 +713,7 @@
     margin: 0;
     white-space: pre-line;
     background: rgb(255 255 255 / 70%);
-    border-left: 3px solid currentcolor;
+    border-inline-start: 3px solid currentcolor;
     border-radius: $radius-sm;
   }
 

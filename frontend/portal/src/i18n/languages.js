@@ -5,10 +5,29 @@ export const DEFAULT_LANGUAGE = 'hy'
  * Languages whose UI text ships with the app (src/i18n/locales). Languages added later
  * in the Back Office load their text from the API instead.
  */
-export const BUNDLED_LANGUAGES = ['hy', 'ru', 'en']
+export const BUNDLED_LANGUAGES = ['hy', 'ru', 'en', 'ar', 'fa', 'hi']
 
 /** Names of the bundled languages in their own language, for when the API is unreachable. */
-export const NATIVE_NAMES = { hy: 'Հայերեն', ru: 'Русский', en: 'English' }
+export const NATIVE_NAMES = {
+  hy: 'Հայերեն',
+  ru: 'Русский',
+  en: 'English',
+  ar: 'العربية',
+  fa: 'فارسی',
+  hi: 'हिन्दी',
+}
+
+/** Languages written right to left. */
+export const RTL_LANGUAGES = ['ar', 'fa']
+
+/** "rtl" for Arabic and Persian, otherwise "ltr". */
+export const directionOf = (lng) => (RTL_LANGUAGES.includes(normalizeLanguage(lng)) ? 'rtl' : 'ltr')
+
+/**
+ * The locale for dates and numbers. Arabic and Persian use the Gregorian calendar and Western digits so dates,
+ * prices and phone numbers look the same as everywhere else in Armenia (Persian would default to the Solar Hijri calendar).
+ */
+export const intlLocale = (lng) => (RTL_LANGUAGES.includes(normalizeLanguage(lng)) ? `${normalizeLanguage(lng)}-u-ca-gregory-nu-latn` : lng)
 
 /** Where the visitor's last choice is remembered. */
 export const STORAGE_KEY = 'hs_lang'

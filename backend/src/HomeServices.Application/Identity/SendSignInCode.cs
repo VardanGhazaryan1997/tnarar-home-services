@@ -38,6 +38,9 @@ public sealed class SendSignInCodeHandler(
         ["hy"] = "Ձեր մուտքի կոդը՝ {0}",
         ["ru"] = "Ваш код входа: {0}",
         ["en"] = "Your sign-in code: {0}",
+        ["ar"] = "رمز الدخول الخاص بك: {0}",
+        ["fa"] = "کد ورود شما: {0}",
+        ["hi"] = "आपका साइन-इन कोड: {0}",
     };
 
     public async Task<SignInCodeSent> HandleAsync(SendSignInCode command, CancellationToken cancellationToken)

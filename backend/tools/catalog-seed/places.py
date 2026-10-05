@@ -126,6 +126,12 @@ def cs(s): return s.replace("\\", "\\\\").replace('"', '\\"')
 def rid(slug): return f"019a0000-0000-7000-8000-{400 + region_order[slug] + 1:012d}"
 def pid(slug): return EXISTING.get(slug) or str(uuid.uuid5(NS, slug))
 
+from catalog_i18n import REGIONS as I18N_REGIONS, TOWNS as I18N_TOWNS
+
+def more(table, slug):
+    """Arabic, Persian and Hindi names as extra Text arguments (villages have none and fall back to English)."""
+    return "".join(f', "{cs(x)}"' for x in table[slug])
+
 out = ['''using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Localization;
 
@@ -139,7 +145,7 @@ internal static partial class CatalogSeed
     internal static readonly (Guid Id, string Slug, LocalizedText Name)[] Regions =
     [''']
 for r in REGIONS:
-    out.append(f'        (new("{rid(r[0])}"), "{r[0]}", Text("{cs(r[2])}", "{cs(r[3])}", "{cs(r[4])}")),')
+    out.append(f'        (new("{rid(r[0])}"), "{r[0]}", Text("{cs(r[2])}", "{cs(r[3])}", "{cs(r[4])}"{more(I18N_REGIONS, r[0])})),')
 out.append('''    ];
 
     internal static readonly Guid YerevanRegionId = new("''' + rid("yerevan") + '''");
@@ -150,13 +156,13 @@ out.append('''    ];
     /// </summary>
     internal static readonly (Guid Id, Guid RegionId, SettlementKind Kind, string Slug, LocalizedText Name)[] Cities =
     [''')
-out.append(f'        (new("019a0000-0000-7000-8000-000000000201"), YerevanRegionId, SettlementKind.City, "yerevan", Text("Երևան", "Ереван", "Yerevan")),')
+out.append(f'        (new("019a0000-0000-7000-8000-000000000201"), YerevanRegionId, SettlementKind.City, "yerevan", Text("Երևան", "Ереван", "Yerevan"{more(I18N_TOWNS, "yerevan")})),')
 current = None
 for region, kind, hy, slug, ru, en in places:
     if region != current:
         out.append(f"        // {next(r[4] for r in REGIONS if r[0] == region)}")
         current = region
-    out.append(f'        (new("{pid(slug)}"), new("{rid(region)}"), SettlementKind.{kind}, "{slug}", Text("{cs(hy)}", "{cs(ru)}", "{cs(en)}")),')
+    out.append(f'        (new("{pid(slug)}"), new("{rid(region)}"), SettlementKind.{kind}, "{slug}", Text("{cs(hy)}", "{cs(ru)}", "{cs(en)}"{more(I18N_TOWNS, slug) if kind == "City" else ""})),')
 out.append('''    ];
 }
 ''')

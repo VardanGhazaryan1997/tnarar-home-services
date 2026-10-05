@@ -119,7 +119,7 @@
   &__refreshing {
     position: absolute;
     top: calc(-1 * #{space(6)});
-    right: 0;
+    inset-inline-end: 0;
   }
 
   &__grid {

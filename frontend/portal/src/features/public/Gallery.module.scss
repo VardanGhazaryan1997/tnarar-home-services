@@ -48,7 +48,7 @@
   &__badge {
     position: absolute;
     bottom: space(2);
-    left: space(2);
+    inset-inline-start: space(2);
     padding: 2px space(2);
     font-size: $font-size-xs;
     font-weight: $font-weight-semibold;

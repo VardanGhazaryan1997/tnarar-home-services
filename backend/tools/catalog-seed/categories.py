@@ -175,6 +175,12 @@ TOP = [
 import re
 slugs = set()
 def cs(s): return s.replace('\\', '\\\\').replace('"', '\\"')
+from catalog_i18n import CATEGORIES as I18N
+
+def more(slug):
+    """Arabic, Persian and Hindi names as extra Text arguments."""
+    return "".join(f', "{cs(x)}"' for x in I18N[slug])
+
 out = []
 out.append('''using HomeServices.Domain.Localization;
 
@@ -188,7 +194,7 @@ internal static partial class CatalogSeed
     [''')
 for n, slug, icon, hy, ru, en, kids in TOP:
     assert slug not in slugs; slugs.add(slug)
-    out.append(f'        (new("019a0000-0000-7000-8000-{n+100:012d}"), "{slug}", "{icon}", Text("{cs(hy)}", "{cs(ru)}", "{cs(en)}")),')
+    out.append(f'        (new("019a0000-0000-7000-8000-{n+100:012d}"), "{slug}", "{icon}", Text("{cs(hy)}", "{cs(ru)}", "{cs(en)}"{more(slug)})),')
 out.append('''    ];
 
     /// <summary>Subcategories, each under one main category. Ids are "...0001PPCC" (parent PP, child CC).</summary>
@@ -201,7 +207,7 @@ for n, slug, icon, hy, ru, en, kids in TOP:
     for i, (s, h, r, e) in enumerate(kids, 1):
         assert re.fullmatch(r'[a-z0-9]+(-[a-z0-9]+)*', s) and len(s) <= 64, s
         assert s not in slugs, s; slugs.add(s)
-        out.append(f'        (new("019a0000-0000-7000-8000-00000001{n:02d}{i:02d}"), new("{parent}"), "{s}", Text("{cs(h)}", "{cs(r)}", "{cs(e)}")),')
+        out.append(f'        (new("019a0000-0000-7000-8000-00000001{n:02d}{i:02d}"), new("{parent}"), "{s}", Text("{cs(h)}", "{cs(r)}", "{cs(e)}"{more(s)})),')
         total += 1
 out.append('''    ];
 }

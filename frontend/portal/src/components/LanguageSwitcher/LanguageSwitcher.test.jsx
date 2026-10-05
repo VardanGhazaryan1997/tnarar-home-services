@@ -49,6 +49,13 @@ describe('LanguageSwitcher', () => {
     renderRoute('/en')
 
     const select = await screen.findByRole('combobox', { name: en.languageSwitcher.label })
-    expect(within(select).getAllByRole('option').map((o) => o.textContent)).toEqual(['Հայերեն', 'Русский', 'English'])
+    expect(within(select).getAllByRole('option').map((o) => o.textContent)).toEqual([
+      'Հայերեն',
+      'Русский',
+      'English',
+      'العربية',
+      'فارسی',
+      'हिन्दी',
+    ])
   })
 })

@@ -205,7 +205,7 @@
   &__review-reply {
     padding: space(3);
     background: $color-surface-sunken;
-    border-left: 3px solid $color-tuff;
+    border-inline-start: 3px solid $color-tuff;
     border-radius: $radius-sm;
   }
 }

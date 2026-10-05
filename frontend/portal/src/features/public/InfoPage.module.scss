@@ -36,7 +36,7 @@
     }
 
     :where(ul, ol) {
-      padding-left: space(5);
+      padding-inline-start: space(5);
     }
 
     :where(a) {
@@ -44,9 +44,9 @@
     }
 
     :where(blockquote) {
-      padding-left: space(4);
+      padding-inline-start: space(4);
       color: $color-text-muted;
-      border-left: 3px solid $color-border-strong;
+      border-inline-start: 3px solid $color-border-strong;
     }
 
     :where(:first-child) {

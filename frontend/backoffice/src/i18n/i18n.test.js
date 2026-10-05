@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { http, HttpResponse } from 'msw'
 import i18n, { BUNDLED_LANGUAGES, DEFAULT_LANGUAGE, getAntdLocale, getDayjsLocale } from '@/i18n'
 import { server } from '@/test/server'
-import { normalizeLanguage, STORAGE_KEY } from './languages'
+import { backOfficeLanguage, normalizeLanguage, STORAGE_KEY } from './languages'
 import en from './locales/en/common.json'
 import hy from './locales/hy/common.json'
 import ru from './locales/ru/common.json'
@@ -84,6 +84,17 @@ describe('normalizeLanguage', () => {
     [undefined, ''],
   ])('normalizes %s to %s', (input, expected) => {
     expect(normalizeLanguage(input)).toBe(expected)
+  })
+})
+
+describe('backOfficeLanguage', () => {
+  it.each([
+    ['ru-RU', 'ru'],
+    ['ar-SA', 'en'],
+    ['fa', 'en'],
+    ['hi-IN', 'en'],
+  ])('opens the Back Office for %s in %s', (input, expected) => {
+    expect(backOfficeLanguage(input)).toBe(expected)
   })
 })
 

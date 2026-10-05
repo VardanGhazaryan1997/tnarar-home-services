@@ -18,7 +18,7 @@ public class CachedLanguageCatalogTests(PostgresFixture db)
 
         var catalog = await new CachedLanguageCatalog(context, cache).GetAsync(CancellationToken.None);
 
-        catalog.ActiveCodes.ShouldBe(new[] { "hy", "ru", "en" });
+        catalog.ActiveCodes.ShouldBe(new[] { "hy", "ru", "en", "ar", "fa", "hi" });
         catalog.DefaultCode.ShouldBe("hy");
     }
 

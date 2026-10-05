@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: space(1);
   padding: space(3) space(4);
-  border-left: 4px solid currentcolor;
+  border-inline-start: 4px solid currentcolor;
   border-radius: $radius;
 
   &--info {

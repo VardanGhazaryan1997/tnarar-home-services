@@ -49,4 +49,22 @@ public class CatalogEndpointTests(ApiFactory factory)
         yerevan.Districts.Count.ShouldBe(12);
         yerevan.Districts.ShouldContain(d => d.Name == "Kentron");
     }
+
+    [Fact]
+    public async Task Portal_only_languages_get_translated_names_and_fall_back_to_English()
+    {
+        var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Add("Accept-Language", "ar");
+
+        var categories = (await client.GetFromJsonAsync<List<CategoryDto>>("/api/v1/categories"))!;
+        var cities = (await client.GetFromJsonAsync<List<CityDto>>("/api/v1/cities"))!;
+
+        categories.Single(c => c.Slug == "plumbing").Name.ShouldBe("السباكة");
+        var yerevan = cities.Single(c => c.Slug == "yerevan");
+        yerevan.Name.ShouldBe("يريفان");
+        yerevan.Districts.ShouldContain(d => d.Name == "كينترون");
+        // Villages have no Arabic name, so they show the English one rather than Armenian.
+        var village = cities.First(c => c.Kind == "Village");
+        village.Name.ShouldMatch("^[A-Za-z]");
+    }
 }

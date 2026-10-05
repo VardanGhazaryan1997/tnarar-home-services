@@ -5,6 +5,7 @@ import Stars from '@/components/Stars/Stars'
 import Icon from '@/components/ui/Icon/Icon'
 import Tag from '@/components/ui/Tag/Tag'
 import { useLocalizedPath } from '@/i18n/hooks'
+import { intlLocale } from '@/i18n/languages'
 import styles from './PartnerCard.module.scss'
 
 /** "★★★★★ 4.8 (12 reviews)": the average rating and how many reviews it is based on. */
@@ -13,7 +14,7 @@ export function Rating({ rating, count, className }) {
   return (
     <p className={[styles['partner-card__rating'], className].filter(Boolean).join(' ')}>
       <Stars value={rating} />
-      <strong>{rating.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</strong>
+      <strong>{rating.toLocaleString(intlLocale(i18n.language), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</strong>
       <span>{t('reviews.count', { n: count })}</span>
     </p>
   )

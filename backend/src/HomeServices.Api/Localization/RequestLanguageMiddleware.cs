@@ -20,7 +20,8 @@ public sealed class RequestLanguageMiddleware(RequestDelegate next)
             languages.DefaultCode);
 
         context.Items[ItemKey] = language;
-        context.Items[DefaultItemKey] = languages.DefaultCode;
+        // Texts missing in the request language fall back to this one (English for ar/fa/hi, else the default).
+        context.Items[DefaultItemKey] = languages.FallbackFor(language);
         context.Response.OnStarting(() =>
         {
             context.Response.Headers.ContentLanguage = language;

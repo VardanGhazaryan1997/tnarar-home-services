@@ -1,4 +1,6 @@
 import {
+  directionOf,
+  intlLocale,
   isLanguageCode,
   localizedPath,
   normalizeLanguage,
@@ -26,6 +28,22 @@ describe('languages', () => {
     [undefined, false],
   ])('recognizes %s as a language code: %s', (value, expected) => {
     expect(isLanguageCode(value)).toBe(expected)
+  })
+
+  it.each([
+    ['ar', 'rtl'],
+    ['fa-IR', 'rtl'],
+    ['hi', 'ltr'],
+    ['hy', 'ltr'],
+  ])('writes %s as %s', (lng, expected) => {
+    expect(directionOf(lng)).toBe(expected)
+  })
+
+  it('formats Persian and Arabic dates in the Gregorian calendar with Western digits', () => {
+    expect(intlLocale('fa')).toBe('fa-u-ca-gregory-nu-latn')
+    expect(intlLocale('ar')).toBe('ar-u-ca-gregory-nu-latn')
+    expect(intlLocale('hi')).toBe('hi')
+    expect(new Intl.DateTimeFormat(intlLocale('fa'), { year: 'numeric' }).format(new Date('2026-10-06'))).toContain('2026')
   })
 
   it('picks the first available candidate in order of preference', () => {

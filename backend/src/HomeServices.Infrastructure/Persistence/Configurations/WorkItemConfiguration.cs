@@ -43,6 +43,7 @@ internal sealed class WorkItemConfiguration : IEntityTypeConfiguration<WorkItem>
                 PriceMin = (int?)w.PriceMin,
                 PriceTypical = (int?)w.PriceTypical,
                 PriceMax = (int?)w.PriceMax,
+                IsPriceLocked = false,
                 IsDeleted = false,
                 CreatedAt = SeededAt,
             })));

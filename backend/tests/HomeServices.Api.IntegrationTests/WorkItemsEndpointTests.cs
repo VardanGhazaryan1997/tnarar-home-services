@@ -122,4 +122,49 @@ public class WorkItemsEndpointTests(ApiFactory factory)
 
         (await client.PutAsJsonAsync($"{Admin}/{Guid.NewGuid()}", Body(plastering.Id, NewSlug("x")))).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task The_starter_catalog_has_priced_work_items_in_every_language()
+    {
+        var all = (await StaffClient(Permissions.CatalogManage).GetFromJsonAsync<List<AdminWorkItemDto>>(Admin, Json))!;
+        all.Count(w => w.PriceTypical is not null).ShouldBeGreaterThanOrEqualTo(287);
+
+        var plastering = all.Single(w => w.Slug == "wall-plastering");
+        plastering.Unit.ShouldBe(WorkUnit.SquareMeter);
+        plastering.Surface.ShouldBe(WorkSurface.Wall);
+        (plastering.PriceMin, plastering.PriceTypical, plastering.PriceMax).ShouldBe((2500, 3500, 5000));
+        plastering.Name.Keys.ShouldBe(new[] { "hy", "ru", "en", "ar", "fa", "hi" }, ignoreOrder: true);
+
+        var arabic = factory.CreateClient();
+        arabic.DefaultRequestHeaders.Add("Accept-Language", "ar");
+        var items = (await arabic.GetFromJsonAsync<List<WorkItemDto>>("/api/v1/work-items?category=renovation-plastering", Json))!;
+        items[0].Slug.ShouldBe("wall-plastering");
+        items[0].Name.ShouldBe(plastering.Name["ar"]);
+        items[0].PriceTypical.ShouldBe(3500);
+    }
+
+    [Fact]
+    public async Task Prices_are_validated_and_saved()
+    {
+        var client = StaffClient(Permissions.CatalogManage);
+        var plastering = (await SeededMain("renovation")).Children.Single(c => c.Slug == "renovation-plastering");
+        var slug = NewSlug("priced");
+
+        var incomplete = await client.PostAsJsonAsync(Admin, new { categoryId = plastering.Id, slug, name = new { hy = "Գին" }, unit = "Piece", surface = "None", sortOrder = 1, priceMin = 100 });
+        incomplete.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await incomplete.Content.ReadAsStringAsync()).ShouldContain("price.incomplete");
+
+        var created = (await (await client.PostAsJsonAsync(
+                Admin,
+                new { categoryId = plastering.Id, slug, name = new { hy = "Գին" }, unit = "Piece", surface = "None", sortOrder = 1, priceMin = 100, priceTypical = 200, priceMax = 300 }))
+            .Content.ReadFromJsonAsync<AdminWorkItemDto>(Json))!;
+        try
+        {
+            (created.PriceMin, created.PriceTypical, created.PriceMax).ShouldBe((100, 200, 300));
+        }
+        finally
+        {
+            await client.DeleteAsync($"{Admin}/{created.Id}");
+        }
+    }
 }

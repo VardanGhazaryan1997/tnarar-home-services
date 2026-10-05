@@ -66,4 +66,41 @@ public class WorkItemTests
         Should.Throw<DomainException>(() => WorkItem.Create(category, "plastering", Plastering, WorkUnit.SquareMeter, (WorkSurface)99, 1))
             .Code.ShouldBe("work_item.surface_invalid");
     }
+
+    [Fact]
+    public void A_new_work_item_has_no_prices_until_staff_set_them()
+    {
+        var item = WorkItem.Create(Guid.NewGuid(), "wall-plastering", Plastering, WorkUnit.SquareMeter, WorkSurface.Wall, 1);
+        item.Price.ShouldBeNull();
+
+        item.SetPrice(new PriceRange(2500, 3500, 5000));
+
+        item.Price.ShouldBe(new PriceRange(2500, 3500, 5000));
+        (item.PriceMin, item.PriceTypical, item.PriceMax).ShouldBe((2500, 3500, 5000));
+
+        item.SetPrice(null);
+        item.Price.ShouldBeNull();
+        item.PriceTypical.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(-1, 0, 0)]
+    [InlineData(3000, 2000, 4000)]
+    [InlineData(1000, 5000, 4000)]
+    [InlineData(0, 0, PriceRange.Limit + 1)]
+    public void Prices_must_be_in_order_and_within_the_limit(int min, int typical, int max)
+    {
+        var item = WorkItem.Create(Guid.NewGuid(), "wall-plastering", Plastering, WorkUnit.SquareMeter, WorkSurface.Wall, 1);
+
+        new PriceRange(min, typical, max).IsValid.ShouldBeFalse();
+        Should.Throw<DomainException>(() => item.SetPrice(new PriceRange(min, typical, max))).Code.ShouldBe("price.invalid");
+        item.Price.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Equal_prices_are_a_valid_range()
+    {
+        new PriceRange(0, 0, 0).IsValid.ShouldBeTrue();
+        new PriceRange(5000, 5000, 5000).IsValid.ShouldBeTrue();
+    }
 }

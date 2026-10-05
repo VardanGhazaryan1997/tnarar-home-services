@@ -16,7 +16,17 @@ namespace HomeServices.Application.Catalog;
 /// </summary>
 public sealed record GetWorkItems(string? Category = null) : IQuery<IReadOnlyList<WorkItemDto>>;
 
-public sealed record WorkItemDto(Guid Id, Guid CategoryId, string Slug, string Name, WorkUnit Unit, WorkSurface Surface);
+/// <summary>A work item for the Portal. Prices are the usual labour price range per unit in AMD (null until priced).</summary>
+public sealed record WorkItemDto(
+    Guid Id,
+    Guid CategoryId,
+    string Slug,
+    string Name,
+    WorkUnit Unit,
+    WorkSurface Surface,
+    int? PriceMin = null,
+    int? PriceTypical = null,
+    int? PriceMax = null);
 
 /// <summary>
 /// Every work item (hidden ones too) with all translations, for the Back Office. Filters: a category (a main category
@@ -33,10 +43,24 @@ public sealed record AdminWorkItemDto(
     WorkUnit Unit,
     WorkSurface Surface,
     int SortOrder,
-    bool IsActive)
+    bool IsActive,
+    int? PriceMin = null,
+    int? PriceTypical = null,
+    int? PriceMax = null)
 {
     public static AdminWorkItemDto From(WorkItem item) =>
-        new(item.Id, item.CategoryId, item.Slug, AdminCategoryDto.Translations(item.Name), item.Unit, item.Surface, item.SortOrder, item.IsActive);
+        new(
+            item.Id,
+            item.CategoryId,
+            item.Slug,
+            AdminCategoryDto.Translations(item.Name),
+            item.Unit,
+            item.Surface,
+            item.SortOrder,
+            item.IsActive,
+            item.PriceMin,
+            item.PriceTypical,
+            item.PriceMax);
 }
 
 /// <summary>The fields a staff member edits on a work item.</summary>
@@ -53,6 +77,13 @@ public interface IWorkItemFields
     WorkSurface Surface { get; }
 
     int SortOrder { get; }
+
+    /// <summary>The labour price range per unit in AMD: all three, or none for an item without prices yet.</summary>
+    int? PriceMin { get; }
+
+    int? PriceTypical { get; }
+
+    int? PriceMax { get; }
 }
 
 public sealed record CreateWorkItem(
@@ -61,7 +92,10 @@ public sealed record CreateWorkItem(
     IReadOnlyDictionary<string, string> Name,
     WorkUnit Unit,
     WorkSurface Surface,
-    int SortOrder) : ICommand<AdminWorkItemDto>, IWorkItemFields;
+    int SortOrder,
+    int? PriceMin = null,
+    int? PriceTypical = null,
+    int? PriceMax = null) : ICommand<AdminWorkItemDto>, IWorkItemFields;
 
 public sealed record UpdateWorkItem(
     Guid Id,
@@ -70,7 +104,10 @@ public sealed record UpdateWorkItem(
     IReadOnlyDictionary<string, string> Name,
     WorkUnit Unit,
     WorkSurface Surface,
-    int SortOrder) : ICommand<AdminWorkItemDto>, IWorkItemFields;
+    int SortOrder,
+    int? PriceMin = null,
+    int? PriceTypical = null,
+    int? PriceMax = null) : ICommand<AdminWorkItemDto>, IWorkItemFields;
 
 /// <summary>Shows or hides a work item on the Portal.</summary>
 public sealed record SetWorkItemActive(Guid Id, bool IsActive) : ICommand<AdminWorkItemDto>;
@@ -89,6 +126,14 @@ public abstract class WorkItemFieldsValidator<T> : AbstractValidator<T>
         RuleFor(x => x.Unit).IsInEnum().WithErrorCode("unit.invalid");
         RuleFor(x => x.Surface).IsInEnum().WithErrorCode("surface.invalid");
         RuleFor(x => x.SortOrder).ValidSortOrder();
+        RuleFor(x => x)
+            .Must(x => x.PriceMin is null == x.PriceTypical is null && x.PriceTypical is null == x.PriceMax is null)
+            .OverridePropertyName("price")
+            .WithErrorCode("price.incomplete");
+        RuleFor(x => x)
+            .Must(x => WorkItemPrices.From(x) is not { IsValid: false })
+            .OverridePropertyName("price")
+            .WithErrorCode("price.invalid");
     }
 }
 
@@ -119,7 +164,8 @@ public sealed class GetWorkItemsHandler(IAppDbContext db, ICurrentLanguage langu
             .ToListAsync(cancellationToken);
 
         return WorkItemCatalog.Sort(items, wanted)
-            .Select(w => new WorkItemDto(w.Id, w.CategoryId, w.Slug, w.Name.Get(language.Code, language.DefaultCode), w.Unit, w.Surface))
+            .Select(w => new WorkItemDto(
+                w.Id, w.CategoryId, w.Slug, w.Name.Get(language.Code, language.DefaultCode), w.Unit, w.Surface, w.PriceMin, w.PriceTypical, w.PriceMax))
             .ToList();
     }
 }
@@ -159,6 +205,7 @@ public sealed class CreateWorkItemHandler(IAppDbContext db) : ICommandHandler<Cr
         await WorkItemChecks.EnsureSlugFreeAsync(db, command.Slug, exceptId: null, cancellationToken);
 
         var item = WorkItem.Create(command.CategoryId, command.Slug, LocalizedText.From(command.Name), command.Unit, command.Surface, command.SortOrder);
+        item.SetPrice(WorkItemPrices.From(command));
         db.WorkItems.Add(item);
         await db.SaveChangesAsync(cancellationToken);
         return AdminWorkItemDto.From(item);
@@ -178,6 +225,7 @@ public sealed class UpdateWorkItemHandler(IAppDbContext db) : ICommandHandler<Up
         await WorkItemChecks.EnsureSlugFreeAsync(db, command.Slug, item.Id, cancellationToken);
 
         item.Update(command.CategoryId, command.Slug, LocalizedText.From(command.Name), command.Unit, command.Surface, command.SortOrder);
+        item.SetPrice(WorkItemPrices.From(command));
         await db.SaveChangesAsync(cancellationToken);
         return AdminWorkItemDto.From(item);
     }
@@ -212,6 +260,13 @@ public sealed class DeleteWorkItemHandler(IAppDbContext db) : ICommandHandler<De
         await db.SaveChangesAsync(cancellationToken);
         return true;
     }
+}
+
+internal static class WorkItemPrices
+{
+    /// <summary>The range from the edited fields; null unless all three prices are given.</summary>
+    public static PriceRange? From(IWorkItemFields fields) =>
+        fields is { PriceMin: { } min, PriceTypical: { } typical, PriceMax: { } max } ? new PriceRange(min, typical, max) : null;
 }
 
 internal static class WorkItemChecks

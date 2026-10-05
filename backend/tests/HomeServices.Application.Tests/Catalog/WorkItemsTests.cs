@@ -255,4 +255,39 @@ public class WorkItemsTests
             new[] { "category.required", "slug.invalid", "name.default_language_required", "unit.invalid", "surface.invalid", "sort_order.invalid" },
             ignoreOrder: true);
     }
+
+    [Fact]
+    public async Task Prices_are_saved_with_the_item_and_shown_on_the_Portal()
+    {
+        var renovation = await GivenCategory("renovation");
+        var plastering = await GivenCategory("plastering", 1, renovation);
+
+        var created = await new CreateWorkItemHandler(_db).HandleAsync(
+            new CreateWorkItem(plastering.Id, "wall-plastering", PlasteringName, WorkUnit.SquareMeter, WorkSurface.Wall, 1, 2500, 3500, 5000),
+            CancellationToken.None);
+
+        (created.PriceMin, created.PriceTypical, created.PriceMax).ShouldBe((2500, 3500, 5000));
+        var shown = (await Public()).ShouldHaveSingleItem();
+        (shown.PriceMin, shown.PriceTypical, shown.PriceMax).ShouldBe((2500, 3500, 5000));
+
+        var cleared = await Update(created.Id, plastering.Id);
+        cleared.PriceTypical.ShouldBeNull();
+        (await Public()).ShouldHaveSingleItem().PriceMin.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(1000, null, null, "price.incomplete")]
+    [InlineData(null, 2000, 3000, "price.incomplete")]
+    [InlineData(3000, 2000, 4000, "price.invalid")]
+    [InlineData(-5, 0, 10, "price.invalid")]
+    public async Task Prices_are_all_three_or_none_and_in_order(int? min, int? typical, int? max, string error)
+    {
+        var validator = new CreateWorkItemValidator(new FakeLanguageCatalog("hy"));
+
+        var result = await validator.ValidateAsync(
+            new CreateWorkItem(Guid.NewGuid(), "wall-plastering", PlasteringName, WorkUnit.SquareMeter, WorkSurface.Wall, 1, min, typical, max));
+
+        result.Errors.Select(e => e.ErrorCode).ShouldBe(new[] { error });
+        result.Errors.Single().PropertyName.ShouldBe("price");
+    }
 }

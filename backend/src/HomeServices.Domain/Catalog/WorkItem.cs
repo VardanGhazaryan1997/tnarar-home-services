@@ -30,6 +30,18 @@ public sealed class WorkItem : SoftDeletableEntity, IAudited
 
     public bool IsActive { get; private set; }
 
+    /// <summary>Lowest usual labour price per unit in AMD, set by staff; null until priced.</summary>
+    public int? PriceMin { get; private set; }
+
+    /// <summary>The usual labour price per unit in AMD.</summary>
+    public int? PriceTypical { get; private set; }
+
+    /// <summary>Highest usual labour price per unit in AMD.</summary>
+    public int? PriceMax { get; private set; }
+
+    /// <summary>The staff price range, or null when the item has no prices yet.</summary>
+    public PriceRange? Price => PriceMin is { } min && PriceTypical is { } typical && PriceMax is { } max ? new PriceRange(min, typical, max) : null;
+
     public static WorkItem Create(Guid categoryId, string slug, LocalizedText name, WorkUnit unit, WorkSurface surface, int sortOrder)
     {
         EnsureNamed(name);
@@ -57,6 +69,15 @@ public sealed class WorkItem : SoftDeletableEntity, IAudited
         Unit = unit;
         Surface = surface;
         SortOrder = sortOrder;
+    }
+
+    /// <summary>Sets the staff price range (labour, AMD per unit), or clears it with null.</summary>
+    public void SetPrice(PriceRange? price)
+    {
+        price?.EnsureValid();
+        PriceMin = price?.Min;
+        PriceTypical = price?.Typical;
+        PriceMax = price?.Max;
     }
 
     public void Activate() => IsActive = true;

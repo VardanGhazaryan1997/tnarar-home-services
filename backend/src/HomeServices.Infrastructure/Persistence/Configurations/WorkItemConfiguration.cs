@@ -7,6 +7,8 @@ namespace HomeServices.Infrastructure.Persistence.Configurations;
 
 internal sealed class WorkItemConfiguration : IEntityTypeConfiguration<WorkItem>
 {
+    private static readonly DateTimeOffset SeededAt = new(2026, 10, 6, 0, 0, 0, TimeSpan.Zero);
+
     public void Configure(EntityTypeBuilder<WorkItem> builder)
     {
         builder.Property(w => w.Slug).HasMaxLength(Slug.MaxLength);
@@ -21,5 +23,28 @@ internal sealed class WorkItemConfiguration : IEntityTypeConfiguration<WorkItem>
             .WithMany()
             .HasForeignKey(w => w.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Ignore(w => w.Price);
+
+        // Starter work items with Yerevan labour prices, numbered within their subcategory.
+        var subcategoryIds = CatalogSeed.Subcategories.ToDictionary(c => c.Slug, c => c.Id, StringComparer.Ordinal);
+        builder.HasData(CatalogSeed.WorkItems
+            .GroupBy(w => w.CategorySlug)
+            .SelectMany(group => group.Select((w, index) => new
+            {
+                w.Id,
+                CategoryId = subcategoryIds[w.CategorySlug],
+                w.Slug,
+                w.Name,
+                w.Unit,
+                w.Surface,
+                SortOrder = index + 1,
+                IsActive = true,
+                PriceMin = (int?)w.PriceMin,
+                PriceTypical = (int?)w.PriceTypical,
+                PriceMax = (int?)w.PriceMax,
+                IsDeleted = false,
+                CreatedAt = SeededAt,
+            })));
     }
 }

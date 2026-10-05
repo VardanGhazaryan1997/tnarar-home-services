@@ -18,7 +18,17 @@ public sealed class AdminCatalogController : ControllerBase
 {
     public sealed record CategoryRequest(string Slug, Dictionary<string, string> Name, string? Icon, Guid? ParentId, int SortOrder);
 
-    public sealed record WorkItemRequest(Guid CategoryId, string Slug, Dictionary<string, string> Name, WorkUnit Unit, WorkSurface Surface, int SortOrder);
+    /// <summary>A work item's fields. Prices (labour, AMD per unit) are all three or none.</summary>
+    public sealed record WorkItemRequest(
+        Guid CategoryId,
+        string Slug,
+        Dictionary<string, string> Name,
+        WorkUnit Unit,
+        WorkSurface Surface,
+        int SortOrder,
+        int? PriceMin = null,
+        int? PriceTypical = null,
+        int? PriceMax = null);
 
     public sealed record PlaceRequest(string Slug, Dictionary<string, string> Name, int SortOrder);
 
@@ -106,7 +116,9 @@ public sealed class AdminCatalogController : ControllerBase
         StatusCode(
             StatusCodes.Status201Created,
             await handler.HandleAsync(
-                new CreateWorkItem(request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder),
+                new CreateWorkItem(
+                    request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder,
+                    request.PriceMin, request.PriceTypical, request.PriceMax),
                 cancellationToken));
 
     [HttpPut("work-items/{id:guid}")]
@@ -116,7 +128,9 @@ public sealed class AdminCatalogController : ControllerBase
         [FromServices] ICommandHandler<UpdateWorkItem, AdminWorkItemDto> handler,
         CancellationToken cancellationToken) =>
         handler.HandleAsync(
-            new UpdateWorkItem(id, request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder),
+            new UpdateWorkItem(
+                id, request.CategoryId, request.Slug, request.Name, request.Unit, request.Surface, request.SortOrder,
+                request.PriceMin, request.PriceTypical, request.PriceMax),
             cancellationToken);
 
     /// <summary>Shows the work item on the Portal again.</summary>

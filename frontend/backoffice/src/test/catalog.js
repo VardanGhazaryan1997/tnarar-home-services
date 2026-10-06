@@ -84,6 +84,12 @@ export const WORK_ITEMS = [
     priceTypical: 6500,
     priceMax: 9000,
     isPriceLocked: false,
+    partnerCount: 6,
+    marketMin: 6000,
+    marketTypical: 7000,
+    marketMax: 8000,
+    marketSource: 'Partners',
+    marketPartnerCount: 6,
   },
   {
     id: 'wi-leaks',

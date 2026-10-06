@@ -10,6 +10,7 @@ using HomeServices.Api.Identity;
 using HomeServices.Api.Localization;
 using HomeServices.Api.Notifications;
 using HomeServices.Api.Orders;
+using HomeServices.Api.Pricing;
 using HomeServices.Api.Requests;
 using HomeServices.Api.Staff;
 using HomeServices.Application;
@@ -84,6 +85,10 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<OrderA
 // Background: weekly commission statements, overdue reminders, pausing partners who don't pay.
 builder.Services.AddSingleton<CommissionJobService>();
 builder.Services.AddHostedService(provider => provider.GetRequiredService<CommissionJobService>());
+
+// Background: market price ranges from partners' prices (also updated as prices change).
+builder.Services.AddSingleton<MarketPriceService>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<MarketPriceService>());
 
 // Background: new notifications go out as SMS (the important ones) and live updates.
 builder.Services.AddSingleton<NotificationDeliveryService>();

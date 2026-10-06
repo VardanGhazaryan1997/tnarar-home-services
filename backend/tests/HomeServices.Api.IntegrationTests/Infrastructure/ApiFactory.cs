@@ -37,6 +37,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 ["Orders:AutoCompleteEnabled"] = "false",
                 ["Notifications:DeliveryEnabled"] = "false",
                 ["Commissions:JobEnabled"] = "false",
+                ["Pricing:JobEnabled"] = "false",
                 // Keep test output readable: only warnings and errors.
                 ["Serilog:MinimumLevel:Default"] = "Warning",
                 ["Serilog:MinimumLevel:Override:Microsoft.AspNetCore"] = "Warning",

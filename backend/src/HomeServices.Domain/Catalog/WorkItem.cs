@@ -45,6 +45,26 @@ public sealed class WorkItem : SoftDeletableEntity, IAudited
     /// </summary>
     public bool IsPriceLocked { get; private set; }
 
+    /// <summary>
+    /// The usual market labour price per unit, as customers and partners see it: partners' prices once enough partners
+    /// priced the item (and staff didn't lock it), otherwise the staff range. Null when there is neither.
+    /// </summary>
+    public int? MarketMin { get; private set; }
+
+    public int? MarketTypical { get; private set; }
+
+    public int? MarketMax { get; private set; }
+
+    public MarketPriceSource MarketSource { get; private set; }
+
+    /// <summary>How many partners' prices the last calculation counted.</summary>
+    public int MarketPartnerCount { get; private set; }
+
+    public DateTimeOffset? MarketUpdatedAt { get; private set; }
+
+    /// <summary>The market range, or null without prices.</summary>
+    public PriceRange? Market => MarketMin is { } min && MarketTypical is { } typical && MarketMax is { } max ? new PriceRange(min, typical, max) : null;
+
     /// <summary>The staff price range, or null when the item has no prices yet.</summary>
     public PriceRange? Price => PriceMin is { } min && PriceTypical is { } typical && PriceMax is { } max ? new PriceRange(min, typical, max) : null;
 
@@ -84,10 +104,44 @@ public sealed class WorkItem : SoftDeletableEntity, IAudited
         PriceMin = price?.Min;
         PriceTypical = price?.Typical;
         PriceMax = price?.Max;
+        if (MarketSource == MarketPriceSource.Staff)
+        {
+            SetMarket(price);
+        }
+    }
+
+    /// <summary>
+    /// Updates the market range from partners' prices: <paramref name="partnerRange"/> from <paramref name="partnerCount"/>
+    /// partners counts once there are at least <paramref name="minPartners"/> and the staff range isn't locked; otherwise
+    /// the market range is the staff range.
+    /// </summary>
+    public void UpdateMarket(PriceRange? partnerRange, int partnerCount, int minPartners, DateTimeOffset now)
+    {
+        var fromPartners = !IsPriceLocked && partnerRange is not null && partnerCount >= minPartners;
+        partnerRange?.EnsureValid();
+        MarketSource = fromPartners ? MarketPriceSource.Partners : MarketPriceSource.Staff;
+        SetMarket(fromPartners ? partnerRange : Price);
+        MarketPartnerCount = partnerCount;
+        MarketUpdatedAt = now;
+    }
+
+    private void SetMarket(PriceRange? range)
+    {
+        MarketMin = range?.Min;
+        MarketTypical = range?.Typical;
+        MarketMax = range?.Max;
     }
 
     /// <summary>Fixes the staff price range (true) or lets partner prices adjust it (false).</summary>
-    public void LockPrice(bool locked) => IsPriceLocked = locked;
+    public void LockPrice(bool locked)
+    {
+        IsPriceLocked = locked;
+        if (locked)
+        {
+            MarketSource = MarketPriceSource.Staff;
+            SetMarket(Price);
+        }
+    }
 
     public void Activate() => IsActive = true;
 

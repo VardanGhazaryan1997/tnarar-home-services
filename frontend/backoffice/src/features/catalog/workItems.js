@@ -18,6 +18,10 @@ export function priceRangeText(item, language) {
     : `${formatMoney(item.priceMin, language).replace(' ֏', '')} – ${formatMoney(item.priceMax, language)}`
 }
 
+/** The market range partners' prices give ("10,000 – 20,000 ֏"), or null without one. */
+export const marketRangeText = (item, language) =>
+  item.marketTypical == null ? null : priceRangeText({ priceMin: item.marketMin, priceTypical: item.marketTypical, priceMax: item.marketMax }, language)
+
 /**
  * Subcategories grouped under their main categories, for a select: [{ label: main, options: [{ value, label }] }].
  * Hidden categories are marked, so staff notice items that customers can't see.

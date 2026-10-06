@@ -5,6 +5,7 @@ using HomeServices.Application.Tests.Support;
 using HomeServices.Domain;
 using HomeServices.Domain.Catalog;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Tests.Partners;
 
@@ -60,7 +61,7 @@ public class PartnerPricesTests
     private async Task<MyPriceListDto> SaveAsync(params MyPriceInput[] prices)
     {
         Db.ChangeTracker.Clear();
-        return await new SaveMyPricesHandler(Db, _data.Me, new FakeCurrentLanguage("hy"))
+        return await new SaveMyPricesHandler(Db, _data.Me, new FakeCurrentLanguage("hy"), Options.Create(new PricingSettings()), _data.Clock)
             .HandleAsync(new SaveMyPrices(prices), CancellationToken.None);
     }
 

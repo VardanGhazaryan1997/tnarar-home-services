@@ -4,6 +4,7 @@ using HomeServices.Application.Tests.Support;
 using HomeServices.Domain;
 using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Localization;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Tests.Catalog;
 
@@ -57,7 +58,7 @@ public class WorkItemsTests
             CancellationToken.None);
 
     private Task<AdminWorkItemDto> Update(Guid id, Guid categoryId, string slug = "wall-plastering") =>
-        new UpdateWorkItemHandler(_db).HandleAsync(
+        new UpdateWorkItemHandler(_db, Options.Create(new PricingSettings()), TimeProvider.System).HandleAsync(
             new UpdateWorkItem(id, categoryId, slug, PlasteringName, WorkUnit.RunningMeter, WorkSurface.Floor, 3),
             CancellationToken.None);
 

@@ -24,7 +24,9 @@ internal sealed class WorkItemConfiguration : IEntityTypeConfiguration<WorkItem>
             .HasForeignKey(w => w.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Property(w => w.MarketSource).HasConversion<string>().HasMaxLength(16);
         builder.Ignore(w => w.Price);
+        builder.Ignore(w => w.Market);
 
         // Starter work items with Yerevan labour prices, numbered within their subcategory.
         var subcategoryIds = CatalogSeed.Subcategories.ToDictionary(c => c.Slug, c => c.Id, StringComparer.Ordinal);
@@ -44,6 +46,12 @@ internal sealed class WorkItemConfiguration : IEntityTypeConfiguration<WorkItem>
                 PriceTypical = (int?)w.PriceTypical,
                 PriceMax = (int?)w.PriceMax,
                 IsPriceLocked = false,
+                MarketMin = (int?)w.PriceMin,
+                MarketTypical = (int?)w.PriceTypical,
+                MarketMax = (int?)w.PriceMax,
+                MarketSource = MarketPriceSource.Staff,
+                MarketPartnerCount = 0,
+                MarketUpdatedAt = (DateTimeOffset?)null,
                 IsDeleted = false,
                 CreatedAt = SeededAt,
             })));

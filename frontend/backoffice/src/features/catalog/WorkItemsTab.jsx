@@ -15,7 +15,7 @@ import {
 import { localizedName } from './names'
 import { useCatalogLanguages } from './useCatalogLanguages'
 import WorkItemFormModal from './WorkItemFormModal'
-import { categoryLookup, filterWorkItems, hasPrice, priceRangeText } from './workItems'
+import { categoryLookup, filterWorkItems, hasPrice, marketRangeText, priceRangeText } from './workItems'
 
 const STATUSES = ['all', 'active', 'hidden', 'unpriced']
 
@@ -122,6 +122,13 @@ export default function WorkItemsTab() {
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               {priceRangeText(item, lng)}
             </Typography.Text>
+            {item.marketSource === 'Partners' && (
+              <Tooltip title={t('catalog.workItems.marketHelp', { count: item.marketPartnerCount })}>
+                <Tag color="blue" style={{ marginTop: 4, width: 'fit-content' }}>
+                  {t('catalog.workItems.market', { range: marketRangeText(item, lng) })}
+                </Tag>
+              </Tooltip>
+            )}
           </Flex>
         ) : (
           <Tag color="orange">{t('catalog.workItems.noPrice')}</Tag>

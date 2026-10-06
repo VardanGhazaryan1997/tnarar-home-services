@@ -1,5 +1,5 @@
 import { CATEGORIES, WORK_ITEMS } from '@/test/catalog'
-import { categoryLookup, filterWorkItems, priceProblem, priceRangeText, subcategoryGroups } from './workItems'
+import { categoryLookup, filterWorkItems, marketRangeText, priceProblem, priceRangeText, subcategoryGroups } from './workItems'
 
 describe('work item helpers', () => {
   it.each([
@@ -18,6 +18,8 @@ describe('work item helpers', () => {
     expect(priceRangeText({ priceMin: 2500, priceTypical: 3500, priceMax: 5000 }, 'en')).toBe('2,500 – 5,000 ֏')
     expect(priceRangeText({ priceMin: 5000, priceTypical: 5000, priceMax: 5000 }, 'en')).toBe('5,000 ֏')
     expect(priceRangeText({ priceMin: null, priceTypical: null, priceMax: null }, 'en')).toBeNull()
+    expect(marketRangeText({ marketMin: 6000, marketTypical: 7000, marketMax: 8000 }, 'en')).toBe('6,000 – 8,000 ֏')
+    expect(marketRangeText({ marketTypical: null }, 'en')).toBeNull()
   })
 
   it('groups subcategories under their main categories and marks hidden ones', () => {

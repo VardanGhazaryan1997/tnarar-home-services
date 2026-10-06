@@ -1,4 +1,5 @@
 using HomeServices.Application.Abstractions;
+using HomeServices.Application.Catalog;
 using HomeServices.Application.Commissions;
 using HomeServices.Application.Files;
 using HomeServices.Application.Identity;
@@ -71,6 +72,10 @@ public static class DependencyInjection
             .Validate(s => s.DueDays is >= 1 and <= 60, "Commissions:DueDays must be between 1 and 60.")
             .Validate(s => s.PauseAfterOverdueDays is >= 0 and <= 365, "Commissions:PauseAfterOverdueDays must be between 0 and 365.")
             .Validate(s => s.JobMinutes is >= 1 and <= 1440, "Commissions:JobMinutes must be between 1 and 1440.");
+        services.AddOptions<PricingSettings>()
+            .BindConfiguration(PricingSettings.SectionName)
+            .Validate(s => s.MinPartners is >= 1 and <= 1000, "Pricing:MinPartners must be between 1 and 1000.")
+            .Validate(s => s.RecalculateHours is >= 1 and <= 168, "Pricing:RecalculateHours must be between 1 and 168.");
         services.AddOptions<NotificationSettings>()
             .BindConfiguration(NotificationSettings.SectionName)
             .Validate(s => Uri.TryCreate(s.PortalUrl, UriKind.Absolute, out _), "Notifications:PortalUrl must be an absolute URL.")

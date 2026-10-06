@@ -7,6 +7,7 @@ using HomeServices.Domain;
 using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Catalog;
 
@@ -16,7 +17,10 @@ namespace HomeServices.Application.Catalog;
 /// </summary>
 public sealed record GetWorkItems(string? Category = null) : IQuery<IReadOnlyList<WorkItemDto>>;
 
-/// <summary>A work item for the Portal. Prices are the usual labour price range per unit in AMD (null until priced).</summary>
+/// <summary>
+/// A work item for the Portal. Prices are the usual market labour price range per unit in AMD (partners' prices once
+/// enough partners priced it, otherwise the staff range; null until priced).
+/// </summary>
 public sealed record WorkItemDto(
     Guid Id,
     Guid CategoryId,
@@ -48,7 +52,12 @@ public sealed record AdminWorkItemDto(
     int? PriceTypical = null,
     int? PriceMax = null,
     bool IsPriceLocked = false,
-    int PartnerCount = 0)
+    int PartnerCount = 0,
+    int? MarketMin = null,
+    int? MarketTypical = null,
+    int? MarketMax = null,
+    MarketPriceSource MarketSource = MarketPriceSource.Staff,
+    int MarketPartnerCount = 0)
 {
     /// <summary>The item; <paramref name="partnerCount"/> is how many partners priced it.</summary>
     public static AdminWorkItemDto From(WorkItem item, int partnerCount = 0) =>
@@ -65,7 +74,12 @@ public sealed record AdminWorkItemDto(
             item.PriceTypical,
             item.PriceMax,
             item.IsPriceLocked,
-            partnerCount);
+            partnerCount,
+            item.MarketMin,
+            item.MarketTypical,
+            item.MarketMax,
+            item.MarketSource,
+            item.MarketPartnerCount);
 }
 
 /// <summary>The fields a staff member edits on a work item.</summary>
@@ -175,7 +189,7 @@ public sealed class GetWorkItemsHandler(IAppDbContext db, ICurrentLanguage langu
 
         return WorkItemCatalog.Sort(items, wanted)
             .Select(w => new WorkItemDto(
-                w.Id, w.CategoryId, w.Slug, w.Name.Get(language.Code, language.DefaultCode), w.Unit, w.Surface, w.PriceMin, w.PriceTypical, w.PriceMax))
+                w.Id, w.CategoryId, w.Slug, w.Name.Get(language.Code, language.DefaultCode), w.Unit, w.Surface, w.MarketMin, w.MarketTypical, w.MarketMax))
             .ToList();
     }
 }
@@ -228,7 +242,8 @@ public sealed class CreateWorkItemHandler(IAppDbContext db) : ICommandHandler<Cr
     }
 }
 
-public sealed class UpdateWorkItemHandler(IAppDbContext db) : ICommandHandler<UpdateWorkItem, AdminWorkItemDto>
+public sealed class UpdateWorkItemHandler(IAppDbContext db, IOptions<PricingSettings> settings, TimeProvider clock)
+    : ICommandHandler<UpdateWorkItem, AdminWorkItemDto>
 {
     public async Task<AdminWorkItemDto> HandleAsync(UpdateWorkItem command, CancellationToken cancellationToken)
     {
@@ -243,6 +258,9 @@ public sealed class UpdateWorkItemHandler(IAppDbContext db) : ICommandHandler<Up
         item.Update(command.CategoryId, command.Slug, LocalizedText.From(command.Name), command.Unit, command.Surface, command.SortOrder);
         item.SetPrice(WorkItemPrices.From(command));
         item.LockPrice(command.IsPriceLocked);
+
+        // A new staff range or an unlocked item may change which range customers see.
+        await MarketPrices.RecalculateAsync(db, settings.Value, clock, [item.Id], cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return await WorkItemChecks.ToDtoAsync(db, item, cancellationToken);
     }

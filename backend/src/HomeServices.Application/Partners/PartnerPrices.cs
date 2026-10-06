@@ -7,6 +7,7 @@ using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Localization;
 using HomeServices.Domain.Partners;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Partners;
 
@@ -78,7 +79,8 @@ public sealed class GetMyPricesHandler(IAppDbContext db, ICurrentUser currentUse
     }
 }
 
-public sealed class SaveMyPricesHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class SaveMyPricesHandler(
+    IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, IOptions<PricingSettings> settings, TimeProvider clock)
     : ICommandHandler<SaveMyPrices, MyPriceListDto>
 {
     public async Task<MyPriceListDto> HandleAsync(SaveMyPrices command, CancellationToken cancellationToken)
@@ -112,6 +114,10 @@ public sealed class SaveMyPricesHandler(IAppDbContext db, ICurrentUser currentUs
             db.PartnerPrices.Add(PartnerPrice.Create(profile.Id, input.WorkItemId, input.PriceFrom, input.PriceTo, input.IncludesMaterials));
         }
 
+        await db.SaveChangesAsync(cancellationToken);
+
+        // The partner's prices count towards the market range of the items they offer.
+        await MarketPrices.RecalculateAsync(db, settings.Value, clock, offered, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return await MyPriceList.BuildAsync(db, language, profile, cancellationToken);
     }
@@ -168,9 +174,9 @@ internal static class MyPriceList
                     Name(o.Subcategory.Name),
                     o.Main.Id,
                     Name(o.Main.Name),
-                    o.Item.PriceMin,
-                    o.Item.PriceTypical,
-                    o.Item.PriceMax,
+                    o.Item.MarketMin,
+                    o.Item.MarketTypical,
+                    o.Item.MarketMax,
                     mine?.PriceFrom,
                     mine?.PriceTo,
                     mine?.IncludesMaterials ?? false);

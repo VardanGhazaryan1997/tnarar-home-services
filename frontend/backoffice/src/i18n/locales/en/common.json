@@ -478,7 +478,9 @@
       "deleteConfirm": "Delete \"{{name}}\"?",
       "deleteHelp": "It disappears from price lists and estimates. To keep it for later, hide it instead.",
       "partners": "Partners",
-      "partnersHelp": "How many partners priced this work"
+      "partnersHelp": "How many partners priced this work",
+      "market": "Partners: {{range}}",
+      "marketHelp": "Customers see this range, worked out from {{count}} partners’ prices. Lock the price to show yours instead."
     }
   },
   "partners": {

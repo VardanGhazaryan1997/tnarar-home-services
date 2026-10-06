@@ -47,9 +47,11 @@ public sealed record AdminWorkItemDto(
     int? PriceMin = null,
     int? PriceTypical = null,
     int? PriceMax = null,
-    bool IsPriceLocked = false)
+    bool IsPriceLocked = false,
+    int PartnerCount = 0)
 {
-    public static AdminWorkItemDto From(WorkItem item) =>
+    /// <summary>The item; <paramref name="partnerCount"/> is how many partners priced it.</summary>
+    public static AdminWorkItemDto From(WorkItem item, int partnerCount = 0) =>
         new(
             item.Id,
             item.CategoryId,
@@ -62,7 +64,8 @@ public sealed record AdminWorkItemDto(
             item.PriceMin,
             item.PriceTypical,
             item.PriceMax,
-            item.IsPriceLocked);
+            item.IsPriceLocked,
+            partnerCount);
 }
 
 /// <summary>The fields a staff member edits on a work item.</summary>
@@ -191,11 +194,16 @@ public sealed class GetAdminWorkItemsHandler(IAppDbContext db) : IQueryHandler<G
             items = items.Where(w => w.IsActive == active);
         }
 
+        var partnerCounts = await db.PartnerPrices.AsNoTracking()
+            .GroupBy(p => p.WorkItemId)
+            .Select(g => new { WorkItemId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(g => g.WorkItemId, g => g.Count, cancellationToken);
+
         // Names are jsonb per language, and there are a few hundred items: search in memory.
         var search = query.Search?.Trim();
         return WorkItemCatalog.Sort(await items.ToListAsync(cancellationToken), wanted)
             .Where(w => string.IsNullOrEmpty(search) || Matches(w, search))
-            .Select(AdminWorkItemDto.From)
+            .Select(w => AdminWorkItemDto.From(w, partnerCounts.GetValueOrDefault(w.Id)))
             .ToList();
     }
 
@@ -236,7 +244,7 @@ public sealed class UpdateWorkItemHandler(IAppDbContext db) : ICommandHandler<Up
         item.SetPrice(WorkItemPrices.From(command));
         item.LockPrice(command.IsPriceLocked);
         await db.SaveChangesAsync(cancellationToken);
-        return AdminWorkItemDto.From(item);
+        return await WorkItemChecks.ToDtoAsync(db, item, cancellationToken);
     }
 }
 
@@ -255,7 +263,7 @@ public sealed class SetWorkItemActiveHandler(IAppDbContext db) : ICommandHandler
         }
 
         await db.SaveChangesAsync(cancellationToken);
-        return AdminWorkItemDto.From(item);
+        return await WorkItemChecks.ToDtoAsync(db, item, cancellationToken);
     }
 }
 
@@ -263,8 +271,12 @@ public sealed class DeleteWorkItemHandler(IAppDbContext db) : ICommandHandler<De
 {
     public async Task<bool> HandleAsync(DeleteWorkItem command, CancellationToken cancellationToken)
     {
-        // Partner price lists (A4) will block deleting an item that is priced; hiding it is the alternative.
         var item = await WorkItemChecks.LoadAsync(db, command.Id, cancellationToken);
+        if (await db.PartnerPrices.AnyAsync(p => p.WorkItemId == item.Id, cancellationToken))
+        {
+            throw new DomainException("work_item.has_prices", "Partners have priced this work item. Hide it instead.");
+        }
+
         db.WorkItems.Remove(item);
         await db.SaveChangesAsync(cancellationToken);
         return true;
@@ -280,6 +292,10 @@ internal static class WorkItemPrices
 
 internal static class WorkItemChecks
 {
+    /// <summary>The Back Office view of the item, with how many partners priced it.</summary>
+    public static async Task<AdminWorkItemDto> ToDtoAsync(IAppDbContext db, WorkItem item, CancellationToken cancellationToken) =>
+        AdminWorkItemDto.From(item, await db.PartnerPrices.CountAsync(p => p.WorkItemId == item.Id, cancellationToken));
+
     public static async Task<WorkItem> LoadAsync(IAppDbContext db, Guid id, CancellationToken cancellationToken) =>
         await db.WorkItems.SingleOrDefaultAsync(w => w.Id == id, cancellationToken)
         ?? throw new NotFoundException("The work item does not exist.", "work_item.not_found");

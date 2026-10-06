@@ -32,6 +32,8 @@ public interface IAppDbContext
 
     DbSet<WorkItem> WorkItems { get; }
 
+    DbSet<PartnerPrice> PartnerPrices { get; }
+
     DbSet<Region> Regions { get; }
 
     DbSet<City> Cities { get; }

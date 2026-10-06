@@ -26,6 +26,7 @@ export const handlers = [
   ),
   // Commission lists a page may still be loading when a test ends (after its own handlers are reset).
   http.get('*/api/v1/me/commissions', () => HttpResponse.json(page([]))),
+  http.get('*/api/v1/me/partner-profile/prices', () => HttpResponse.json({ items: [], pricedCount: 0 })),
   http.get('*/api/v1/me/commission-statements', () => HttpResponse.json(page([]))),
   http.get('*/api/v1/me/commission-statements/:id', () => HttpResponse.json({ status: 404, code: 'commission.statement_not_found' }, { status: 404 })),
   http.post('*/api/v1/auth/refresh', () => HttpResponse.json({ status: 401, code: 'session.missing' }, { status: 401 })),

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import { errorMessage, fieldErrors } from '@/api/errors'
@@ -12,6 +12,7 @@ import { fromProfile, STEP_OF_FIELD, STEPS, stepErrors, toPayload } from './prof
 import AboutStep from './steps/AboutStep'
 import AreasStep from './steps/AreasStep'
 import MediaStep from './steps/MediaStep'
+import PricesStep from './steps/PricesStep'
 import ReviewStep from './steps/ReviewStep'
 import ServicesStep from './steps/ServicesStep'
 import TypeStep from './steps/TypeStep'
@@ -21,8 +22,9 @@ const b = bem(styles)
 const SAVED_STEPS = ['type', 'services', 'areas', 'about']
 
 /**
- * The profile in six steps. The first four save the profile when you continue (the first save creates it);
- * work examples attach as they upload; the last step sends the profile for review. The step is in the
+ * The profile in seven steps. The first four save the profile when you continue (the first save creates it);
+ * work examples attach as they upload; prices (optional) save when you continue; the last step sends the profile
+ * for review. The step is in the
  * address (?step=areas), so a refresh or the back button keeps your place. Mount it with a `key` per profile.
  */
 export default function PartnerWizard({ profile, categories, cities, regions = [], onDone }) {
@@ -32,6 +34,8 @@ export default function PartnerWizard({ profile, categories, cities, regions = [
   const [showErrors, setShowErrors] = useState(false)
   const [save, saving] = useSavePartnerProfileMutation()
   const [submit, submitting] = useSubmitPartnerProfileMutation()
+  const prices = useRef(null)
+  const [savingPrices, setSavingPrices] = useState(false)
   const requested = params.get('step')
   // Until the profile exists only the first step is open.
   const step = profile && STEPS.includes(requested) ? requested : 'type'
@@ -53,6 +57,12 @@ export default function PartnerWizard({ profile, categories, cities, regions = [
   const next = async () => {
     if (Object.keys(localErrors).length) return setShowErrors(true)
     if (step === 'work' && profile.workExamples.length === 0) return setShowErrors(true)
+    if (step === 'prices' && prices.current) {
+      setSavingPrices(true)
+      const ok = await prices.current.save()
+      setSavingPrices(false)
+      if (!ok) return undefined
+    }
     if (SAVED_STEPS.includes(step)) {
       const result = await save(toPayload(form))
       if (result.error) {
@@ -108,6 +118,7 @@ export default function PartnerWizard({ profile, categories, cities, regions = [
           {step === 'areas' && <AreasStep form={form} set={set} cities={cities} regions={regions} errorFor={errorFor} />}
           {step === 'about' && <AboutStep form={form} set={set} errorFor={errorFor} />}
           {step === 'work' && <MediaStep profile={profile} showErrors={showErrors} />}
+          {step === 'prices' && <PricesStep ref={prices} goTo={goTo} />}
           {step === 'review' && <ReviewStep profile={profile} categories={categories} cities={cities} regions={regions} goTo={goTo} />}
         </Card>
 
@@ -120,7 +131,7 @@ export default function PartnerWizard({ profile, categories, cities, regions = [
             <span />
           )}
           {step !== 'review' && (
-            <Button onClick={next} loading={saving.isLoading}>
+            <Button onClick={next} loading={saving.isLoading || savingPrices}>
               {SAVED_STEPS.includes(step) ? t('partner.saveContinue') : t('common.next')}
             </Button>
           )}

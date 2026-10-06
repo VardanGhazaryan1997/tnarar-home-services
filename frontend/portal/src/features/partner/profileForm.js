@@ -12,7 +12,7 @@ export const LIMITS = {
   documents: 10,
 }
 
-export const STEPS = ['type', 'services', 'areas', 'about', 'work', 'review']
+export const STEPS = ['type', 'services', 'areas', 'about', 'work', 'prices', 'review']
 
 export const PARTNER_TYPES = ['Specialist', 'Company', 'Supplier']
 

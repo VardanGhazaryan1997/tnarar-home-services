@@ -372,6 +372,15 @@
     },
     "commission": {
       "statement_not_found": "This statement doesn't exist."
+    },
+    "partner_price": {
+      "invalid": "Check the prices: whole drams, \"up to\" not below the price.",
+      "not_offered": "You can only price work in the services you offer. Refresh the page."
+    },
+    "prices": {
+      "duplicate": "The same work is listed twice. Refresh the page.",
+      "too_many": "Too many prices at once.",
+      "required": "Send your prices."
     }
   },
   "pagination": {
@@ -399,6 +408,7 @@
       "mine": "My requests",
       "inbox": "Inbox",
       "offers": "Sent offers",
+      "prices": "Prices",
       "commissions": "Commissions"
     },
     "new": "New request",
@@ -1001,6 +1011,7 @@
       "areas": "Where you work",
       "about": "About you",
       "work": "Work and documents",
+      "prices": "Prices",
       "review": "Check and send"
     },
     "fields": {
@@ -1094,7 +1105,49 @@
     "noPlaces": "Nothing found. Try another spelling.",
     "otherPlaces": "Other places",
     "towns": "Towns",
-    "villages": "Villages"
+    "villages": "Villages",
+    "prices": {
+      "title": "My prices",
+      "subtitle": "Your labour prices for the work you offer. Customers will see them on your profile and in estimates.",
+      "howTitle": "How prices work",
+      "howText": "Enter a price per unit, or a range (from – to) if it depends on the job. Prices are for labour; tick \"Includes materials\" if yours do. The usual market price is shown under each item.",
+      "save": "Save prices",
+      "saved": "Prices saved",
+      "search": "Search work",
+      "count": "{{priced}} of {{total}} priced",
+      "fillTypical": "Use usual prices for empty ones",
+      "noMatches": "Nothing matches your search.",
+      "emptyTitle": "No work to price yet",
+      "emptyText": "Choose the services you offer first; their work items will appear here.",
+      "chooseServices": "Choose services",
+      "market": "Usually {{range}}",
+      "noMarket": "No market price yet",
+      "from": "Price, ֏",
+      "to": "Up to, ֏",
+      "materials": "Includes materials",
+      "useTypical": "Use usual price",
+      "clear": "Clear",
+      "per": {
+        "SquareMeter": "per m²",
+        "RunningMeter": "per running m",
+        "Piece": "per piece",
+        "Point": "per point",
+        "CubicMeter": "per m³",
+        "Hour": "per hour",
+        "Fixed": "per job"
+      },
+      "noProfileTitle": "Create your partner profile first",
+      "noProfileText": "Prices are part of your partner profile.",
+      "createProfile": "Create a partner profile",
+      "stepHint": "Optional: set prices for your work now, or later under \"Prices\". You can skip any item.",
+      "errors": {
+        "fromRequired": "Enter the price first",
+        "invalid": "Enter whole drams, e.g. 15000",
+        "tooHigh": "That price is too high",
+        "toBelowFrom": "\"Up to\" can't be below the price",
+        "fix": "Some prices need fixing. They are marked below."
+      }
+    }
   },
   "reviews": {
     "ratingLabel": "{{rating}} out of 5",

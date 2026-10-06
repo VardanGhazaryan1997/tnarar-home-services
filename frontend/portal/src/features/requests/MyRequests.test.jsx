@@ -80,7 +80,7 @@ describe('My requests', () => {
 
     expect(await screen.findByText('Page 1 of 3')).toBeInTheDocument()
     const tabs = screen.getByRole('navigation', { name: en.requests.tabsLabel })
-    expect(within(tabs).getAllByRole('link').map((l) => l.getAttribute('href'))).toEqual(['/en/requests', '/en/inbox', '/en/offers', '/en/commissions'])
+    expect(within(tabs).getAllByRole('link').map((l) => l.getAttribute('href'))).toEqual(['/en/requests', '/en/inbox', '/en/offers', '/en/prices', '/en/commissions'])
     await user.click(screen.getByRole('button', { name: en.pagination.next }))
     await waitFor(() => expect(router.state.location.search).toBe('?page=2'))
     await waitFor(() => expect(seen.at(-1)).toContain('page=2'))

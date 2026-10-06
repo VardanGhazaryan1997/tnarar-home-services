@@ -26,6 +26,9 @@ public sealed class PartnerProfileController : ControllerBase
 
     public sealed record AddMediaRequest(PartnerMediaKind Kind, Guid FileId, string? Caption);
 
+    /// <summary>The partner's price list: the full list of prices for the services they offer.</summary>
+    public sealed record SavePricesRequest(IReadOnlyList<MyPriceInput> Prices);
+
     /// <summary>The profile, or 404 "partner.not_found" when the user hasn't started one.</summary>
     [HttpGet]
     public Task<PartnerProfileDto> Get(
@@ -71,4 +74,24 @@ public sealed class PartnerProfileController : ControllerBase
         [FromServices] ICommandHandler<SubmitMyPartnerProfile, PartnerProfileDto> handler,
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new SubmitMyPartnerProfile(), cancellationToken);
+
+    /// <summary>
+    /// The price list: every work item in the services the partner offers, with the market range and their own price.
+    /// </summary>
+    [HttpGet("prices")]
+    public Task<MyPriceListDto> GetPrices(
+        [FromServices] IQueryHandler<GetMyPrices, MyPriceListDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetMyPrices(), cancellationToken);
+
+    /// <summary>
+    /// Saves the price list. Send every price: items of the offered services left out lose their price.
+    /// 422 "partner_price.not_offered" for an item outside the partner's services.
+    /// </summary>
+    [HttpPut("prices")]
+    public Task<MyPriceListDto> SavePrices(
+        SavePricesRequest request,
+        [FromServices] ICommandHandler<SaveMyPrices, MyPriceListDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SaveMyPrices(request.Prices), cancellationToken);
 }

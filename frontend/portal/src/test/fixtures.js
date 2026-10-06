@@ -409,3 +409,42 @@ export const statementDetail = (overrides = {}) => ({
   settlements: [{ id: 'settlement-1', amount: 5000, method: 'Cash', paidOn: '2026-10-13', reference: 'Receipt 7', recordedAt: '2026-10-13T10:00:00Z' }],
   ...overrides,
 })
+
+/** A work item on the partner's price list as GET /me/partner-profile/prices returns it. */
+export const priceItem = (overrides = {}) => ({
+  workItemId: 'wi-toilet',
+  slug: 'toilet-installation',
+  name: 'Toilet installation',
+  unit: 'Piece',
+  categoryId: 'cat-fixtures',
+  categoryName: 'Fixture installation',
+  mainCategoryId: 'cat-plumbing',
+  mainCategoryName: 'Plumbing',
+  marketMin: 10000,
+  marketTypical: 15000,
+  marketMax: 22000,
+  priceFrom: null,
+  priceTo: null,
+  includesMaterials: false,
+  ...overrides,
+})
+
+/** A partner's price list: a toilet (priced), a faucet (not priced) and a leak repair (no market price). */
+export const priceList = () => {
+  const items = [
+    priceItem({ priceFrom: 14000, priceTo: 18000 }),
+    priceItem({ workItemId: 'wi-faucet', slug: 'faucet-installation', name: 'Faucet installation', marketMin: 4000, marketTypical: 6000, marketMax: 9000 }),
+    priceItem({
+      workItemId: 'wi-leak',
+      slug: 'leak-repair',
+      name: 'Leak repair',
+      unit: 'Fixed',
+      categoryId: 'cat-leaks',
+      categoryName: 'Leak repair',
+      marketMin: null,
+      marketTypical: null,
+      marketMax: null,
+    }),
+  ]
+  return { items, pricedCount: 1 }
+}

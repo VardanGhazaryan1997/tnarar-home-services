@@ -1,0 +1,137 @@
+@use 'styles/mixins' as *;
+
+// The partner's price list: a search toolbar, then categories with one card-like row per work item.
+.prices-page {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.price-list {
+  display: flex;
+  flex-direction: column;
+  gap: space(5);
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(3);
+    align-items: flex-end;
+  }
+
+  &__search {
+    flex: 1 1 260px;
+  }
+
+  &__count {
+    @include text-small;
+    @include text-muted;
+
+    padding-block-end: space(3);
+  }
+
+  &__none {
+    @include text-muted;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+  }
+
+  &__main {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__sub {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__sub-title {
+    @include text-small;
+
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  &__rows {
+    display: grid;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(lg) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+.price-row {
+  @include surface;
+
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+  padding: space(3);
+  border-inline-start: 4px solid transparent;
+
+  &--priced {
+    border-inline-start-color: $color-tuff;
+  }
+
+  &--invalid {
+    border-inline-start-color: $color-danger;
+  }
+
+  &__head {
+    display: flex;
+    gap: space(2);
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  &__name {
+    font-weight: $font-weight-medium;
+  }
+
+  &__unit {
+    @include text-small;
+    @include text-muted;
+
+    white-space: nowrap;
+  }
+
+  &__market {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: space(2);
+  }
+
+  &__field input {
+    direction: ltr;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1) space(3);
+    align-items: center;
+  }
+}

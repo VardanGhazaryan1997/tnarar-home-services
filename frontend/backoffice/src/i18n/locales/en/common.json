@@ -340,7 +340,8 @@
       "not_found": "This work item no longer exists. Refresh the page.",
       "slug_taken": "Another work item already uses this slug",
       "category_not_found": "This subcategory no longer exists",
-      "category_not_subcategory": "Choose a subcategory, not a main category"
+      "category_not_subcategory": "Choose a subcategory, not a main category",
+      "has_prices": "Partners have priced this work item. Hide it instead."
     },
     "price": {
       "incomplete": "Enter all three prices, or none",
@@ -475,7 +476,9 @@
       "locked": "Price range locked",
       "lockHelp": "Partners' own prices won't change a locked range",
       "deleteConfirm": "Delete \"{{name}}\"?",
-      "deleteHelp": "It disappears from price lists and estimates. To keep it for later, hide it instead."
+      "deleteHelp": "It disappears from price lists and estimates. To keep it for later, hide it instead.",
+      "partners": "Partners",
+      "partnersHelp": "How many partners priced this work"
     }
   },
   "partners": {

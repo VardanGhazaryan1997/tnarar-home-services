@@ -69,6 +69,7 @@ export const WORK_ITEMS = [
     priceTypical: 3500,
     priceMax: 5000,
     isPriceLocked: true,
+    partnerCount: 4,
   },
   {
     id: 'wi-floor-tiling',

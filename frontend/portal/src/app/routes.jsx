@@ -50,6 +50,7 @@ export const routes = [
                   { path: 'offers', lazy: page(() => import('@/features/offers/MyOffersPage')) },
                   { path: 'commissions', lazy: page(() => import('@/features/commissions/CommissionsPage')) },
                   { path: 'commissions/:id', lazy: page(() => import('@/features/commissions/StatementPage')) },
+                  { path: 'prices', lazy: page(() => import('@/features/partner/prices/PricesPage')) },
                 ],
               },
             ],

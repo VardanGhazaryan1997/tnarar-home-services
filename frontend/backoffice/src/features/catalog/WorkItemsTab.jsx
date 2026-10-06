@@ -127,6 +127,17 @@ export default function WorkItemsTab() {
           <Tag color="orange">{t('catalog.workItems.noPrice')}</Tag>
         ),
     },
+    {
+      title: t('catalog.workItems.partners'),
+      key: 'partners',
+      width: 100,
+      responsive: ['md'],
+      render: (_, item) => (
+        <Tooltip title={t('catalog.workItems.partnersHelp')}>
+          <span>{item.partnerCount ?? 0}</span>
+        </Tooltip>
+      ),
+    },
     { title: t('catalog.columns.sortOrder'), dataIndex: 'sortOrder', key: 'sortOrder', width: 80, responsive: ['lg'] },
     {
       title: t('catalog.columns.status'),

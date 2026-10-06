@@ -49,6 +49,7 @@ describe('Work items tab', () => {
     expect(within(table).getByText(/^3\D?500 ֏$/)).toBeInTheDocument()
     expect(within(table).getByLabelText(hy.catalog.workItems.locked)).toBeInTheDocument()
     expect(within(table).getByText(hy.catalog.workItems.noPrice)).toBeInTheDocument()
+    expect(within(table).getByText('4')).toBeInTheDocument() // partners who priced wall plastering
     expect(screen.getByText(i18n.t('catalog.workItems.count', { shown: 3, total: 3 }))).toBeInTheDocument()
   }, SLOW)
 

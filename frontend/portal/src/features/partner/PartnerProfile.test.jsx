@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import en from '@/i18n/locales/en/common.json'
 import { CUSTOMER, PARTNER_USER, problem, signedInAs } from '@/test/auth'
-import { partnerMedia, partnerProfile } from '@/test/fixtures'
+import { partnerMedia, partnerProfile, priceList } from '@/test/fixtures'
 import { renderRoute } from '@/test/renderWithProviders'
 import { server } from '@/test/server'
 
@@ -72,7 +72,7 @@ describe('Partner onboarding', () => {
     const { store } = renderRoute('/en/partner')
 
     await stepTitle('type')
-    expect(screen.getByText(t(en.partner.stepOf, { step: 1, total: 6 }))).toBeInTheDocument()
+    expect(screen.getByText(t(en.partner.stepOf, { step: 1, total: 7 }))).toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: new RegExp(en.public.partnerType.Company) }))
     expect(screen.getByLabelText(en.partner.fields.nameCompany)).toBeInTheDocument()
     await user.click(continueButton())
@@ -195,6 +195,50 @@ describe('Partner onboarding', () => {
     expect(screen.getByRole('button', { name: en.partner.avatarAdd })).toBeInTheDocument()
     await user.click(continueButton())
     await waitFor(() => expect(api.saves[1].avatarFileId).toBeNull())
+  })
+
+  it('takes optional prices after the work examples and saves them when continuing', async () => {
+    const user = userEvent.setup()
+    signedInAs(PARTNER_USER)
+    profileApi(partnerProfile())
+    const saves = []
+    server.use(
+      http.get('*/api/v1/me/partner-profile/prices', () => HttpResponse.json(priceList())),
+      http.put('*/api/v1/me/partner-profile/prices', async ({ request }) => {
+        const body = await request.json()
+        saves.push(body)
+        return HttpResponse.json(priceList())
+      }),
+    )
+    renderRoute('/en/partner?step=work')
+
+    await stepTitle('work')
+    await user.click(screen.getByRole('button', { name: en.common.next }))
+    await stepTitle('prices')
+    const faucet = await screen.findByRole('listitem', { name: 'Faucet installation' })
+    await user.type(within(faucet).getByLabelText(en.partner.prices.from), '6500')
+    await user.click(screen.getByRole('button', { name: en.common.next }))
+
+    await stepTitle('review')
+    expect(saves[0].prices).toContainEqual({ workItemId: 'wi-faucet', priceFrom: 6500, priceTo: null, includesMaterials: false })
+  })
+
+  it('lets partners skip prices, but not continue with a wrong one', async () => {
+    const user = userEvent.setup()
+    signedInAs(PARTNER_USER)
+    profileApi(partnerProfile())
+    server.use(http.get('*/api/v1/me/partner-profile/prices', () => HttpResponse.json(priceList())))
+    renderRoute('/en/partner?step=prices')
+
+    const faucet = await screen.findByRole('listitem', { name: 'Faucet installation' })
+    await user.type(within(faucet).getAllByRole('textbox')[1], '100')
+    await user.click(screen.getByRole('button', { name: en.common.next }))
+    expect(await screen.findByText(en.partner.prices.errors.fix)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: en.partner.steps.prices })).toBeInTheDocument()
+
+    await user.clear(within(faucet).getAllByRole('textbox')[1])
+    await user.click(screen.getByRole('button', { name: en.common.next }))
+    await stepTitle('review')
   })
 
   it('lists what is missing on the last step and links to it', async () => {

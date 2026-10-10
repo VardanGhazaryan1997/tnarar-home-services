@@ -80,6 +80,7 @@ describe('New request', () => {
         budgetMin: null,
         budgetMax: 50000,
         mediaFileIds: ['file-1'],
+        estimateId: null,
       },
     ])
     expect(await screen.findByText(en.requests.created)).toBeInTheDocument()

@@ -12,6 +12,7 @@ import StartChatButton from '@/features/chat/StartChatButton'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatMoney } from '@/shared/format'
 import OfferCard from './OfferCard'
+import OfferComparison from './OfferComparison'
 import { useAcceptOfferMutation, useGetRequestOffersQuery, useRejectOfferMutation } from './offersApi'
 import styles from './offers.module.scss'
 
@@ -50,6 +51,7 @@ export default function RequestOffers({ request }) {
       {query.isLoading && <Spinner label={t('common.loading')} />}
       {query.isError && <Alert tone="danger" title={errorMessage(t, query.error)} />}
       {query.isSuccess && offers.length === 0 && <p className={styles['offer-card__expiry']}>{t('offers.none')}</p>}
+      {offers.length > 0 && request.lines?.length > 0 && <OfferComparison request={request} offers={offers} />}
       {offers.length > 0 && (
         <div className={styles['offer-list']}>
           {offers.map((offer) => (

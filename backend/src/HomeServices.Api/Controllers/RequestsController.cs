@@ -30,7 +30,8 @@ public sealed class RequestsController : ControllerBase
         string? TimeNote,
         int? BudgetMin,
         int? BudgetMax,
-        IReadOnlyList<Guid>? MediaFileIds);
+        IReadOnlyList<Guid>? MediaFileIds,
+        Guid? EstimateId = null);
 
     public sealed record ReasonBody(string? Reason);
 
@@ -72,7 +73,8 @@ public sealed class RequestsController : ControllerBase
                     body.TimeNote,
                     body.BudgetMin,
                     body.BudgetMax,
-                    body.MediaFileIds),
+                    body.MediaFileIds,
+                    body.EstimateId),
                 cancellationToken));
 
     /// <summary>The signed-in customer's requests, newest first.</summary>

@@ -194,5 +194,35 @@ public class OfferTests
         old.Status.ShouldBe(OfferStatus.Expired);
     }
 
+    [Fact]
+    public void Lines_can_be_priced_and_then_add_up_to_the_price()
+    {
+        var requestLine = Guid.NewGuid();
+        var offer = NewOffer(Work(price: 55_000, lines:
+        [
+            new OfferLine("Bathroom · Floor tiling", true, requestLine, 4m, 6_500),
+            new OfferLine("Toilet installation", true, null, null, 29_000),
+            new OfferLine("Tiles", false),
+        ]));
+
+        offer.Items.Select(i => (i.RequestLineId, i.Quantity, i.UnitPrice, i.Amount)).ShouldBe(new[]
+        {
+            ((Guid?)requestLine, (decimal?)4m, (int?)6_500, (int?)26_000),
+            ((Guid?)null, (decimal?)null, (int?)29_000, (int?)29_000),
+            ((Guid?)null, (decimal?)null, (int?)null, (int?)null),
+        });
+    }
+
+    [Fact]
+    public void Priced_lines_are_checked()
+    {
+        var line = Guid.NewGuid();
+        Code(() => NewOffer(Work(price: 50_000, lines: [new OfferLine("Tiling", true, line, 4m, 6_500)]))).ShouldBe("offer.lines_sum_mismatch");
+        Code(() => NewOffer(Work(price: 26_000, lines: [new OfferLine("Tiling", true, line, 4m, 6_500), new OfferLine("Grout", true)]))).ShouldBe("offer.lines_unpriced");
+        Code(() => NewOffer(Work(price: 26_000, lines: [new OfferLine("Tiling", false, line, 4m, 6_500)]))).ShouldBe("offer.line_invalid");
+        Code(() => NewOffer(Work(price: 26_000, lines: [new OfferLine("Tiling", true, line, 0m, 6_500)]))).ShouldBe("offer.line_invalid");
+        Code(() => NewOffer(Work(price: 1_000, lines: [new OfferLine("A", true, line, 1m, 500), new OfferLine("B", true, line, 1m, 500)]))).ShouldBe("offer.line_invalid");
+    }
+
     private static string Code(Action action) => Should.Throw<DomainException>(action).Code;
 }

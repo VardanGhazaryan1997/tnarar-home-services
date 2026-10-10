@@ -1,3 +1,4 @@
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Requests;
 
 namespace HomeServices.Domain.Tests.Requests;
@@ -352,4 +353,40 @@ public class ServiceRequestTests
         Should.Throw<DomainException>(() => request.Close(Now)).Code.ShouldBe("request.not_open");
         Should.Throw<DomainException>(() => request.Cancel(null, Now)).Code.ShouldBe("request.not_open");
     }
+
+    [Fact]
+    public void A_request_made_from_an_estimate_keeps_its_lines_in_order()
+    {
+        var request = NewRequest();
+        var estimate = Guid.NewGuid();
+        var (tiling, toilet) = (Guid.NewGuid(), Guid.NewGuid());
+
+        request.LinkEstimate(estimate);
+        request.AddLine(" Bathroom ", tiling, WorkUnit.SquareMeter, 4.444m, 20_000, 36_000);
+        request.AddLine("Bathroom", toilet, WorkUnit.Piece, null, null, null);
+
+        request.EstimateId.ShouldBe(estimate);
+        request.Lines.Select(l => (l.SortOrder, l.RoomName, l.WorkItemId, l.Quantity, l.EstimateMin))
+            .ShouldBe(new[] { (1, "Bathroom", tiling, (decimal?)4.44m, (int?)20_000), (2, "Bathroom", toilet, (decimal?)null, (int?)null) });
+    }
+
+    [Fact]
+    public void Request_lines_are_checked()
+    {
+        var request = NewRequest();
+
+        Code(() => request.AddLine(" ", Guid.NewGuid(), WorkUnit.Piece, 1m, null, null)).ShouldBe("request.line_invalid");
+        Code(() => request.AddLine("Hall", Guid.Empty, WorkUnit.Piece, 1m, null, null)).ShouldBe("request.line_invalid");
+        Code(() => request.AddLine("Hall", Guid.NewGuid(), WorkUnit.Piece, 0m, null, null)).ShouldBe("request.line_invalid");
+        Code(() => request.AddLine("Hall", Guid.NewGuid(), WorkUnit.Piece, 1m, 500, 100)).ShouldBe("request.line_invalid");
+        Code(() => request.LinkEstimate(Guid.Empty)).ShouldBe("request.estimate_invalid");
+        for (var i = 0; i < ServiceRequest.MaxLines; i++)
+        {
+            request.AddLine("Hall", Guid.NewGuid(), WorkUnit.Piece, 1m, null, null);
+        }
+
+        Code(() => request.AddLine("Hall", Guid.NewGuid(), WorkUnit.Piece, 1m, null, null)).ShouldBe("request.too_many_lines");
+    }
+
+    private static string Code(Action action) => Should.Throw<DomainException>(action).Code;
 }

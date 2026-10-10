@@ -1,4 +1,5 @@
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Estimates;
 using HomeServices.Domain.Files;
 using HomeServices.Domain.Identity;
 using HomeServices.Domain.Partners;
@@ -33,6 +34,24 @@ internal sealed class ServiceRequestConfiguration : IEntityTypeConfiguration<Ser
 
         builder.HasMany(r => r.Recipients).WithOne().HasForeignKey(x => x.RequestId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(r => r.Media).WithOne().HasForeignKey(m => m.RequestId).OnDelete(DeleteBehavior.Cascade);
+
+        // Made from an estimate: the lines are copied, so deleting the estimate later only drops the link.
+        builder.HasOne<Estimate>().WithMany().HasForeignKey(r => r.EstimateId).OnDelete(DeleteBehavior.SetNull);
+        builder.HasMany(r => r.Lines).WithOne().HasForeignKey(l => l.RequestId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(r => r.Lines).HasField("_lines");
+    }
+}
+
+internal sealed class RequestLineConfiguration : IEntityTypeConfiguration<RequestLine>
+{
+    public void Configure(EntityTypeBuilder<RequestLine> builder)
+    {
+        builder.ToTable("RequestLines");
+        builder.Property(l => l.RoomName).HasMaxLength(RequestLine.RoomNameMaxLength);
+        builder.Property(l => l.Unit).HasConversion<string>().HasMaxLength(16);
+        builder.Property(l => l.Quantity).HasPrecision(10, 2);
+        builder.HasIndex(l => new { l.RequestId, l.SortOrder });
+        builder.HasOne<WorkItem>().WithMany().HasForeignKey(l => l.WorkItemId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 

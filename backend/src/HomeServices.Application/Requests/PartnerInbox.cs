@@ -130,6 +130,7 @@ internal static class Inbox
         var request = await db.ServiceRequests
             .Include(r => r.Recipients)
             .Include(r => r.Media)
+            .Include(r => r.Lines)
             .SingleOrDefaultAsync(r => r.Id == id && r.Recipients.Any(x => x.PartnerProfileId == partnerId), cancellationToken)
             ?? throw MyRequests.NotFound();
         return (request, partnerId);
@@ -162,7 +163,8 @@ internal static class Inbox
             await RequestLookup.MediaAsync(db, files, request, cancellationToken),
             FirstName(customerName),
             recipient.SentAt,
-            request.CreatedAt);
+            request.CreatedAt,
+            await RequestLookup.LinesAsync(db, language, request, withEstimate: false, cancellationToken));
     }
 
     private static string? FirstName(string? fullName) =>

@@ -34,7 +34,7 @@ internal static class OfferViews
         (await ToDtosAsync(db, [offer], now, cancellationToken))[0];
 
     public static IReadOnlyList<OfferLineDto> Lines(Offer offer) =>
-        offer.Items.OrderBy(i => i.SortOrder).Select(i => new OfferLineDto(i.Title, i.Included)).ToList();
+        offer.Items.OrderBy(i => i.SortOrder).Select(i => new OfferLineDto(i.Title, i.Included, i.RequestLineId, i.Quantity, i.UnitPrice, i.Amount)).ToList();
 
     public static IReadOnlyList<PaymentStageDto> Stages(Offer offer) =>
         offer.Stages.OrderBy(s => s.SortOrder).Select(s => new PaymentStageDto(s.Title, s.Purpose.ToString(), s.Amount)).ToList();

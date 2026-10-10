@@ -1,3 +1,4 @@
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Common;
 
 namespace HomeServices.Domain.Requests;
@@ -105,4 +106,58 @@ public sealed class RequestMedia : Entity, IAudited
     public Guid FileId { get; private set; }
 
     public int SortOrder { get; private set; }
+}
+
+/// <summary>
+/// A line of work in a request made from an estimate: the room, the work item, the amount (null = to be agreed) and
+/// the estimated labour range (shown to the customer only). Partners can price their offer line by line against these.
+/// </summary>
+public sealed class RequestLine : Entity, IAudited
+{
+    public const int RoomNameMaxLength = 60;
+    public const decimal MaxQuantity = 100_000m;
+
+    private RequestLine()
+    {
+    }
+
+    internal RequestLine(Guid requestId, int sortOrder, string roomName, Guid workItemId, WorkUnit unit, decimal? quantity, int? estimateMin, int? estimateMax)
+    {
+        var room = roomName?.Trim() ?? string.Empty;
+        if (room.Length is 0 or > RoomNameMaxLength)
+        {
+            throw new DomainException("request.line_invalid", $"Each line needs a room name of up to {RoomNameMaxLength} characters.");
+        }
+
+        if (workItemId == Guid.Empty || !Enum.IsDefined(unit) || quantity is <= 0 or > MaxQuantity
+            || estimateMin is < 0 || estimateMax is < 0 || estimateMin > estimateMax)
+        {
+            throw new DomainException("request.line_invalid", "A line needs work, a unit and a sensible amount.");
+        }
+
+        RequestId = requestId;
+        SortOrder = sortOrder;
+        RoomName = room;
+        WorkItemId = workItemId;
+        Unit = unit;
+        Quantity = quantity is null ? null : Math.Round(quantity.Value, 2, MidpointRounding.AwayFromZero);
+        EstimateMin = estimateMin;
+        EstimateMax = estimateMax;
+    }
+
+    public Guid RequestId { get; private set; }
+
+    public int SortOrder { get; private set; }
+
+    public string RoomName { get; private set; } = string.Empty;
+
+    public Guid WorkItemId { get; private set; }
+
+    public WorkUnit Unit { get; private set; }
+
+    public decimal? Quantity { get; private set; }
+
+    public int? EstimateMin { get; private set; }
+
+    public int? EstimateMax { get; private set; }
 }

@@ -16,6 +16,7 @@ import RequestOffers from '@/features/offers/RequestOffers'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate, formatDateTime } from '@/shared/format'
 import { MediaGallery, RequestFacts, RequestStatusTag } from './components/RequestParts'
+import RequestLines from './components/RequestLines'
 import { useCancelMyRequestMutation, useGetMyRequestQuery } from './requestsApi'
 import styles from './requests.module.scss'
 
@@ -74,6 +75,20 @@ export default function MyRequestPage() {
                 <p className={styles['request-page__text']}>{request.description}</p>
                 <MediaGallery files={request.media} />
               </Card>
+              {request.lines?.length > 0 && (
+                <Card
+                  title={t('requests.lines.title')}
+                  actions={
+                    request.estimateId && (
+                      <Link to={path(`/estimates/${request.estimateId}`)} className={styles['request-page__muted']}>
+                        {t('requests.lines.openEstimate')}
+                      </Link>
+                    )
+                  }
+                >
+                  <RequestLines lines={request.lines} showEstimate />
+                </Card>
+              )}
             </div>
             <aside className={styles['request-page__side']}>
               <Card title={t('requests.whoHasIt')}>

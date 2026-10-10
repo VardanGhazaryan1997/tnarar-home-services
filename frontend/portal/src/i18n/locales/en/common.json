@@ -178,7 +178,10 @@
       "not_open": "This request is no longer open.",
       "not_found": "Request not found.",
       "already_declined": "You already declined this request.",
-      "already_responded": "You already responded to this request."
+      "already_responded": "You already responded to this request.",
+      "too_many_lines": "A request can carry at most 200 lines of work.",
+      "line_invalid": "One of the estimate's lines isn't right.",
+      "estimate_invalid": "This estimate can't be used."
     },
     "offer": {
       "already_sent": "You already have a waiting offer of this type. Withdraw it to send a new one.",
@@ -186,7 +189,10 @@
       "visit_already_agreed": "The customer already accepted your visit.",
       "not_open": "This offer is no longer open.",
       "expired": "This offer has expired.",
-      "not_found": "Offer not found."
+      "not_found": "Offer not found.",
+      "lines_unpriced": "Price every included line, or none.",
+      "lines_sum_mismatch": "The lines must add up to the price.",
+      "line_invalid": "One of the lines isn't right. Check the amounts and prices."
     },
     "order": {
       "not_found": "Order not found.",
@@ -236,7 +242,8 @@
     },
     "lines": {
       "invalid": "Every item needs a name (up to 200 characters).",
-      "too_many": "At most 30 items."
+      "too_many": "At most 200 items.",
+      "price_invalid": "Each priced line needs an amount above 0 and a price; excluded work has no price."
     },
     "price": {
       "invalid": "Enter a valid price."
@@ -493,7 +500,20 @@
     "cancelTitle": "Cancel this request?",
     "cancelConfirm": "Cancel request",
     "cancelText": "Specialists will stop receiving it, and waiting offers will close.",
-    "cancelReason": "Why are you cancelling?"
+    "cancelReason": "Why are you cancelling?",
+    "lines": {
+      "title": "Work, room by room",
+      "toAgree": "amount to agree",
+      "openEstimate": "Open the estimate",
+      "partnerHint": "The customer's rooms and the amounts of work. You can price your offer line by line."
+    },
+    "fromEstimate": {
+      "description": "Renovation by my estimate “{{title}}”: {{rooms}}. The work and amounts are listed room by room.",
+      "title": "From your estimate “{{title}}”",
+      "summary": "Rooms: {{rooms}}, kinds of work: {{lines}}.",
+      "range": "Estimated labour: {{range}}.",
+      "private": "Specialists see the rooms, work and amounts, not the estimated prices or your budget."
+    }
   },
   "inbox": {
     "status": {
@@ -628,7 +648,36 @@
     "mineSubtitle": "Your offers and what customers decided.",
     "mineEmpty": "No offers here",
     "mineEmptyText": "Offers you send from your inbox appear here.",
-    "sentOn": "sent {{date}}"
+    "sentOn": "sent {{date}}",
+    "linePricing": {
+      "title": "The customer's work",
+      "toggle": "Price line by line",
+      "hint": "Prices start from your price list, or the usual market price. The offer's price is the sum of the lines.",
+      "quantity": "Amount, {{unit}}",
+      "unitPrice": "Price per {{unit}}, ֏",
+      "quantityRequired": "Enter the amount",
+      "priceRequired": "Enter a price",
+      "source": {
+        "mine": "From your price list",
+        "market": "Usual market price"
+      },
+      "notIncluded": "Not included in this offer",
+      "pricedLines": "Work included, priced line by line ({{number}})",
+      "total": "Total of the lines: {{total}}",
+      "extra": "Other work (optional)",
+      "priceEvery": "Price every included line, or turn off pricing line by line.",
+      "linePrice": "Price of item {{n}}, ֏",
+      "priceHint": "The sum of the lines"
+    },
+    "compare": {
+      "title": "Offers line by line",
+      "work": "Work",
+      "estimate": "Estimate",
+      "notIncluded": "not included",
+      "inPrice": "in the price",
+      "other": "Other work",
+      "total": "Total"
+    }
   },
   "orders": {
     "title": "Orders",
@@ -1432,7 +1481,10 @@
       "shareHint": "Anyone with the link sees the rooms and prices, not your name or phone.",
       "delete": "Delete estimate",
       "deleteTitle": "Delete \"{{title}}\"?",
-      "deleteText": "The estimate and its share link are deleted for good."
+      "deleteText": "The estimate and its share link are deleted for good.",
+      "getOffers": "Get offers for this estimate",
+      "saveFirst": "Save your changes first.",
+      "getOffersHint": "Specialists get your rooms and work and can price their offers line by line."
     },
     "list": {
       "title": "My estimates",

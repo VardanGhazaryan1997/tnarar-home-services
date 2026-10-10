@@ -1,3 +1,4 @@
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Common;
 
 namespace HomeServices.Domain.Requests;
@@ -15,9 +16,11 @@ public sealed class ServiceRequest : AuditableEntity, IAudited
     public const int CancelReasonMaxLength = 500;
     public const int MaxMedia = 10;
     public const int MaxBudget = 1_000_000_000;
+    public const int MaxLines = 200;
 
     private readonly List<RequestRecipient> _recipients = [];
     private readonly List<RequestMedia> _media = [];
+    private readonly List<RequestLine> _lines = [];
 
     private ServiceRequest()
     {
@@ -63,6 +66,12 @@ public sealed class ServiceRequest : AuditableEntity, IAudited
     public IReadOnlyCollection<RequestRecipient> Recipients => _recipients.AsReadOnly();
 
     public IReadOnlyCollection<RequestMedia> Media => _media.AsReadOnly();
+
+    /// <summary>The estimate the request was made from, while it still exists.</summary>
+    public Guid? EstimateId { get; private set; }
+
+    /// <summary>The work wanted, room by room, copied from an estimate; empty for a request described in words only.</summary>
+    public IReadOnlyCollection<RequestLine> Lines => _lines.AsReadOnly();
 
     public bool NeedsAttention => NeedsAttentionSince is not null;
 
@@ -142,6 +151,33 @@ public sealed class ServiceRequest : AuditableEntity, IAudited
         }
 
         _media.Add(new RequestMedia(Id, fileId, _media.Count + 1));
+    }
+
+    /// <summary>Remembers the estimate this request was made from (its lines are copied with <see cref="AddLine"/>).</summary>
+    public void LinkEstimate(Guid estimateId)
+    {
+        if (estimateId == Guid.Empty)
+        {
+            throw new DomainException("request.estimate_invalid", "Unknown estimate.");
+        }
+
+        EstimateId = estimateId;
+    }
+
+    /// <summary>
+    /// Adds a line of work from the estimate: where (<paramref name="roomName"/>), what, how much (null when the customer
+    /// left the amount open) and the estimated labour range. Lines are fixed once the request is sent.
+    /// </summary>
+    public RequestLine AddLine(string roomName, Guid workItemId, WorkUnit unit, decimal? quantity, int? estimateMin, int? estimateMax)
+    {
+        if (_lines.Count >= MaxLines)
+        {
+            throw new DomainException("request.too_many_lines", $"A request has at most {MaxLines} lines of work.");
+        }
+
+        var line = new RequestLine(Id, _lines.Count + 1, roomName, workItemId, unit, quantity, estimateMin, estimateMax);
+        _lines.Add(line);
+        return line;
     }
 
     /// <summary>

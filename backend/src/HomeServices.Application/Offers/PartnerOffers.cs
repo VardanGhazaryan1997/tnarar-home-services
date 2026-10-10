@@ -69,6 +69,11 @@ public sealed class SendOfferValidator : AbstractValidator<SendOffer>
                 .Must(lines => lines!.Count <= Offer.MaxLines).WithErrorCode("lines.too_many")
                 .Must(lines => lines!.All(l => !string.IsNullOrWhiteSpace(l.Title) && l.Title.Trim().Length <= Offer.LineMaxLength))
                 .WithErrorCode("lines.invalid")
+                .Must(lines => lines!.All(l =>
+                    l.UnitPrice is null or (>= 0 and <= Offer.MaxPrice)
+                    && l.Quantity is null or (> 0 and <= Offer.MaxLineQuantity)
+                    && (l.Included || l.UnitPrice is null)))
+                .WithErrorCode("lines.price_invalid")
                 .When(x => x.Lines is { Count: > 0 });
 
             // Yesterday is allowed: the partner's day may not have ended in UTC terms.
@@ -143,6 +148,11 @@ public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser,
         if (command.Kind == OfferKind.Visit && mine.Any(o => o.Status == OfferStatus.Accepted))
         {
             throw new DomainException("offer.visit_already_agreed", "The customer already accepted your visit.");
+        }
+
+        if (command.Lines?.Any(l => l.RequestLineId is { } id && request.Lines.All(r => r.Id != id)) == true)
+        {
+            throw new DomainException("offer.line_invalid", "A line answers a line that isn't in this request.");
         }
 
         var terms = new OfferTerms(

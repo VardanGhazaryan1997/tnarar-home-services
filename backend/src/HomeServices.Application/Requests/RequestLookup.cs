@@ -61,6 +61,36 @@ internal sealed class RequestLookup
         return result;
     }
 
+    /// <summary>
+    /// The request's lines in order, work named in the request language (removed work keeps its name). The estimated
+    /// ranges only when <paramref name="withEstimate"/> (the customer's view).
+    /// </summary>
+    public static async Task<IReadOnlyList<RequestLineDto>> LinesAsync(
+        IAppDbContext db, ICurrentLanguage language, ServiceRequest request, bool withEstimate, CancellationToken cancellationToken)
+    {
+        if (request.Lines.Count == 0)
+        {
+            return [];
+        }
+
+        var ids = request.Lines.Select(l => l.WorkItemId).Distinct().ToList();
+        var names = await db.WorkItems.AsNoTracking().IgnoreQueryFilters()
+            .Where(w => ids.Contains(w.Id))
+            .ToDictionaryAsync(w => w.Id, w => w.Name, cancellationToken);
+        return request.Lines
+            .OrderBy(l => l.SortOrder)
+            .Select(l => new RequestLineDto(
+                l.Id,
+                l.RoomName,
+                l.WorkItemId,
+                names.GetValueOrDefault(l.WorkItemId)?.Get(language.Code, language.DefaultCode) ?? string.Empty,
+                l.Unit,
+                l.Quantity,
+                withEstimate ? l.EstimateMin : null,
+                withEstimate ? l.EstimateMax : null))
+            .ToList();
+    }
+
     public RequestPlaceDto Place(ServiceRequest request)
     {
         var city = _cities.GetValueOrDefault(request.CityId);

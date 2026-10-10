@@ -1,9 +1,25 @@
 using HomeServices.Application.Files;
+using HomeServices.Domain.Catalog;
 
 namespace HomeServices.Application.Requests;
 
 /// <summary>What and where, with names in the request language.</summary>
 public sealed record RequestPlaceDto(Guid CategoryId, string CategoryName, Guid CityId, string CityName, Guid? DistrictId, string? DistrictName);
+
+/// <summary>
+/// A line of work in a request made from an estimate: room, work (named in the request language), unit and amount
+/// (null = to be agreed). <see cref="EstimateMin"/>–<see cref="EstimateMax"/>: the estimated labour range, for the
+/// customer only (partners never see it, like the budget).
+/// </summary>
+public sealed record RequestLineDto(
+    Guid Id,
+    string RoomName,
+    Guid WorkItemId,
+    string Name,
+    WorkUnit Unit,
+    decimal? Quantity,
+    int? EstimateMin = null,
+    int? EstimateMax = null);
 
 /// <summary>A request in the customer's list. <see cref="FindingPartners"/>: no partner could take it yet and an operator is on it.</summary>
 public sealed record MyRequestListItemDto(
@@ -37,7 +53,9 @@ public sealed record MyRequestDto(
     bool FindingPartners,
     DateTimeOffset CreatedAt,
     DateTimeOffset? CancelledAt,
-    string? CancelReason);
+    string? CancelReason,
+    Guid? EstimateId,
+    IReadOnlyList<RequestLineDto> Lines);
 
 /// <summary>A request in a partner's inbox. <see cref="MyStatus"/>: New, Viewed, Declined or Responded.</summary>
 public sealed record InboxItemDto(
@@ -67,7 +85,8 @@ public sealed record InboxRequestDto(
     IReadOnlyList<FileDto> Media,
     string? CustomerFirstName,
     DateTimeOffset SentAt,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<RequestLineDto> Lines);
 
 public sealed record AdminRequestListItemDto(
     Guid Id,

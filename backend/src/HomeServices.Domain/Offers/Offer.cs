@@ -11,7 +11,8 @@ public sealed class Offer : AuditableEntity, IAudited
 {
     public const int SummaryMinLength = 10;
     public const int SummaryMaxLength = 4000;
-    public const int MaxLines = 30;
+    public const int MaxLines = 200;
+    public const decimal MaxLineQuantity = 100_000m;
     public const int LineMaxLength = 200;
     public const int MaterialsNoteMaxLength = 1000;
     public const int MaxDurationDays = 3650;
@@ -242,7 +243,33 @@ public sealed class Offer : AuditableEntity, IAudited
                 throw new DomainException("offer.line_invalid", $"Each line needs a title of at most {LineMaxLength} characters.");
             }
 
-            _items.Add(new OfferItem(Id, title, line.Included, _items.Count + 1));
+            if (line.UnitPrice is < 0 or > MaxPrice || line.Quantity is <= 0 or > MaxLineQuantity || (!line.Included && line.UnitPrice is not null))
+            {
+                throw new DomainException("offer.line_invalid", "A priced line needs a unit price and a sensible quantity; excluded work has no price.");
+            }
+
+            if (line.RequestLineId is { } requestLineId && _items.Any(i => i.RequestLineId == requestLineId))
+            {
+                throw new DomainException("offer.line_invalid", "Each line of the request is answered once.");
+            }
+
+            var quantity = line.Quantity is null ? (decimal?)null : Math.Round(line.Quantity.Value, 2, MidpointRounding.AwayFromZero);
+            int? amount = line.UnitPrice is { } unitPrice ? (int)Math.Min(Math.Round(unitPrice * (quantity ?? 1m), MidpointRounding.AwayFromZero), MaxPrice) : null;
+            _items.Add(new OfferItem(Id, title, line.Included, _items.Count + 1, line.RequestLineId, quantity, line.UnitPrice, amount));
+        }
+
+        // Priced line by line: every included line has a price and they add up to the offer's price.
+        if (_items.Any(i => i.Amount is not null))
+        {
+            if (_items.Any(i => i.Included && i.Amount is null))
+            {
+                throw new DomainException("offer.lines_unpriced", "Price every included line, or none.");
+            }
+
+            if (_items.Sum(i => (long)(i.Amount ?? 0)) != Price)
+            {
+                throw new DomainException("offer.lines_sum_mismatch", "The priced lines must add up to the price.");
+            }
         }
     }
 
@@ -307,12 +334,16 @@ public sealed class OfferItem : Entity, IAudited
     {
     }
 
-    internal OfferItem(Guid offerId, string title, bool included, int sortOrder)
+    internal OfferItem(Guid offerId, string title, bool included, int sortOrder, Guid? requestLineId = null, decimal? quantity = null, int? unitPrice = null, int? amount = null)
     {
         OfferId = offerId;
         Title = title;
         Included = included;
         SortOrder = sortOrder;
+        RequestLineId = requestLineId;
+        Quantity = quantity;
+        UnitPrice = unitPrice;
+        Amount = amount;
     }
 
     public Guid OfferId { get; private set; }
@@ -322,6 +353,17 @@ public sealed class OfferItem : Entity, IAudited
     public bool Included { get; private set; }
 
     public int SortOrder { get; private set; }
+
+    /// <summary>The request line this answers, for comparing offers line by line.</summary>
+    public Guid? RequestLineId { get; private set; }
+
+    public decimal? Quantity { get; private set; }
+
+    /// <summary>AMD per unit; null for a line without its own price.</summary>
+    public int? UnitPrice { get; private set; }
+
+    /// <summary>Unit price × quantity (1 when not given), rounded to whole drams.</summary>
+    public int? Amount { get; private set; }
 }
 
 /// <summary>One payment in an offer's plan.</summary>

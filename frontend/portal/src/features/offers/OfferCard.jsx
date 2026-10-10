@@ -19,20 +19,31 @@ export function OfferTerms({ terms, kind }) {
   const { t, i18n } = useTranslation()
   const included = terms.lines.filter((line) => line.included)
   const excluded = terms.lines.filter((line) => !line.included)
+  const priced = included.some((line) => line.amount != null)
+  const includedList = (
+    <ul className={styles['offer-terms__lines']} aria-label={t('offers.included')}>
+      {included.map((line, index) => (
+        <li key={`${index}-${line.title}`} className={styles['offer-terms__line']}>
+          <Icon name="check" size={16} className={styles['offer-terms__icon']} />
+          <span className={styles['offer-terms__title']}>{line.title}</span>
+          {line.amount != null && <span className={styles['offer-terms__line-amount']}>{formatMoney(line.amount, i18n.language)}</span>}
+        </li>
+      ))}
+    </ul>
+  )
 
   return (
     <div className={styles['offer-terms']}>
       <p className={styles['offer-terms__summary']}>{terms.summary}</p>
-      {included.length > 0 && (
-        <ul className={styles['offer-terms__lines']} aria-label={t('offers.included')}>
-          {included.map((line, index) => (
-            <li key={`${index}-${line.title}`} className={styles['offer-terms__line']}>
-              <Icon name="check" size={16} className={styles['offer-terms__icon']} />
-              {line.title}
-            </li>
-          ))}
-        </ul>
-      )}
+      {included.length > 0 &&
+        (priced && included.length > 6 ? (
+          <details className={styles['offer-terms__details']}>
+            <summary>{t('offers.linePricing.pricedLines', { number: included.length })}</summary>
+            {includedList}
+          </details>
+        ) : (
+          includedList
+        ))}
       {excluded.length > 0 && (
         <ul className={styles['offer-terms__lines']} aria-label={t('offers.excluded')}>
           {excluded.map((line, index) => (

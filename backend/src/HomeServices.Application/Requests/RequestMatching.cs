@@ -8,7 +8,8 @@ namespace HomeServices.Application.Requests;
 
 /// <summary>
 /// Which partners can receive a request. The distribution rule: approved partners (owner not blocked) who
-/// offer the request's category or its parent category, and work where it is — its whole region, the whole
+/// offer the request's category or its parent category (for a request made from an estimate, also the services of
+/// its lines and their parents), and work where it is — its whole region, the whole
 /// town or village, or the request's district. The customer's own profile never receives it.
 /// </summary>
 internal static class RequestMatching
@@ -29,7 +30,19 @@ internal static class RequestMatching
             .Where(c => c.Id == request.CategoryId)
             .Select(c => c.ParentId)
             .SingleOrDefaultAsync(cancellationToken);
-        var categoryIds = parentId is { } parent ? new[] { request.CategoryId, parent } : new[] { request.CategoryId };
+        var categoryIds = parentId is { } parent ? new List<Guid> { request.CategoryId, parent } : new List<Guid> { request.CategoryId };
+        if (request.Lines.Count > 0)
+        {
+            var workItemIds = request.Lines.Select(l => l.WorkItemId).Distinct().ToList();
+            var lineCategories = await db.Categories.AsNoTracking()
+                .Where(c => db.WorkItems.Any(w => workItemIds.Contains(w.Id) && w.CategoryId == c.Id))
+                .Select(c => new { c.Id, c.ParentId })
+                .ToListAsync(cancellationToken);
+            categoryIds.AddRange(lineCategories.Select(c => c.Id));
+            categoryIds.AddRange(lineCategories.Where(c => c.ParentId != null).Select(c => c.ParentId!.Value));
+            categoryIds = categoryIds.Distinct().ToList();
+        }
+
         var customerId = request.CustomerId;
         var cityId = request.CityId;
         var districtId = request.DistrictId;

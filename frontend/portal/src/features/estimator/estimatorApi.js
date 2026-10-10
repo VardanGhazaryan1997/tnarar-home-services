@@ -57,16 +57,16 @@ export function useRoomTemplates() {
   return estimatorApi.useGetRoomTemplatesQuery(i18n.language)
 }
 
-/** Every active work item in the UI language. */
-export function useWorkItems() {
+/** Every active work item in the UI language (`skip` loads nothing). */
+export function useWorkItems({ skip = false } = {}) {
   const { i18n } = useTranslation()
-  return estimatorApi.useGetWorkItemsQuery(i18n.language)
+  return estimatorApi.useGetWorkItemsQuery(i18n.language, { skip })
 }
 
-/** One of the user's estimates (names in the UI language). */
+/** One of the user's estimates (names in the UI language); nothing is loaded without an id. */
 export function useMyEstimate(id) {
   const { i18n } = useTranslation()
-  return estimatorApi.useGetMyEstimateQuery({ id, lng: i18n.language })
+  return estimatorApi.useGetMyEstimateQuery({ id, lng: i18n.language }, { skip: !id })
 }
 
 /** A shared estimate by its link token. */

@@ -17,6 +17,7 @@ import MyOffersOnRequest from '@/features/offers/MyOffersOnRequest'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDateTime } from '@/shared/format'
 import { MediaGallery, RecipientStatusTag, RequestFacts } from './components/RequestParts'
+import RequestLines from './components/RequestLines'
 import { useDeclineInboxRequestMutation, useGetInboxRequestQuery } from './requestsApi'
 import styles from './requests.module.scss'
 
@@ -72,6 +73,12 @@ export default function InboxRequestPage() {
                   <p className={styles['request-page__text']}>{request.description}</p>
                   <MediaGallery files={request.media} />
                 </Card>
+                {request.lines?.length > 0 && (
+                  <Card title={t('requests.lines.title')}>
+                    <p className={styles['request-page__muted']}>{t('requests.lines.partnerHint')}</p>
+                    <RequestLines lines={request.lines} />
+                  </Card>
+                )}
                 <MyOffersOnRequest requestId={request.id} />
               </div>
               <aside className={styles['request-page__side']}>

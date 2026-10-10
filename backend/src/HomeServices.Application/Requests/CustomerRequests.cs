@@ -1,6 +1,7 @@
 using FluentValidation;
 using HomeServices.Application.Abstractions;
 using HomeServices.Application.Common;
+using HomeServices.Application.Estimates;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Files;
 using HomeServices.Application.Messaging;
@@ -19,7 +20,9 @@ namespace HomeServices.Application.Requests;
 /// <summary>
 /// The signed-in customer asks for work. A direct request (<see cref="PartnerId"/> set) goes to that partner;
 /// an open request goes to matching partners (see <see cref="RequestMatching"/>), or to the operator queue
-/// when nobody matches. Photos and videos are uploaded with /api/v1/files first.
+/// when nobody matches. Photos and videos are uploaded with /api/v1/files first. With <see cref="EstimateId"/> (one of
+/// the customer's saved estimates) the request carries the estimate's work room by room, with amounts and estimated
+/// ranges, so partners can price it line by line.
 /// </summary>
 public sealed record CreateRequest(
     RequestKind Kind,
@@ -32,7 +35,8 @@ public sealed record CreateRequest(
     string? TimeNote,
     int? BudgetMin,
     int? BudgetMax,
-    IReadOnlyList<Guid>? MediaFileIds) : ICommand<MyRequestDto>;
+    IReadOnlyList<Guid>? MediaFileIds,
+    Guid? EstimateId = null) : ICommand<MyRequestDto>;
 
 /// <summary>The customer's requests, newest first.</summary>
 public sealed record GetMyRequests(RequestStatus? Status = null, int Page = 1, int PageSize = GetMyRequests.DefaultPageSize)
@@ -142,6 +146,11 @@ public sealed class CreateRequestHandler(
             request.AddMedia(fileId);
         }
 
+        if (command.EstimateId is { } estimateId)
+        {
+            await CopyEstimateAsync(request, estimateId, cancellationToken);
+        }
+
         if (command.Kind == RequestKind.Direct)
         {
             var partner = await RequestMatching.Receiving(db).SingleOrDefaultAsync(p => p.Id == command.PartnerId, cancellationToken)
@@ -167,6 +176,22 @@ public sealed class CreateRequestHandler(
             db, request.Recipients.Select(r => r.PartnerProfileId).ToList(), NotificationType.RequestReceived, _ => $"/inbox/{request.Id}", null, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return await MyRequests.ToDtoAsync(db, language, files, request, cancellationToken);
+    }
+
+    // The estimate's work as it's priced now: work removed from the catalog since is left out.
+    private async Task CopyEstimateAsync(ServiceRequest request, Guid estimateId, CancellationToken cancellationToken)
+    {
+        var estimate = await MyEstimateData.LoadAsync(db.Estimates.AsNoTracking(), currentUser, estimateId, cancellationToken);
+        var measurement = await MyEstimateData.MeasureAsync(db, language, estimate, cancellationToken);
+        var rooms = estimate.Rooms.OrderBy(r => r.SortOrder).ToList();
+        request.LinkEstimate(estimate.Id);
+        for (var i = 0; i < rooms.Count; i++)
+        {
+            foreach (var line in measurement.Rooms[i].Lines)
+            {
+                request.AddLine(rooms[i].Name, line.WorkItemId, line.Unit, line.Quantity, line.PriceMin, line.PriceMax);
+            }
+        }
     }
 }
 
@@ -241,6 +266,7 @@ internal static class MyRequests
         return await db.ServiceRequests
             .Include(r => r.Recipients)
             .Include(r => r.Media)
+            .Include(r => r.Lines)
             .SingleOrDefaultAsync(r => r.Id == id && r.CustomerId == customerId, cancellationToken)
             ?? throw NotFound();
     }
@@ -280,7 +306,9 @@ internal static class MyRequests
             request.NeedsAttention,
             request.CreatedAt,
             request.CancelledAt,
-            request.CancelReason);
+            request.CancelReason,
+            request.EstimateId,
+            await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken));
     }
 }
 

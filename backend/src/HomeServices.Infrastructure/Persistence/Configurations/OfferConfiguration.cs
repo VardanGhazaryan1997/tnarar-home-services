@@ -40,6 +40,8 @@ internal sealed class OfferItemConfiguration : IEntityTypeConfiguration<OfferIte
     {
         builder.ToTable("OfferItems");
         builder.Property(i => i.Title).HasMaxLength(Offer.LineMaxLength);
+        builder.Property(i => i.Quantity).HasPrecision(10, 2);
+        builder.HasOne<RequestLine>().WithMany().HasForeignKey(i => i.RequestLineId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 

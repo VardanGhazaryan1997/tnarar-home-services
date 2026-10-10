@@ -10,11 +10,14 @@ import Card from '@/components/ui/Card/Card'
 import { CheckboxField, SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
 import Segmented from '@/components/ui/Segmented/Segmented'
+import { useGetMyPricesQuery } from '@/features/partner/prices/pricesApi'
 import { placeText } from '@/features/requests/place'
 import { useGetInboxRequestQuery } from '@/features/requests/requestsApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
 import { formatMoney, todayIso } from '@/shared/format'
+import LinePricing from './LinePricing'
+import { allPriced, initialRows, toOfferLines, total } from './linePricing'
 import { useSendOfferMutation } from './offersApi'
 import styles from './offers.module.scss'
 
@@ -30,7 +33,8 @@ const toInt = (value) => (value === '' || value == null ? null : Math.round(Numb
 /**
  * The partner's offer on a received request. A work offer: what's included and excluded, the price,
  * materials, dates and an optional payment plan whose stages add up to the price. A visit offer: a time
- * and a fee (0 = free) for an assessment visit before the work offer.
+ * and a fee (0 = free) for an assessment visit before the work offer. A request made from an estimate lists its work
+ * line by line: the partner prices each line (prefilled from their price list) and the price is the sum.
  */
 export default function OfferBuilderPage() {
   const { t, i18n } = useTranslation()
@@ -44,13 +48,21 @@ export default function OfferBuilderPage() {
   const [lines, setLines] = useState([])
   const [stages, setStages] = useState([])
   const [showErrors, setShowErrors] = useState(false)
+  const requestLines = request.data?.lines ?? []
+  const priceList = useGetMyPricesQuery(undefined, { skip: requestLines.length === 0 })
+  // The lines as edited; until then, prefilled from the price list (which may load after the request).
+  const [editedRows, setRows] = useState(null)
+  const rows = editedRows ?? initialRows(requestLines, priceList.data?.items)
+  const [byLineChoice, setByLine] = useState(true)
+  const byLine = kind === 'Work' && requestLines.length > 0 && byLineChoice
 
   const set = (field) => (event) =>
     setForm((current) => ({ ...current, [field]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }))
   const editRow = (setRows, rowKey, changes) => setRows((rows) => rows.map((row) => (row.key === rowKey ? { ...row, ...changes } : row)))
   const removeRow = (setRows, rowKey) => setRows((rows) => rows.filter((row) => row.key !== rowKey))
 
-  const price = toInt(form.price) ?? 0
+  const extraPriced = lines.reduce((sum, line) => sum + (line.included ? (toInt(line.price) ?? 0) : 0), 0)
+  const price = byLine ? total(rows) + extraPriced : (toInt(form.price) ?? 0)
   const stagesTotal = stages.reduce((sum, stage) => sum + (toInt(stage.amount) ?? 0), 0)
   const apiErrors = fieldErrors(t, sending.error)
   const local = {
@@ -58,7 +70,9 @@ export default function OfferBuilderPage() {
     price: (kind === 'Work' ? price < 1 : form.price === '' || price < 0) && t('offers.errors.priceRequired'),
     visitAt: kind === 'Visit' && Number.isNaN(Date.parse(form.visitAt)) && t('offers.errors.visitAtRequired'),
     stages: kind === 'Work' && stages.length > 0 && stagesTotal !== price && t('errors.stages.sum_mismatch'),
-    lines: kind === 'Work' && lines.some((line) => !line.title.trim()) && t('errors.lines.invalid'),
+    lines:
+      (kind === 'Work' && lines.some((line) => !line.title.trim()) && t('errors.lines.invalid')) ||
+      (byLine && (!allPriced(rows) || lines.some((line) => line.included && toInt(line.price) == null)) && t('offers.linePricing.priceEvery')),
   }
   const errorFor = (field) => apiErrors[field] ?? (showErrors ? local[field] || undefined : undefined)
 
@@ -71,7 +85,18 @@ export default function OfferBuilderPage() {
       requestId: id,
       kind,
       summary: form.summary.trim(),
-      lines: work ? lines.map((line) => ({ title: line.title.trim(), included: line.included })) : [],
+      lines: !work
+        ? []
+        : byLine
+          ? [
+              ...toOfferLines(rows),
+              ...lines.map((line) =>
+                line.included
+                  ? { title: line.title.trim(), included: true, quantity: 1, unitPrice: toInt(line.price) }
+                  : { title: line.title.trim(), included: false },
+              ),
+            ]
+          : lines.map((line) => ({ title: line.title.trim(), included: line.included })),
       price,
       materialsIncluded: work && form.materialsIncluded,
       materialsNote: (work && form.materialsNote.trim()) || null,
@@ -114,13 +139,27 @@ export default function OfferBuilderPage() {
                   error={errorFor('summary')}
                 />
 
+                {kind === 'Work' && requestLines.length > 0 && (
+                  <div className={styles['offer-builder__fields']}>
+                    <p className={styles['offer-builder__group-title']}>{t('offers.linePricing.title')}</p>
+                    <CheckboxField label={t('offers.linePricing.toggle')} checked={byLineChoice} onChange={(event) => setByLine(event.target.checked)} />
+                    {byLine && (
+                      <>
+                        <p className={styles['offer-builder__context']}>{t('offers.linePricing.hint')}</p>
+                        <LinePricing rows={rows} onChange={setRows} showErrors={showErrors} />
+                        <p className={styles['offer-builder__sum']}>{t('offers.linePricing.total', { total: formatMoney(price, i18n.language) })}</p>
+                      </>
+                    )}
+                  </div>
+                )}
+
                 {kind === 'Work' && (
                   <div className={styles['offer-builder__fields']}>
-                    <p className={styles['offer-builder__group-title']}>{t('offers.fields.lines')}</p>
+                    <p className={styles['offer-builder__group-title']}>{requestLines.length > 0 ? t('offers.linePricing.extra') : t('offers.fields.lines')}</p>
                     {lines.length > 0 && (
                       <ul className={styles['offer-builder__editor']}>
                         {lines.map((line, index) => (
-                          <li key={line.key} className={b('offer-builder__editor-row', { line: true })}>
+                          <li key={line.key} className={b('offer-builder__editor-row', { line: !(byLine && line.included) })}>
                             <TextField
                               label={t('offers.fields.lineTitle', { n: index + 1 })}
                               maxLength={200}
@@ -136,6 +175,16 @@ export default function OfferBuilderPage() {
                               value={line.included ? 'in' : 'out'}
                               onChange={(event) => editRow(setLines, line.key, { included: event.target.value === 'in' })}
                             />
+                            {byLine && line.included && (
+                              <TextField
+                                label={t('offers.linePricing.linePrice', { n: index + 1 })}
+                                type="number"
+                                inputMode="numeric"
+                                min={0}
+                                value={line.price ?? ''}
+                                onChange={(event) => editRow(setLines, line.key, { price: event.target.value })}
+                              />
+                            )}
                             <Button variant="ghost" icon={<Icon name="trash" />} aria-label={t('offers.removeLine', { n: index + 1 })} onClick={() => removeRow(setLines, line.key)} />
                           </li>
                         ))}
@@ -169,12 +218,13 @@ export default function OfferBuilderPage() {
                 <div className={styles['offer-builder__row']}>
                   <TextField
                     label={kind === 'Work' ? t('offers.fields.price') : t('offers.fields.fee')}
-                    hint={kind === 'Visit' ? t('offers.feeHint') : undefined}
+                    hint={kind === 'Visit' ? t('offers.feeHint') : byLine ? t('offers.linePricing.priceHint') : undefined}
                     type="number"
                     inputMode="numeric"
                     min={0}
                     required
-                    value={form.price}
+                    readOnly={byLine}
+                    value={byLine ? String(price) : form.price}
                     onChange={set('price')}
                     error={errorFor('price')}
                   />

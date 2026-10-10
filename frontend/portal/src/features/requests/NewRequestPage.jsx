@@ -9,11 +9,13 @@ import Card from '@/components/ui/Card/Card'
 import { SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
 import { categoryOptions, cityOptionGroups, useCategories, useCities, useRegions } from '@/features/catalog/catalogApi'
+import { useMyEstimate, useWorkItems } from '@/features/estimator/estimatorApi'
 import PhotoPicker from '@/features/files/PhotoPicker'
 import { useFileUploads } from '@/features/files/useFileUploads'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
-import { todayIso } from '@/shared/format'
+import { formatMoney, todayIso } from '@/shared/format'
+import { mainCategoryOf } from './fromEstimate'
 import { useCreateRequestMutation } from './requestsApi'
 import styles from './requests.module.scss'
 
@@ -41,14 +43,19 @@ const toNumber = (value) => (value === '' ? null : Number(value))
 /**
  * A new request in three short steps (phones show one at a time): what and where; the description and
  * photos; when and the budget. `?partner=<id>&name=<name>` sends it to that partner only (a direct request).
+ * `?estimate=<id>` makes it from one of the customer's estimates: its work goes with the request line by line, and the
+ * service, description and budget start from the estimate.
  */
 export default function NewRequestPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const path = useLocalizedPath()
   const [params] = useSearchParams()
   const partnerId = params.get('partner')
   const partnerName = params.get('name')
+  const estimateId = params.get('estimate')
+  const estimate = useMyEstimate(estimateId)
+  const workItems = useWorkItems({ skip: !estimateId })
   const categories = useCategories()
   const cities = useCities()
   const regions = useRegions()
@@ -68,6 +75,27 @@ export default function NewRequestPage() {
   })
 
   const set = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }))
+
+  // From an estimate: start the description and budget from it once it's loaded, and the service once the work's
+  // services are known; the customer can change them all.
+  const [prefilled, setPrefilled] = useState({ text: false, category: false })
+  if (estimate.data && !prefilled.text) {
+    const data = estimate.data
+    setPrefilled((current) => ({ ...current, text: true }))
+    setForm((current) => ({
+      ...current,
+      description:
+        current.description ||
+        t('requests.fromEstimate.description', { title: data.title, rooms: data.rooms.map((room) => room.name).join(', ') }),
+      budgetMin: current.budgetMin || (data.measurement.totalMin > 0 ? String(data.measurement.totalMin) : ''),
+      budgetMax: current.budgetMax || (data.measurement.totalMax > 0 ? String(data.measurement.totalMax) : ''),
+    }))
+  }
+  if (estimate.data && workItems.data && categories.data && !prefilled.category) {
+    const main = mainCategoryOf(estimate.data, workItems.data, categories.data)
+    setPrefilled((current) => ({ ...current, category: true }))
+    if (main) setForm((current) => ({ ...current, categoryId: current.categoryId || main }))
+  }
   const districts = useMemo(() => cities.data?.find((city) => city.id === form.cityId)?.districts ?? [], [cities.data, form.cityId])
   const apiErrors = fieldErrors(t, creating.error)
 
@@ -109,6 +137,7 @@ export default function NewRequestPage() {
       budgetMin: toNumber(form.budgetMin),
       budgetMax: toNumber(form.budgetMax),
       mediaFileIds: uploads.fileIds,
+      estimateId: estimate.data ? estimateId : null,
     })
     if (result.data) return navigate(path(`/requests/${result.data.id}`), { replace: true, state: { created: true } })
 
@@ -144,6 +173,23 @@ export default function NewRequestPage() {
             {t('requests.directTo', { name: partnerName ?? '' })}
           </p>
         )}
+
+        {estimate.data && (
+          <Alert tone="info" title={t('requests.fromEstimate.title', { title: estimate.data.title })}>
+            <p>
+              {t('requests.fromEstimate.summary', {
+                rooms: estimate.data.rooms.length,
+                lines: estimate.data.rooms.reduce((sum, room) => sum + room.lines.length, 0),
+              })}
+              {estimate.data.measurement.totalTypical > 0 &&
+                ` ${t('requests.fromEstimate.range', {
+                  range: `${formatMoney(estimate.data.measurement.totalMin, i18n.language)} – ${formatMoney(estimate.data.measurement.totalMax, i18n.language)}`,
+                })}`}
+            </p>
+            <p>{t('requests.fromEstimate.private')}</p>
+          </Alert>
+        )}
+        {estimate.isError && <Alert tone="warning" title={errorMessage(t, estimate.error)} />}
 
         <Card>
           {step === 0 && (

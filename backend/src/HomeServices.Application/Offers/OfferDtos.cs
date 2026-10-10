@@ -4,7 +4,11 @@ namespace HomeServices.Application.Offers;
 
 public sealed record OfferPartnerDto(Guid PartnerId, string DisplayName, string? Slug);
 
-public sealed record OfferLineDto(string Title, bool Included);
+/// <summary>
+/// A line of an offer. Priced lines have a <see cref="UnitPrice"/> and <see cref="Amount"/>; <see cref="RequestLineId"/>
+/// points at the request line it answers.
+/// </summary>
+public sealed record OfferLineDto(string Title, bool Included, Guid? RequestLineId = null, decimal? Quantity = null, int? UnitPrice = null, int? Amount = null);
 
 /// <summary><see cref="Purpose"/>: Deposit, Stage or Final.</summary>
 public sealed record PaymentStageDto(string? Title, string Purpose, int Amount);

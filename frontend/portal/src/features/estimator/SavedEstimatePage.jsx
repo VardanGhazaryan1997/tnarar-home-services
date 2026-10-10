@@ -101,6 +101,16 @@ function SavedEstimate({ estimate }) {
       <Button variant="accent" block icon={<Icon name="check" />} disabled={!changed} loading={updating.isLoading} onClick={save}>
         {t('estimator.saved.save')}
       </Button>
+      {changed ? (
+        <Button variant="primary" block icon={<Icon name="requests" />} disabled>
+          {t('estimator.saved.getOffers')}
+        </Button>
+      ) : (
+        <Button variant="primary" block icon={<Icon name="requests" />} to={path(`/requests/new?estimate=${estimate.id}`)}>
+          {t('estimator.saved.getOffers')}
+        </Button>
+      )}
+      <p className={styles['estimate-summary__note']}>{changed ? t('estimator.saved.saveFirst') : t('estimator.saved.getOffersHint')}</p>
       <div className={styles['estimate-share']}>
         {shareUrl ? (
           <>

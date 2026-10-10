@@ -1,0 +1,59 @@
+@use 'styles/mixins' as *;
+
+// A request's work, room by room.
+.request-lines {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__room {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__title {
+    @include text-small;
+
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: space(1) space(3);
+    padding-block-end: space(2);
+    border-block-end: 1px solid $color-border;
+
+    @include up(md) {
+      grid-template-columns: minmax(0, 1fr) auto minmax(140px, auto);
+    }
+  }
+
+  &__amount {
+    @include text-muted;
+
+    white-space: nowrap;
+  }
+
+  &__estimate {
+    grid-column: 1 / -1;
+    font-weight: $font-weight-medium;
+    white-space: nowrap;
+
+    @include up(md) {
+      grid-column: auto;
+      text-align: end;
+    }
+  }
+}

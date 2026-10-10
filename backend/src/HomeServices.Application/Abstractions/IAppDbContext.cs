@@ -3,6 +3,7 @@ using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Chat;
 using HomeServices.Domain.Commissions;
 using HomeServices.Domain.Content;
+using HomeServices.Domain.Estimates;
 using HomeServices.Domain.Files;
 using HomeServices.Domain.Identity;
 using HomeServices.Domain.Localization;
@@ -33,6 +34,8 @@ public interface IAppDbContext
     DbSet<WorkItem> WorkItems { get; }
 
     DbSet<PartnerPrice> PartnerPrices { get; }
+
+    DbSet<Estimate> Estimates { get; }
 
     DbSet<Region> Regions { get; }
 

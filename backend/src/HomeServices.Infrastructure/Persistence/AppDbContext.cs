@@ -6,6 +6,7 @@ using HomeServices.Domain.Chat;
 using HomeServices.Domain.Commissions;
 using HomeServices.Domain.Common;
 using HomeServices.Domain.Content;
+using HomeServices.Domain.Estimates;
 using HomeServices.Domain.Files;
 using HomeServices.Domain.Identity;
 using HomeServices.Domain.Localization;
@@ -44,6 +45,8 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<WorkItem> WorkItems => Set<WorkItem>();
 
     public DbSet<PartnerPrice> PartnerPrices => Set<PartnerPrice>();
+
+    public DbSet<Estimate> Estimates => Set<Estimate>();
 
     public DbSet<Region> Regions => Set<Region>();
 

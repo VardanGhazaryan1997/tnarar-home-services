@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import Button from '@/components/ui/Button/Button'
 import Icon from '@/components/ui/Icon/Icon'
 import { useCategories } from '@/features/catalog/catalogApi'
+import QuickEstimate from '@/features/estimator/QuickEstimate'
 import CategoryTiles from '@/features/public/CategoryTiles'
 import PartnerCard from '@/features/public/PartnerCard'
 import { useSearchPartners } from '@/features/public/publicApi'
@@ -65,6 +66,8 @@ export default function HomePage() {
           <CategoryTiles categories={categories.data} label={t('home.servicesTitle')} />
         </section>
       )}
+
+      <QuickEstimate />
 
       <section className={styles['home-page__section']} aria-labelledby="how-title">
         <h2 id="how-title" className={styles['home-page__section-title']}>

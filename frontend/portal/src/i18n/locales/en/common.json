@@ -1290,5 +1290,46 @@
     },
     "notFound": "Statement not found",
     "notFoundText": "This statement doesn't exist or isn't yours."
+  },
+  "estimator": {
+    "roomType": "Room",
+    "area": "Floor area, m²",
+    "oldBuilding": "Old building",
+    "roomTypes": {
+      "LivingRoom": "Living room",
+      "Bedroom": "Bedroom",
+      "KidsRoom": "Kids' room",
+      "Kitchen": "Kitchen",
+      "Bathroom": "Bathroom",
+      "Toilet": "Toilet",
+      "Hallway": "Hallway",
+      "Balcony": "Balcony",
+      "Office": "Office",
+      "Garage": "Garage",
+      "Other": "Other room"
+    },
+    "units": {
+      "SquareMeter": "m²",
+      "RunningMeter": "m",
+      "Piece": "pcs",
+      "Point": "points",
+      "CubicMeter": "m³",
+      "Hour": "h",
+      "Fixed": "job"
+    },
+    "quick": {
+      "title": "How much will the renovation cost?",
+      "subtitle": "Pick a room and its floor area to see a labour price range for the usual work, based on prices in Armenia.",
+      "calculate": "Calculate",
+      "resultLabel": "Labour, approximately",
+      "usually": "Usually about {{amount}}",
+      "note": "Labour only, without materials. Specialists give the final price after seeing the place.",
+      "included": "What's included ({{count}})",
+      "noPrices": "There aren't enough prices for this room yet. Describe the job and get offers from specialists.",
+      "cta": "Get exact offers"
+    },
+    "errors": {
+      "area": "Enter the floor area in m², from 1 to {{max}}"
+    }
   }
 }

@@ -37,6 +37,8 @@ public interface IAppDbContext
 
     DbSet<Estimate> Estimates { get; }
 
+    DbSet<RoomTemplate> RoomTemplates { get; }
+
     DbSet<Region> Regions { get; }
 
     DbSet<City> Cities { get; }

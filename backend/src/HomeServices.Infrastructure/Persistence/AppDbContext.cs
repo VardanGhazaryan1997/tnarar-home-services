@@ -48,6 +48,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<Estimate> Estimates => Set<Estimate>();
 
+    public DbSet<RoomTemplate> RoomTemplates => Set<RoomTemplate>();
+
     public DbSet<Region> Regions => Set<Region>();
 
     public DbSet<City> Cities => Set<City>();

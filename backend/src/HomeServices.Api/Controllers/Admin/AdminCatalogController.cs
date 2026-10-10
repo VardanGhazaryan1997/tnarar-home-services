@@ -1,7 +1,9 @@
 using HomeServices.Api.Authorization;
 using HomeServices.Application.Catalog;
+using HomeServices.Application.Estimates;
 using HomeServices.Application.Messaging;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Estimates;
 using HomeServices.Domain.Staff;
 using Microsoft.AspNetCore.Mvc;
 
@@ -159,6 +161,26 @@ public sealed class AdminCatalogController : ControllerBase
         await handler.HandleAsync(new DeleteWorkItem(id), cancellationToken);
         return NoContent();
     }
+
+    // ---------- Room templates (the estimator's usual work per kind of room) ----------
+
+    public sealed record RoomTemplateRequest(IReadOnlyList<RoomTemplateInput> Items);
+
+    /// <summary>Every room type's usual work, in order, with default counts.</summary>
+    [HttpGet("room-templates")]
+    public Task<IReadOnlyList<AdminRoomTemplateDto>> GetRoomTemplates(
+        [FromServices] IQueryHandler<GetAdminRoomTemplates, IReadOnlyList<AdminRoomTemplateDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminRoomTemplates(), cancellationToken);
+
+    /// <summary>Replaces a room type's usual work with the list sent (in that order).</summary>
+    [HttpPut("room-templates/{roomType}")]
+    public Task<AdminRoomTemplateDto> SetRoomTemplate(
+        RoomType roomType,
+        RoomTemplateRequest request,
+        [FromServices] ICommandHandler<SetRoomTemplate, AdminRoomTemplateDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetRoomTemplate(roomType, request.Items), cancellationToken);
 
     // ---------- Regions, cities and districts ----------
 

@@ -1,0 +1,94 @@
+@use 'styles/mixins' as *;
+
+// The quick estimate on the home page: a short form, then the price range with the work it includes.
+.quick-estimate {
+  @include surface;
+
+  display: grid;
+  gap: space(4);
+  padding: space(5) space(4);
+
+  @include up(md) {
+    padding: space(6);
+  }
+
+  &__title {
+    @include heading-2;
+  }
+
+  &__subtitle {
+    @include text-muted;
+  }
+
+  &__form {
+    display: grid;
+    gap: space(3);
+    align-items: end;
+
+    @include up(md) {
+      grid-template-columns: 1.4fr 1fr auto auto;
+    }
+  }
+
+  &__check {
+    padding-block-end: space(3);
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: space(4);
+    background: $color-surface-sunken;
+    border-radius: $radius;
+  }
+
+  &__label {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__range {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-night;
+  }
+
+  &__typical {
+    font-weight: $font-weight-medium;
+  }
+
+  &__note {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__details > summary {
+    cursor: pointer;
+    font-weight: $font-weight-medium;
+    color: $color-night;
+  }
+
+  &__lines {
+    display: grid;
+    gap: space(2);
+    padding: 0;
+    margin: space(3) 0 0;
+    list-style: none;
+  }
+
+  &__line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1) space(3);
+    justify-content: space-between;
+  }
+
+  &__quantity {
+    @include text-muted;
+  }
+
+  &__line-price {
+    white-space: nowrap;
+  }
+}

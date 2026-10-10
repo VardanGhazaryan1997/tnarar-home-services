@@ -98,5 +98,5 @@ public sealed class MeasureEstimateValidator : AbstractValidator<MeasureEstimate
 public sealed class MeasureEstimateHandler(IAppDbContext db, ICurrentLanguage language) : IQueryHandler<MeasureEstimate, EstimateMeasurementDto>
 {
     public Task<EstimateMeasurementDto> HandleAsync(MeasureEstimate query, CancellationToken cancellationToken) =>
-        EstimateCalculator.CalculateAsync(db, language, query.Rooms, query.OldBuilding, cancellationToken);
+        EstimateCalculator.CalculateAsync(db, language, query.Rooms, query.OldBuilding, skipUnavailable: false, cancellationToken);
 }

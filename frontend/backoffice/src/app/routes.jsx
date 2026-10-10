@@ -138,6 +138,7 @@ export const routes = [
                       { index: true, element: <Navigate replace to="categories" /> },
                       { path: 'categories', lazy: page(() => import('@/features/catalog/CategoriesTab')) },
                       { path: 'work-items', lazy: page(() => import('@/features/catalog/WorkItemsTab')) },
+                      { path: 'room-templates', lazy: page(() => import('@/features/catalog/RoomTemplatesTab')) },
                       { path: 'cities', lazy: page(() => import('@/features/catalog/CitiesTab')) },
                     ],
                   },

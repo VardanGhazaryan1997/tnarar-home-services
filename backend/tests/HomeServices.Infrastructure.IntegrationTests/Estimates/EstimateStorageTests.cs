@@ -38,4 +38,41 @@ public class EstimateStorageTests(PostgresFixture db)
         await context.SaveChangesAsync();
         (await context.Set<EstimateLine>().CountAsync(l => l.RoomId == bedroom.Id)).ShouldBe(0);
     }
+
+    [Fact]
+    public async Task Rooms_are_replaced_and_the_share_token_is_unique()
+    {
+        await using var context = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(db.ConnectionStringFor("estimates")).Options);
+        await context.Database.MigrateAsync();
+        var workItem = await context.WorkItems.FirstAsync();
+        var estimate = Estimate.Create(null, "Replace me", null);
+        estimate.AddRoom("Old", RoomType.Bedroom, new RoomSize(4m, 3m, null, 2.7m), [new RoomOpening(OpeningKind.Door, 0.9m, 2m)]).AddLine(workItem.Id, null);
+        estimate.Share($"token-{Guid.NewGuid():N}"[..24]);
+        context.Estimates.Add(estimate);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+
+        var stored = await context.Estimates
+            .Include(e => e.Rooms).ThenInclude(r => r.Openings)
+            .Include(e => e.Rooms).ThenInclude(r => r.Lines)
+            .SingleAsync(e => e.Id == estimate.Id);
+        var oldRoomId = stored.Rooms.Single().Id;
+        stored.ClearRooms();
+        stored.AddRoom("New", RoomType.Kitchen, new RoomSize(null, null, 9m, 2.7m), []).AddLine(workItem.Id, 2m);
+        stored.SetOldBuilding(true);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+
+        var reloaded = await context.Estimates.Include(e => e.Rooms).ThenInclude(r => r.Lines).SingleAsync(e => e.Id == estimate.Id);
+        reloaded.OldBuilding.ShouldBeTrue();
+        reloaded.Rooms.Single().Name.ShouldBe("New");
+        reloaded.Rooms.Single().Lines.Single().Quantity.ShouldBe(2m);
+        (await context.Set<EstimateRoom>().AnyAsync(r => r.Id == oldRoomId)).ShouldBeFalse();
+        (await context.Set<EstimateOpening>().AnyAsync(o => o.RoomId == oldRoomId)).ShouldBeFalse();
+
+        var copy = Estimate.Create(null, "Copy", null);
+        copy.Share(estimate.ShareToken!);
+        context.Estimates.Add(copy);
+        await Should.ThrowAsync<DbUpdateException>(() => context.SaveChangesAsync());
+    }
 }

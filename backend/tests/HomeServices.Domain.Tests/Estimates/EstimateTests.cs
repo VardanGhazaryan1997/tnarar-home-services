@@ -57,6 +57,20 @@ public class EstimateTests
     }
 
     [Fact]
+    public void Lines_keep_their_order()
+    {
+        var room = Estimate.Create(null, "x", null).AddRoom("Hall", RoomType.Hallway, Bedroom, []);
+        var (a, b, c) = (Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        room.AddLine(a, null);
+        room.AddLine(b, null);
+        room.AddLine(c, 2m);
+
+        room.RemoveLine(a);
+
+        room.Lines.Select(l => (l.WorkItemId, l.SortOrder)).ShouldBe(new[] { (b, 1), (c, 2) });
+    }
+
+    [Fact]
     public void Titles_names_and_types_are_checked()
     {
         Should.Throw<DomainException>(() => Estimate.Create(null, " ", null)).Code.ShouldBe("estimate.title_invalid");
@@ -89,5 +103,31 @@ public class EstimateTests
         }
 
         Should.Throw<DomainException>(() => estimate.AddRoom("One more", RoomType.Other, Bedroom, [])).Code.ShouldBe("estimate.too_many_rooms");
+    }
+
+    [Fact]
+    public void An_estimate_is_shared_by_a_token_until_sharing_stops()
+    {
+        var estimate = Estimate.Create(null, "x", null, oldBuilding: true);
+        estimate.OldBuilding.ShouldBeTrue();
+        estimate.ShareToken.ShouldBeNull();
+
+        estimate.Share("abcdefghijklmnop_-12").ShouldBe("abcdefghijklmnop_-12");
+        estimate.Share("another-token-0000000").ShouldBe("abcdefghijklmnop_-12");
+
+        estimate.StopSharing();
+        estimate.ShareToken.ShouldBeNull();
+        Should.Throw<DomainException>(() => estimate.Share("short")).Code.ShouldBe("estimate.share_token_invalid");
+        Should.Throw<DomainException>(() => estimate.Share("has spaces in the token")).Code.ShouldBe("estimate.share_token_invalid");
+    }
+
+    [Fact]
+    public void Rooms_can_be_cleared_and_added_again()
+    {
+        var estimate = Estimate.Create(null, "x", null);
+        estimate.AddRoom("A", RoomType.Bedroom, Bedroom, []);
+        estimate.ClearRooms();
+        estimate.Rooms.ShouldBeEmpty();
+        estimate.AddRoom("B", RoomType.Kitchen, Bedroom, []).SortOrder.ShouldBe(1);
     }
 }

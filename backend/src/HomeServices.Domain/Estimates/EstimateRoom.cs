@@ -110,14 +110,28 @@ public sealed class EstimateRoom : Entity
             throw new DomainException("estimate.too_many_lines", $"At most {MaxLines} kinds of work per room.");
         }
 
-        var line = new EstimateLine(Id, workItemId, quantity);
+        var line = new EstimateLine(Id, _lines.Count + 1, workItemId, quantity);
         _lines.Add(line);
         return line;
     }
 
-    public void RemoveLine(Guid workItemId) => _lines.RemoveAll(l => l.WorkItemId == workItemId);
+    public void RemoveLine(Guid workItemId)
+    {
+        _lines.RemoveAll(l => l.WorkItemId == workItemId);
+        for (var i = 0; i < _lines.Count; i++)
+        {
+            _lines[i].Reorder(i + 1);
+        }
+    }
 
     internal void Reorder(int sortOrder) => SortOrder = sortOrder;
+
+    /// <summary>Removes the room's doors, windows and work (before the room itself is removed).</summary>
+    internal void ClearContents()
+    {
+        _openings.Clear();
+        _lines.Clear();
+    }
 }
 
 /// <summary>A stored door or window of a room.</summary>
@@ -158,9 +172,10 @@ public sealed class EstimateLine : Entity
     {
     }
 
-    internal EstimateLine(Guid roomId, Guid workItemId, decimal? quantity)
+    internal EstimateLine(Guid roomId, int sortOrder, Guid workItemId, decimal? quantity)
     {
         RoomId = roomId;
+        SortOrder = sortOrder;
         WorkItemId = workItemId;
         SetQuantity(quantity);
     }
@@ -168,6 +183,9 @@ public sealed class EstimateLine : Entity
     public Guid RoomId { get; private set; }
 
     public Guid WorkItemId { get; private set; }
+
+    /// <summary>Position in the room (1 = first), in the order the work was added.</summary>
+    public int SortOrder { get; private set; }
 
     public decimal? Quantity { get; private set; }
 
@@ -180,4 +198,6 @@ public sealed class EstimateLine : Entity
 
         Quantity = quantity is null ? null : Math.Round(quantity.Value, 2, MidpointRounding.AwayFromZero);
     }
+
+    internal void Reorder(int sortOrder) => SortOrder = sortOrder;
 }

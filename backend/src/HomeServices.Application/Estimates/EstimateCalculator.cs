@@ -10,8 +10,18 @@ namespace HomeServices.Application.Estimates;
 /// <summary>Measures rooms and prices their work: the engine behind the measure and quick-estimate endpoints.</summary>
 internal static class EstimateCalculator
 {
+    /// <summary>
+    /// Measures and prices <paramref name="rooms"/>. Work that isn't offered (deleted or hidden) fails with
+    /// "estimate.work_item_not_found", or with <paramref name="skipUnavailable"/> (saved estimates) is left out of the
+    /// result, so the caller can tell the customer which of their lines are gone.
+    /// </summary>
     public static async Task<EstimateMeasurementDto> CalculateAsync(
-        IAppDbContext db, ICurrentLanguage language, IReadOnlyList<RoomInput> rooms, bool oldBuilding, CancellationToken cancellationToken)
+        IAppDbContext db,
+        ICurrentLanguage language,
+        IReadOnlyList<RoomInput> rooms,
+        bool oldBuilding,
+        bool skipUnavailable,
+        CancellationToken cancellationToken)
     {
         var ids = rooms.SelectMany(r => r.Lines ?? Array.Empty<LineInput>()).Select(l => l.WorkItemId).Distinct().ToList();
         var items = await db.WorkItems.AsNoTracking()
@@ -19,7 +29,12 @@ internal static class EstimateCalculator
             .ToDictionaryAsync(w => w.Id, cancellationToken);
         if (items.Count != ids.Count)
         {
-            throw new DomainException("estimate.work_item_not_found", "Some of the work is no longer offered. Refresh the page.");
+            if (!skipUnavailable)
+            {
+                throw new DomainException("estimate.work_item_not_found", "Some of the work is no longer offered. Refresh the page.");
+            }
+
+            rooms = rooms.Select(r => r with { Lines = (r.Lines ?? Array.Empty<LineInput>()).Where(l => items.ContainsKey(l.WorkItemId)).ToList() }).ToList();
         }
 
         var measured = rooms.Select(room => Measure(room, items, oldBuilding, language)).ToList();

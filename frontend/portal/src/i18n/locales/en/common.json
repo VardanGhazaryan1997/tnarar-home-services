@@ -75,7 +75,8 @@
       "services": "Find"
     },
     "services": "Find a specialist",
-    "how": "How it works"
+    "how": "How it works",
+    "estimates": "Estimates"
   },
   "layout": {
     "skipToContent": "Skip to content",
@@ -381,6 +382,18 @@
       "duplicate": "The same work is listed twice. Refresh the page.",
       "too_many": "Too many prices at once.",
       "required": "Send your prices."
+    },
+    "estimate": {
+      "not_found": "This estimate doesn't exist.",
+      "size_invalid": "A room's size doesn't look right. Check the length, width and height.",
+      "opening_invalid": "A door or window doesn't fit. Check its size.",
+      "work_item_not_found": "Some of the work is no longer offered. Refresh the page.",
+      "city_not_found": "This town is no longer in the list.",
+      "too_many": "You can keep up to 50 estimates. Delete an old one first.",
+      "title_invalid": "Give the estimate a name of up to 120 characters.",
+      "room_name_invalid": "Name each room in up to 60 characters.",
+      "too_many_rooms": "An estimate has at most 30 rooms.",
+      "quantity_invalid": "An amount is too large."
     }
   },
   "pagination": {
@@ -1326,10 +1339,122 @@
       "note": "Labour only, without materials. Specialists give the final price after seeing the place.",
       "included": "What's included ({{count}})",
       "noPrices": "There aren't enough prices for this room yet. Describe the job and get offers from specialists.",
-      "cta": "Get exact offers"
+      "cta": "Get exact offers",
+      "detailed": "Room-by-room estimate"
     },
     "errors": {
-      "area": "Enter the floor area in m², from 1 to {{max}}"
+      "area": "Enter the floor area in m², from 1 to {{max}}",
+      "side": "From 0 to {{side}} m",
+      "roomArea": "From 0 to {{area}} m²",
+      "height": "From {{minHeight}} to {{maxHeight}} m",
+      "openingSize": "From 0 to {{openingSize}} m",
+      "count": "A whole number from 1 to {{openingCount}}",
+      "quantity": "From 0 to {{quantity}}",
+      "fixRooms": "Some rooms have sizes that need fixing (marked in red)."
+    },
+    "openings": {
+      "Door": "Door",
+      "Window": "Window"
+    },
+    "room": {
+      "moveUp": "Move room up",
+      "moveDown": "Move room down",
+      "remove": "Remove room",
+      "name": "Room name",
+      "size": "Size",
+      "sizeMode": "How to give the size",
+      "bySides": "Length × width",
+      "byArea": "Floor area",
+      "length": "Length, m",
+      "width": "Width, m",
+      "height": "Ceiling height, m",
+      "geometry": "Floor {{floor}} m² · walls {{walls}} m² · perimeter {{perimeter}} m",
+      "openings": "Doors and windows",
+      "noOpenings": "Doors and windows are taken off the wall area.",
+      "openingWidth": "Width, m",
+      "openingHeight": "Height, m",
+      "openingCount": "How many",
+      "removeOpening": "Remove: {{kind}}",
+      "addDoor": "Add a door",
+      "addWindow": "Add a window",
+      "work": "Work",
+      "noWork": "No work in this room yet.",
+      "unknownWork": "Work no longer offered",
+      "gone": "No longer offered: remove it",
+      "quantity": "Amount, {{unit}}",
+      "enterQuantity": "Enter",
+      "needsQuantity": "Enter the amount",
+      "noPrice": "No price yet",
+      "removeWork": "Remove: {{name}}",
+      "addWork": "Add work",
+      "total": "This room: {{range}}",
+      "needsSize": "Enter the room's size to see prices"
+    },
+    "picker": {
+      "title": "Add work: {{room}}",
+      "done": "Done",
+      "search": "Search work",
+      "none": "Nothing found",
+      "price": "usually {{amount}} per {{unit}}",
+      "add": "Add: {{name}}",
+      "more": "{{number}} more: type to narrow down"
+    },
+    "editor": {
+      "title": "Estimate name",
+      "oldBuildingHint": "Older buildings usually cost about 15% more: uneven walls, old pipes and wiring.",
+      "noRooms": "No rooms yet",
+      "noRoomsText": "Add the rooms you want to renovate. The usual work for each room is ticked for you.",
+      "newRoom": "Room type",
+      "addRoom": "Add room",
+      "summary": "Total",
+      "noTotal": "Add a room and its size to see the price.",
+      "unmeasured": "Rooms without a complete size: {{number}}",
+      "unpriced": "Lines without a price (enter the amount, or no price yet): {{number}}",
+      "defaultTitle": "My renovation",
+      "save": "Save to my estimates",
+      "signInToSave": "Sign in to save",
+      "keptHere": "Your estimate is kept on this device until you save it.",
+      "startOver": "Start over",
+      "newTitle": "Renovation estimate",
+      "subtitle": "Room by room, with labour prices from Armenia's market.",
+      "startOverTitle": "Start a new estimate?",
+      "startOverText": "The rooms you entered on this device will be removed."
+    },
+    "saved": {
+      "notFound": "This estimate doesn't exist",
+      "save": "Save changes",
+      "saved": "Saved",
+      "link": "Share link",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "share": "Share a link",
+      "stopSharing": "Stop sharing",
+      "shareHint": "Anyone with the link sees the rooms and prices, not your name or phone.",
+      "delete": "Delete estimate",
+      "deleteTitle": "Delete \"{{title}}\"?",
+      "deleteText": "The estimate and its share link are deleted for good."
+    },
+    "list": {
+      "title": "My estimates",
+      "subtitle": "Work out what your renovation will cost, room by room.",
+      "new": "New estimate",
+      "continue": "Continue the estimate",
+      "draftTitle": "Not saved yet",
+      "rooms": "Rooms: {{number}}",
+      "draftSave": "Open it and save it to your account.",
+      "visitorTitle": "Estimate your renovation",
+      "visitorText": "Start without signing in. Sign in to keep your estimates and share them.",
+      "signIn": "Sign in",
+      "empty": "No saved estimates yet",
+      "emptyText": "Make an estimate and save it to come back to it later.",
+      "noPrice": "No price yet",
+      "shared": "Shared"
+    },
+    "shared": {
+      "notFound": "This link no longer works",
+      "makeYourOwn": "Make your own estimate",
+      "subtitle": "A renovation estimate, updated {{date}}",
+      "oldBuilding": "Old building: prices include about 15% extra."
     }
   }
 }

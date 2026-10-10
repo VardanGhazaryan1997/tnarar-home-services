@@ -34,6 +34,14 @@ public sealed class EstimatesController : ControllerBase
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new GetRoomTemplates(), cancellationToken);
 
+    /// <summary>An estimate someone shared, by its link (read-only); 404 "estimate.not_found" once sharing stops.</summary>
+    [HttpGet("shared/{token}")]
+    public Task<SharedEstimateDto> Shared(
+        string token,
+        [FromServices] IQueryHandler<GetSharedEstimate, SharedEstimateDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetSharedEstimate(token), cancellationToken);
+
     /// <summary>A quick estimate: one room of the given type and floor area with its usual work, measured and priced.</summary>
     [HttpPost("quick")]
     public Task<EstimateMeasurementDto> Quick(

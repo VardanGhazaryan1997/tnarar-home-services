@@ -15,7 +15,7 @@ describe('AppLayout', () => {
     const tabs = screen.getByRole('navigation', { name: en.layout.tabNavigation })
     expect(within(tabs).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.tab.home, en.nav.tab.services, en.nav.signIn])
     const main = within(header).getByRole('navigation', { name: en.layout.mainNavigation })
-    expect(within(main).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.services, en.nav.how])
+    expect(within(main).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.services, en.nav.estimates, en.nav.how])
     expect(screen.getByRole('link', { name: en.layout.skipToContent })).toHaveAttribute('href', '#main')
     expect(screen.getByRole('contentinfo')).toHaveTextContent('Tnarar')
   })
@@ -27,17 +27,17 @@ describe('AppLayout', () => {
     const header = screen.getByRole('banner')
     expect(await within(header).findByRole('link', { name: CUSTOMER.fullName })).toHaveAttribute('href', '/en/account')
     const main = within(header).getByRole('navigation', { name: en.layout.mainNavigation })
-    expect(within(main).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.services, en.nav.requests, en.nav.orders, en.nav.messages])
+    expect(within(main).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.services, en.nav.estimates, en.nav.requests, en.nav.orders, en.nav.messages])
     expect(within(header).getByRole('link', { name: en.layout.home })).toHaveAttribute('href', '/en')
     const tabs = screen.getByRole('navigation', { name: en.layout.tabNavigation })
     expect(within(tabs).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.tab.home, en.nav.tab.requests, en.nav.tab.orders, en.nav.tab.messages, en.nav.tab.account])
   })
 
   it('adds the inbox for partners and keeps five tabs for signed-in users', () => {
-    expect(desktopItems(PARTNER_USER).map((i) => i.key)).toEqual(['services', 'requests', 'inbox', 'orders', 'messages'])
+    expect(desktopItems(PARTNER_USER).map((i) => i.key)).toEqual(['services', 'estimates', 'requests', 'inbox', 'orders', 'messages'])
     expect(mobileItems(PARTNER_USER).map((i) => i.key)).toEqual(['home', 'requests', 'orders', 'messages', 'account'])
     expect(navItemsFor({ ...PARTNER_USER, fullName: null }).some((i) => i.key === 'inbox')).toBe(true)
-    expect(navItemsFor(null).map((i) => i.key)).toEqual(['home', 'services', 'how'])
+    expect(navItemsFor(null).map((i) => i.key)).toEqual(['home', 'services', 'estimates', 'how'])
   })
 
   it('links the public pages and the information pages marked for the footer', async () => {

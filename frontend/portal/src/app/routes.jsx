@@ -28,10 +28,14 @@ export const routes = [
           { path: 'partners/:slug', lazy: page(() => import('@/features/public/PartnerPage')) },
           { path: 'how-it-works', lazy: page(() => import('@/features/public/HowItWorksPage')) },
           { path: 'pages/:slug', lazy: page(() => import('@/features/public/InfoPage')) },
+          { path: 'estimates', lazy: page(() => import('@/features/estimator/EstimatesPage')) },
+          { path: 'estimates/new', lazy: page(() => import('@/features/estimator/NewEstimatePage')) },
+          { path: 'estimates/shared/:token', lazy: page(() => import('@/features/estimator/SharedEstimatePage')) },
           {
             element: <RequireAuth />,
             children: [
               { path: 'account', lazy: page(() => import('@/features/account/AccountPage')) },
+              { path: 'estimates/:id', lazy: page(() => import('@/features/estimator/SavedEstimatePage')) },
               { path: 'partner', lazy: page(() => import('@/features/partner/PartnerProfilePage')) },
               { path: 'requests', lazy: page(() => import('@/features/requests/MyRequestsPage')) },
               { path: 'requests/new', lazy: page(() => import('@/features/requests/NewRequestPage')) },

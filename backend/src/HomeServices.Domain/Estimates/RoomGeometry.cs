@@ -96,5 +96,8 @@ public sealed record RoomGeometry(decimal FloorArea, decimal Perimeter, decimal 
         _ => null,
     };
 
+    /// <summary>True when work of this unit and surface can be measured from a room (see <see cref="QuantityFor"/>).</summary>
+    public static bool CanMeasure(WorkUnit unit, WorkSurface surface) => new RoomGeometry(1, 1, 1, 1, 1).QuantityFor(unit, surface) is not null;
+
     private static decimal Round(decimal value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);
 }

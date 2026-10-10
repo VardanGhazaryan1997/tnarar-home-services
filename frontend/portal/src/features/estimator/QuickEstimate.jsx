@@ -111,9 +111,12 @@ export default function QuickEstimate() {
           ) : (
             <p>{t('estimator.quick.noPrices')}</p>
           )}
-          <div>
+          <div className={styles['quick-estimate__actions']}>
             <Button to={path('/requests/new')} variant="primary">
               {t('estimator.quick.cta')}
+            </Button>
+            <Button to={path('/estimates/new')} variant="secondary">
+              {t('estimator.quick.detailed')}
             </Button>
           </div>
         </div>

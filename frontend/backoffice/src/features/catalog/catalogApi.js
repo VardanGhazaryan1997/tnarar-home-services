@@ -3,7 +3,7 @@ import { baseApi } from '@/api/baseApi'
 const BASE = '/admin/catalog'
 
 /** Back Office catalog management (needs catalog.manage). See backend/README "Managing the catalog". */
-export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories', 'Cities', 'WorkItems'] }).injectEndpoints({
+export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories', 'Cities', 'WorkItems', 'RoomTemplates'] }).injectEndpoints({
   endpoints: (build) => ({
     getCategories: build.query({
       query: () => `${BASE}/categories`,
@@ -48,6 +48,15 @@ export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories',
     deleteWorkItem: build.mutation({
       query: (id) => ({ url: `${BASE}/work-items/${id}`, method: 'DELETE' }),
       invalidatesTags: ['WorkItems'],
+    }),
+
+    getRoomTemplates: build.query({
+      query: () => `${BASE}/room-templates`,
+      providesTags: ['RoomTemplates'],
+    }),
+    setRoomTemplate: build.mutation({
+      query: ({ roomType, items }) => ({ url: `${BASE}/room-templates/${roomType}`, method: 'PUT', body: { items } }),
+      invalidatesTags: ['RoomTemplates'],
     }),
 
     getRegions: build.query({
@@ -98,6 +107,8 @@ export const {
   useUpdateWorkItemMutation,
   useSetWorkItemActiveMutation,
   useDeleteWorkItemMutation,
+  useGetRoomTemplatesQuery,
+  useSetRoomTemplateMutation,
   useGetRegionsQuery,
   useGetCitiesQuery,
   useCreateCityMutation,

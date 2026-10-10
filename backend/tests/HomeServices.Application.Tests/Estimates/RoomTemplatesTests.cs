@@ -93,7 +93,20 @@ public class RoomTemplatesTests
         (await Should.ThrowAsync<DomainException>(() => new SetRoomTemplateHandler(_db).HandleAsync(
             new SetRoomTemplate(RoomType.Bathroom, [new RoomTemplateInput(Guid.NewGuid())]), CancellationToken.None)))
             .Code.ShouldBe("room_template.work_item_not_found");
+        (await Should.ThrowAsync<DomainException>(() => new SetRoomTemplateHandler(_db).HandleAsync(
+            new SetRoomTemplate(RoomType.Bathroom, [new RoomTemplateInput(_toilet.Id)]), CancellationToken.None)))
+            .Code.ShouldBe("room_template.quantity_required");
     }
+
+    [Theory]
+    [InlineData(WorkUnit.SquareMeter, WorkSurface.None, true)]
+    [InlineData(WorkUnit.RunningMeter, WorkSurface.Floor, true)]
+    [InlineData(WorkUnit.Fixed, WorkSurface.None, true)]
+    [InlineData(WorkUnit.RunningMeter, WorkSurface.None, false)]
+    [InlineData(WorkUnit.Piece, WorkSurface.Wall, false)]
+    [InlineData(WorkUnit.Hour, WorkSurface.None, false)]
+    public void Only_room_sized_work_can_be_measured(WorkUnit unit, WorkSurface surface, bool measurable) =>
+        RoomGeometry.CanMeasure(unit, surface).ShouldBe(measurable);
 
     [Fact]
     public void Template_counts_are_checked()

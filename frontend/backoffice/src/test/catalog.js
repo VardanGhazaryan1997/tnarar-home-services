@@ -106,3 +106,17 @@ export const WORK_ITEMS = [
     isPriceLocked: false,
   },
 ]
+
+/** Room templates as GET /admin/catalog/room-templates returns them (every room type, in order). */
+export const ROOM_TEMPLATES = ['LivingRoom', 'Bedroom', 'KidsRoom', 'Kitchen', 'Bathroom', 'Toilet', 'Hallway', 'Balcony', 'Office', 'Garage', 'Other'].map(
+  (type) => ({
+    type,
+    items:
+      type === 'LivingRoom'
+        ? [
+            { workItemId: 'wi-plastering', quantity: null, quantityPerSquareMeter: null },
+            { workItemId: 'wi-leaks', quantity: 2, quantityPerSquareMeter: null },
+          ]
+        : [],
+  }),
+)

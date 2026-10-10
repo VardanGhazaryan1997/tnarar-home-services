@@ -352,12 +352,24 @@
     },
     "surface": {
       "invalid": "Choose a surface"
+    },
+    "room_template": {
+      "work_item_not_found": "Some of this work no longer exists. Refresh the page.",
+      "quantity_required": "Work that can't be measured from the room needs a count",
+      "quantity_invalid": "Give a count or a count per m², not both",
+      "type_invalid": "Unknown room type"
+    },
+    "items": {
+      "required": "Add at least one line",
+      "too_many": "A room can have up to 60 lines",
+      "duplicate": "Each work can be added once"
     }
   },
   "catalog": {
     "tabs": {
       "categories": "Categories",
       "work-items": "Work items",
+      "room-templates": "Room templates",
       "cities": "Cities and districts"
     },
     "columns": {
@@ -481,6 +493,45 @@
       "partnersHelp": "How many partners priced this work",
       "market": "Partners: {{range}}",
       "marketHelp": "Customers see this range, worked out from {{count}} partners’ prices. Lock the price to show yours instead."
+    },
+    "roomTemplates": {
+      "help": "The work usually done in each kind of room. It's ticked by default when a customer adds such a room to an estimate, and the quick estimate on the home page prices it. Work measured from the room (m² of walls, skirting) needs nothing more; pieces and points get a count.",
+      "roomType": "Room type",
+      "add": "Add work…",
+      "work": "Work",
+      "amount": "Default amount",
+      "modes": {
+        "measured": "Measured from the room",
+        "count": "Fixed count",
+        "perSquareMeter": "Count per m² of floor"
+      },
+      "values": {
+        "count": "Count",
+        "perSquareMeter": "Count per m²"
+      },
+      "perSquareMeterSuffix": "{{unit}} / m²",
+      "needsCount": "This work can't be measured from the room: give a count",
+      "countInvalid": "Enter a count from 0.01 to 1000",
+      "perSquareMeterInvalid": "Enter a count per m² from 0.001 to 100",
+      "hiddenHelp": "Hidden work is left out of estimates until it's shown again",
+      "up": "Move up",
+      "down": "Move down",
+      "remove": "Remove",
+      "undo": "Undo changes",
+      "empty": "No work in this room yet",
+      "roomTypes": {
+        "LivingRoom": "Living room",
+        "Bedroom": "Bedroom",
+        "KidsRoom": "Kids' room",
+        "Kitchen": "Kitchen",
+        "Bathroom": "Bathroom",
+        "Toilet": "Toilet",
+        "Hallway": "Hallway",
+        "Balcony": "Balcony",
+        "Office": "Office",
+        "Garage": "Garage",
+        "Other": "Other room"
+      }
     }
   },
   "partners": {

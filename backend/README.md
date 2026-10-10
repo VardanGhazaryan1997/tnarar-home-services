@@ -323,6 +323,24 @@ Errors: `comment.required`, `comment.too_long`, `status.invalid`, `type.invalid`
 
 Broken JSON, an unknown enum name or a missing required field return the usual 400 shape: `code: "validation_failed"` with `errors: { field: ["value.invalid" | "value.required"] }` (`InvalidRequestProblems`).
 
+## Renovation estimates
+
+| Endpoint | What it does |
+| --- | --- |
+| `POST /api/v1/estimates/measure` | Measures and prices rooms without saving (anyone) |
+| `GET /api/v1/estimates/templates` | The usual work per room type, with market prices and default counts (anyone) |
+| `POST /api/v1/estimates/quick` | One room of a type and floor area with its usual work, priced (anyone; the home page widget) |
+| `GET /api/v1/estimates/shared/{token}` | A shared estimate by its link, read-only (anyone); 404 `estimate.not_found` once sharing stops |
+| `GET /api/v1/me/estimates`, `GET …/{id}` | The signed-in user's estimates (up to 50) with totals; one estimate with rooms and prices |
+| `POST /api/v1/me/estimates`, `PUT …/{id}`, `DELETE …/{id}` | Save a new estimate (201), replace one (title, `cityId`, `oldBuilding`, all rooms), delete one |
+| `POST …/{id}/share`, `DELETE …/{id}/share` | Turn the share link on (a random 22-character `shareToken`) or off |
+| `GET /api/v1/admin/catalog/room-templates`, `PUT …/room-templates/{roomType}` | Back Office (`catalog.manage`): every room type's usual work; replace one type's list |
+
+- Prices are labour only: quantity × the work item's market range, +15% in an old building, +10% on wall and ceiling work under ceilings above 3 m. Amounts are rounded (10 under 1,000, 100 under 100,000, else 1,000).
+- Visitors keep their estimate in the browser; it's saved on the server once they sign in. A saved estimate keeps lines for work hidden since; its prices leave them out (the line is missing from `measurement`).
+- A template line is measured from the room, or has a fixed `quantity`, or a `quantityPerSquareMeter` of floor (rounded up, at least 1). Work that can't be measured (pieces, points, hours, m³) needs one of the two: 422 `room_template.quantity_required`.
+- Errors: `title.invalid`, `rooms.required`, `rooms.count_invalid`, `room.name_invalid`, `room.type_invalid`, `room.duplicate_lines`, `line.quantity_invalid` (400); `estimate.size_invalid`, `estimate.opening_invalid`, `estimate.work_item_not_found`, `estimate.city_not_found`, `estimate.too_many` (422); `estimate.not_found` (404).
+
 ## Code coverage
 
 CI fails when backend coverage drops below 90% of lines or 85% of branches (migrations excluded). To see the report locally (one-time: `dotnet tool install --global dotnet-reportgenerator-globaltool`):

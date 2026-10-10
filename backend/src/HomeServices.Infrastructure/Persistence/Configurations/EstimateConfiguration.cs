@@ -12,6 +12,8 @@ internal sealed class EstimateConfiguration : IEntityTypeConfiguration<Estimate>
     {
         builder.Property(e => e.Title).HasMaxLength(Estimate.TitleMaxLength);
         builder.HasIndex(e => e.UserId);
+        builder.Property(e => e.ShareToken).HasMaxLength(Estimate.ShareTokenMaxLength);
+        builder.HasIndex(e => e.ShareToken).IsUnique();
         builder.HasOne<User>().WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<City>().WithMany().HasForeignKey(e => e.CityId).OnDelete(DeleteBehavior.SetNull);
         builder.HasMany(e => e.Rooms).WithOne().HasForeignKey(r => r.EstimateId).OnDelete(DeleteBehavior.Cascade);

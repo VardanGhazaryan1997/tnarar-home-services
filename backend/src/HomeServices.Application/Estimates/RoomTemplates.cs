@@ -100,7 +100,7 @@ public sealed class QuickEstimateHandler(IAppDbContext db, ICurrentLanguage lang
         var templates = await RoomTemplateData.ActiveAsync(db, query.RoomType, cancellationToken);
         var lines = templates.Select(t => new LineInput(t.Item.Id, t.Template.DefaultQuantity(query.Area))).ToList();
         var room = new RoomInput(query.RoomType, null, null, query.Area, query.Height, Lines: lines);
-        return await EstimateCalculator.CalculateAsync(db, language, [room], query.OldBuilding, cancellationToken);
+        return await EstimateCalculator.CalculateAsync(db, language, [room], query.OldBuilding, skipUnavailable: false, cancellationToken);
     }
 }
 
@@ -118,9 +118,15 @@ public sealed class SetRoomTemplateHandler(IAppDbContext db) : ICommandHandler<S
     public async Task<AdminRoomTemplateDto> HandleAsync(SetRoomTemplate command, CancellationToken cancellationToken)
     {
         var ids = command.Items.Select(i => i.WorkItemId).ToList();
-        if (await db.WorkItems.CountAsync(w => ids.Contains(w.Id), cancellationToken) != ids.Count)
+        var items = await db.WorkItems.AsNoTracking().Where(w => ids.Contains(w.Id)).ToDictionaryAsync(w => w.Id, cancellationToken);
+        if (items.Count != ids.Count)
         {
             throw new DomainException("room_template.work_item_not_found", "Some of the work no longer exists.");
+        }
+
+        if (command.Items.Any(i => i.Quantity is null && i.QuantityPerSquareMeter is null && !RoomGeometry.CanMeasure(items[i.WorkItemId].Unit, items[i.WorkItemId].Surface)))
+        {
+            throw new DomainException("room_template.quantity_required", "Work that can't be measured from the room needs a count.");
         }
 
         var created = command.Items

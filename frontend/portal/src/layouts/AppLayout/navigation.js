@@ -7,6 +7,7 @@
 export const NAV_ITEMS = [
   { key: 'home', path: '/', icon: 'home', end: true, mobileOnly: true },
   { key: 'services', path: '/services', icon: 'search', anonymousTab: true },
+  { key: 'estimates', path: '/estimates', icon: 'money', desktopOnly: true },
   { key: 'how', path: '/how-it-works', icon: 'info', anonymous: true, desktopOnly: true },
   { key: 'requests', path: '/requests', icon: 'requests', auth: true },
   { key: 'inbox', path: '/inbox', icon: 'inbox', auth: true, partner: true, desktopOnly: true },

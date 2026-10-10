@@ -11,6 +11,8 @@ public sealed class Estimate : AuditableEntity
 {
     public const int TitleMaxLength = 120;
     public const int MaxRooms = 30;
+    public const int ShareTokenMinLength = 16;
+    public const int ShareTokenMaxLength = 32;
 
     private readonly List<EstimateRoom> _rooms = [];
 
@@ -25,13 +27,55 @@ public sealed class Estimate : AuditableEntity
     /// <summary>Where the work is (prices may differ by place later).</summary>
     public Guid? CityId { get; private set; }
 
+    /// <summary>An old building: all work costs more (uneven walls, old pipes and wiring).</summary>
+    public bool OldBuilding { get; private set; }
+
+    /// <summary>The secret part of the estimate's share link, or null when it isn't shared.</summary>
+    public string? ShareToken { get; private set; }
+
     public IReadOnlyCollection<EstimateRoom> Rooms => _rooms.AsReadOnly();
 
-    public static Estimate Create(Guid? userId, string title, Guid? cityId)
+    public static Estimate Create(Guid? userId, string title, Guid? cityId, bool oldBuilding = false)
     {
-        var estimate = new Estimate { UserId = userId, CityId = cityId };
+        var estimate = new Estimate { UserId = userId, CityId = cityId, OldBuilding = oldBuilding };
         estimate.Rename(title);
         return estimate;
+    }
+
+    public void SetOldBuilding(bool oldBuilding) => OldBuilding = oldBuilding;
+
+    /// <summary>
+    /// Turns on the share link with <paramref name="token"/> (16+ URL-safe characters); an estimate already shared keeps
+    /// its link. Returns the token in use.
+    /// </summary>
+    public string Share(string token)
+    {
+        if (ShareToken is not null)
+        {
+            return ShareToken;
+        }
+
+        if (token is not { Length: >= ShareTokenMinLength and <= ShareTokenMaxLength } || !token.All(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '_'))
+        {
+            throw new DomainException("estimate.share_token_invalid", "A share token is 16 to 32 URL-safe characters.");
+        }
+
+        ShareToken = token;
+        return token;
+    }
+
+    /// <summary>Turns the share link off; the old link stops working.</summary>
+    public void StopSharing() => ShareToken = null;
+
+    /// <summary>Removes every room (to rebuild the estimate from an edited copy).</summary>
+    public void ClearRooms()
+    {
+        foreach (var room in _rooms)
+        {
+            room.ClearContents();
+        }
+
+        _rooms.Clear();
     }
 
     public void Rename(string title)

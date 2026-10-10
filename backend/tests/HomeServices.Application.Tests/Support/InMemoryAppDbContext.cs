@@ -158,6 +158,11 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
         // Same shape as Infrastructure/Persistence/Configurations/PaymentReviewNotificationConfiguration.cs.
         modelBuilder.Entity<Payment>().Ignore(p => p.Counts);
+
+        // Room, door and line ids are made in code: rooms added to a loaded estimate are new rows, not updates.
+        modelBuilder.Entity<EstimateRoom>().Property(r => r.Id).ValueGeneratedNever();
+        modelBuilder.Entity<EstimateOpening>().Property(o => o.Id).ValueGeneratedNever();
+        modelBuilder.Entity<EstimateLine>().Property(l => l.Id).ValueGeneratedNever();
         modelBuilder.Entity<CommissionStatement>().Ignore(s => s.Outstanding);
     }
 

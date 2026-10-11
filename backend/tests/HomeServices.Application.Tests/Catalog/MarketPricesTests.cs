@@ -1,8 +1,10 @@
 using HomeServices.Application.Catalog;
+using HomeServices.Application.Estimates;
 using HomeServices.Application.Partners;
 using HomeServices.Application.Tests.Partners;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Estimates;
 using HomeServices.Domain.Offers;
 using HomeServices.Domain.Partners;
 using HomeServices.Domain.Requests;
@@ -25,15 +27,26 @@ public class MarketPricesTests
         _data.Db.SaveChanges();
     }
 
-    private void GivenPrices(PartnerStatus status = PartnerStatus.Approved, bool materials = false, params (int From, int? To)[] prices)
+    private List<PartnerProfile> GivenPrices(
+        PartnerStatus status = PartnerStatus.Approved,
+        bool materials = false,
+        DateTimeOffset? confirmedAt = null,
+        Guid? cityId = null,
+        params (int From, int? To)[] prices)
     {
+        var partners = new List<PartnerProfile>();
         foreach (var (from, to) in prices)
         {
-            var partner = _data.GivenProfile($"Partner {Guid.NewGuid():N}"[..20], status);
-            _data.Db.PartnerPrices.Add(PartnerPrice.Create(partner.Id, _item.Id, from, to, materials));
+            var partner = _data.GivenProfile(
+                $"Partner {Guid.NewGuid():N}"[..20],
+                status,
+                configure: cityId is { } city ? p => p.SetAreas([(city, null)]) : null);
+            _data.Db.PartnerPrices.Add(PartnerPrice.Create(partner.Id, _item.Id, from, to, materials, confirmedAt ?? PartnerTestData.Now));
+            partners.Add(partner);
         }
 
         _data.Db.SaveChanges();
+        return partners;
     }
 
     private Task<MarketPricesResult> RecalculateAsync(int minPartners = 5) =>
@@ -134,10 +147,11 @@ public class MarketPricesTests
     public void No_prices_give_no_range() => MarketPrices.RangeOf([]).ShouldBeNull();
 
     // A customer accepted a work offer that priced this work at unitPrice per unit, at decidedAt.
-    private void GivenAcceptedOffer(int unitPrice, DateTimeOffset decidedAt, bool materials = false)
+    private PartnerProfile GivenAcceptedOffer(
+        int unitPrice, DateTimeOffset decidedAt, bool materials = false, PartnerProfile? partner = null, Guid? cityId = null)
     {
-        var partner = _data.GivenProfile($"Deal {Guid.NewGuid():N}"[..20], PartnerStatus.Approved);
-        var request = ServiceRequest.Create(_data.User.Id, RequestKind.Open, _data.Plumbing.Id, _data.Yerevan.Id, null, "Fix the leaking pipe, please.", null, null, null, null);
+        partner ??= _data.GivenProfile($"Deal {Guid.NewGuid():N}"[..20], PartnerStatus.Approved);
+        var request = ServiceRequest.Create(_data.User.Id, RequestKind.Open, _data.Plumbing.Id, cityId ?? _data.Yerevan.Id, null, "Fix the leaking pipe, please.", null, null, null, null);
         var line = request.AddLine("Kitchen", _item.Id, WorkUnit.Fixed, 2m, null, null);
         var terms = new OfferTerms(
             "Fix the leak under the sink.",
@@ -154,6 +168,7 @@ public class MarketPricesTests
         _data.Db.ServiceRequests.Add(request);
         _data.Db.Offers.Add(offer);
         _data.Db.SaveChanges();
+        return partner;
     }
 
     [Fact]
@@ -169,5 +184,81 @@ public class MarketPricesTests
         // 10,000 · 12,000 · 14,000 · 40,000 · 40,000 from four partners.
         _item.MarketPartnerCount.ShouldBe(4);
         _item.Market.ShouldBe(new PriceRange(12000, 14000, 40000));
+    }
+
+    [Fact]
+    public async Task Prices_not_confirmed_for_90_days_dont_count()
+    {
+        GivenPrices(prices: [(10000, null), (12000, null), (14000, null), (20000, null)]);
+        GivenPrices(confirmedAt: PartnerTestData.Now.AddDays(-91), prices: [(30000, null)]);
+        GivenPrices(confirmedAt: PartnerTestData.Now.AddDays(-89), prices: [(16000, null)]);
+
+        (await RecalculateAsync(minPartners: 5)).FromPartners.ShouldBe(1);
+
+        _item.MarketPartnerCount.ShouldBe(5);
+        _item.Market.ShouldBe(new PriceRange(12000, 14000, 16000));
+    }
+
+    [Fact]
+    public async Task Prices_far_outside_the_rest_are_left_out()
+    {
+        GivenPrices(prices: [(100, null), (10000, null), (11000, null), (12000, null), (13000, null), (14000, null), (900000, null)]);
+
+        await RecalculateAsync();
+
+        _item.MarketPartnerCount.ShouldBe(5);
+        _item.Market.ShouldBe(new PriceRange(11000, 12000, 13000));
+    }
+
+    [Fact]
+    public async Task Many_deals_of_one_partner_count_as_one_price()
+    {
+        GivenPrices(prices: [(10000, null), (12000, null), (14000, null), (16000, null)]);
+        var busy = GivenAcceptedOffer(2000, PartnerTestData.Now.AddDays(-3));
+        GivenAcceptedOffer(3000, PartnerTestData.Now.AddDays(-2), partner: busy);
+        GivenAcceptedOffer(4000, PartnerTestData.Now.AddDays(-1), partner: busy);
+
+        await RecalculateAsync();
+
+        // 3,000 (the median of their deals, twice) · 10,000 · 12,000 · 14,000 · 16,000.
+        _item.MarketPartnerCount.ShouldBe(5);
+        _item.Market.ShouldBe(new PriceRange(4800, 11000, 13500));
+    }
+
+    [Fact]
+    public async Task A_region_gets_its_own_range_once_enough_partners_work_there()
+    {
+        var local = GivenPrices(cityId: _data.Masis.Id, prices: [(10000, null), (12000, null), (14000, null), (16000, null)]);
+        GivenAcceptedOffer(18000, PartnerTestData.Now.AddDays(-5), cityId: _data.Masis.Id); // a deal in Ararat
+        GivenPrices(prices: [(20000, null)]); // works in Yerevan only
+
+        await RecalculateAsync();
+
+        _item.MarketPartnerCount.ShouldBe(6);
+        _item.Market.ShouldBe(new PriceRange(13000, 16000, 18000));
+        var ararat = _data.Db.RegionalMarketPrices.Single();
+        (ararat.WorkItemId, ararat.RegionId, ararat.PartnerCount).ShouldBe((_item.Id, _data.Ararat.Id, 5));
+        ararat.Range.ShouldBe(new PriceRange(12500, 15000, 17500));
+
+        var items = await new GetWorkItemsHandler(_data.Db, new FakeCurrentLanguage("hy"))
+            .HandleAsync(new GetWorkItems(Region: "ARARAT"), CancellationToken.None);
+        items.Single(i => i.Id == _item.Id).ShouldSatisfyAllConditions(
+            i => i.PriceTypical.ShouldBe(15000),
+            i => i.PartnerCount.ShouldBe(5),
+            i => i.Regional.ShouldBeTrue());
+        var national = await new GetWorkItemsHandler(_data.Db, new FakeCurrentLanguage("hy"))
+            .HandleAsync(new GetWorkItems(Region: "nowhere"), CancellationToken.None);
+        national.Single(i => i.Id == _item.Id).ShouldSatisfyAllConditions(i => i.PriceTypical.ShouldBe(16000), i => i.Regional.ShouldBeFalse());
+
+        var priced = await new MeasureEstimateHandler(_data.Db, new FakeCurrentLanguage("hy")).HandleAsync(
+            new MeasureEstimate([new RoomInput(RoomType.Kitchen, null, null, 10m, null, null, [new LineInput(_item.Id, 1m)])], CityId: _data.Masis.Id),
+            CancellationToken.None);
+        priced.TotalTypical.ShouldBe(15000);
+
+        // Too few partners left there: the region falls back to the national range.
+        _data.Db.PartnerPrices.Remove(_data.Db.PartnerPrices.Single(p => p.PartnerProfileId == local[0].Id));
+        _data.Db.SaveChanges();
+        await RecalculateAsync();
+        _data.Db.RegionalMarketPrices.ShouldBeEmpty();
     }
 }

@@ -35,6 +35,8 @@ public interface IAppDbContext
 
     DbSet<PartnerPrice> PartnerPrices { get; }
 
+    DbSet<RegionalMarketPrice> RegionalMarketPrices { get; }
+
     DbSet<Estimate> Estimates { get; }
 
     DbSet<RoomTemplate> RoomTemplates { get; }

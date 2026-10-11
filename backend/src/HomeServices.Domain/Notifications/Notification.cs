@@ -29,6 +29,7 @@ public enum NotificationType
     PartnerPausedForDebt = 22,
     PartnerResumed = 23,
     CommissionSettled = 24,
+    PricesNeedConfirming = 25,
 }
 
 /// <summary>

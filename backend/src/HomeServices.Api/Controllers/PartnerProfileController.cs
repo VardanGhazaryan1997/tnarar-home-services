@@ -86,7 +86,8 @@ public sealed class PartnerProfileController : ControllerBase
 
     /// <summary>
     /// Saves the price list. Send every price: items of the offered services left out lose their price.
-    /// 422 "partner_price.not_offered" for an item outside the partner's services.
+    /// 422 "partner_price.not_offered" for an item outside the partner's services; 422 "partner_price.unrealistic" for a
+    /// new or changed price far from the usual market price. Saving confirms every price.
     /// </summary>
     [HttpPut("prices")]
     public Task<MyPriceListDto> SavePrices(
@@ -94,4 +95,11 @@ public sealed class PartnerProfileController : ControllerBase
         [FromServices] ICommandHandler<SaveMyPrices, MyPriceListDto> handler,
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new SaveMyPrices(request.Prices), cancellationToken);
+
+    /// <summary>Confirms that every price is still right, so out-of-date prices count and show again.</summary>
+    [HttpPost("prices/confirm")]
+    public Task<MyPriceListDto> ConfirmPrices(
+        [FromServices] ICommandHandler<ConfirmMyPrices, MyPriceListDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new ConfirmMyPrices(), cancellationToken);
 }

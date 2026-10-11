@@ -308,6 +308,7 @@ internal static class MyEstimateData
             language,
             Rooms(estimate).Select(r => new RoomInput(r.Type, r.Length, r.Width, r.Area, r.Height, r.Openings, r.Lines)).ToList(),
             estimate.OldBuilding,
+            estimate.CityId,
             skipUnavailable: true,
             cancellationToken);
 

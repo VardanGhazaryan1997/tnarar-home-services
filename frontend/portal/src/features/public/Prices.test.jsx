@@ -57,6 +57,29 @@ describe('Renovation prices', () => {
     expect(await screen.findByText(g.none)).toBeInTheDocument()
   }, SLOW)
 
+  it('shows a region’s own prices where it has them', async () => {
+    const asked = []
+    server.use(
+      http.get('*/api/v1/work-items', ({ request }) => {
+        const region = new URL(request.url).searchParams.get('region')
+        asked.push(region)
+        return HttpResponse.json(
+          region === 'ararat' ? [{ ...WORK_ITEMS[0], priceMin: 15000, priceTypical: 25000, priceMax: 35000, partnerCount: 5, regional: true }, WORK_ITEMS[1]] : WORK_ITEMS,
+        )
+      }),
+    )
+    const user = userEvent.setup()
+    renderRoute('/en/renovation-prices')
+
+    const heating = await screen.findByRole('region', { name: 'Boilers' })
+    expect(within(heating).getByText(g.fromSpecialists.replace('{{n}}', '6'))).toBeInTheDocument()
+    await user.selectOptions(screen.getByLabelText(g.region), 'ararat')
+
+    expect(await within(await screen.findByRole('region', { name: 'Boilers' })).findByText(g.fromLocalSpecialists.replace('{{n}}', '5'))).toBeInTheDocument()
+    expect(asked[0]).toBeNull()
+    expect(asked.at(-1)).toBe('ararat')
+  }, SLOW)
+
   it('is linked from the footer', async () => {
     renderRoute('/en')
     expect(await screen.findByRole('link', { name: en.layout.links.prices })).toHaveAttribute('href', '/en/renovation-prices')

@@ -12,12 +12,19 @@ export const estimatorApi = baseApi.enhanceEndpoints({ addTagTypes: ['Estimates'
     quickEstimate: build.mutation({
       query: (body) => ({ url: '/estimates/quick', method: 'POST', body }),
     }),
-    /** `{ rooms, oldBuilding }` → the same shape as a quick estimate, a room per room sent. */
+    /**
+     * `{ rooms, oldBuilding, cityId? }` → the same shape as a quick estimate, a room per room sent. With a town, work
+     * is priced by its region where enough specialists there priced it.
+     */
     measureEstimate: build.mutation({
       query: (body) => ({ url: '/estimates/measure', method: 'POST', body }),
     }),
     getRoomTemplates: build.query({ query: () => '/estimates/templates', keepUnusedDataFor: 60 * 30 }),
-    getWorkItems: build.query({ query: () => '/work-items', keepUnusedDataFor: 60 * 30 }),
+    /** `{ lng, region? }`: a region slug gives that region's prices where it has its own (`regional: true`). */
+    getWorkItems: build.query({
+      query: ({ region }) => (region ? `/work-items?region=${encodeURIComponent(region)}` : '/work-items'),
+      keepUnusedDataFor: 60 * 30,
+    }),
 
     getMyEstimates: build.query({ query: () => '/me/estimates', providesTags: ['Estimates'] }),
     getMyEstimate: build.query({ query: ({ id }) => `/me/estimates/${id}`, providesTags: ['Estimates'] }),
@@ -57,10 +64,10 @@ export function useRoomTemplates() {
   return estimatorApi.useGetRoomTemplatesQuery(i18n.language)
 }
 
-/** Every active work item in the UI language (`skip` loads nothing). */
-export function useWorkItems({ skip = false } = {}) {
+/** Every active work item in the UI language, priced for `region` (a slug) when given (`skip` loads nothing). */
+export function useWorkItems({ skip = false, region = '' } = {}) {
   const { i18n } = useTranslation()
-  return estimatorApi.useGetWorkItemsQuery(i18n.language, { skip })
+  return estimatorApi.useGetWorkItemsQuery({ lng: i18n.language, region }, { skip })
 }
 
 /** One of the user's estimates (names in the UI language); nothing is loaded without an id. */

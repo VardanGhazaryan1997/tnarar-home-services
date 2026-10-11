@@ -138,6 +138,42 @@ describe('My prices page', () => {
     expect(await screen.findByText(en.errors.partner_price.not_offered)).toBeInTheDocument()
   })
 
+  it('asks to confirm out-of-date prices and confirms them', async () => {
+    const list = priceList()
+    list.items[0] = { ...list.items[0], isStale: true, confirmedAt: '2026-01-05T10:00:00Z' }
+    pricesApi({ ...list, staleCount: 1 })
+    let confirmed = 0
+    server.use(
+      http.post('*/api/v1/me/partner-profile/prices/confirm', () => {
+        confirmed += 1
+        return HttpResponse.json({ ...list, staleCount: 0, items: list.items.map((item) => ({ ...item, isStale: false })) })
+      }),
+    )
+    const user = userEvent.setup()
+    renderRoute('/en/prices')
+
+    expect(await screen.findByText(p.staleTitle.replace('{{count}}', '1'))).toBeInTheDocument()
+    expect(within(row('Toilet installation')).getByText(/Not confirmed since/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: p.confirm }))
+
+    expect(await screen.findByText(p.confirmed)).toBeInTheDocument()
+    expect(confirmed).toBe(1)
+    expect(screen.queryByText(p.staleTitle.replace('{{count}}', '1'))).not.toBeInTheDocument()
+    expect(within(row('Toilet installation')).queryByText(/Not confirmed since/)).not.toBeInTheDocument()
+  })
+
+  it('warns about prices far from the usual price', async () => {
+    pricesApi()
+    const user = userEvent.setup()
+    renderRoute('/en/prices')
+
+    const faucet = await screen.findByRole('listitem', { name: 'Faucet installation' })
+    await user.type(within(faucet).getByLabelText(p.from), '500')
+    expect(within(faucet).getByText(p.farFromMarket)).toBeInTheDocument()
+    await user.type(within(faucet).getByLabelText(p.from), '0')
+    expect(within(faucet).queryByText(p.farFromMarket)).not.toBeInTheDocument()
+  })
+
   it('asks to choose services when there is nothing to price', async () => {
     pricesApi({ items: [] })
     renderRoute('/en/prices')

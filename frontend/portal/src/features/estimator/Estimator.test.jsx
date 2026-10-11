@@ -150,6 +150,10 @@ describe('Room-by-room estimator', () => {
     await user.click(screen.getByLabelText(en.estimator.oldBuilding))
     await waitFor(() => expect(measured.at(-1).oldBuilding).toBe(true))
 
+    // Prices follow the town's region.
+    await user.selectOptions(screen.getByLabelText(ed.town), 'city-masis')
+    await waitFor(() => expect(measured.at(-1).cityId).toBe('city-masis'))
+
     expect(JSON.parse(localStorage.getItem('hs_estimate_draft')).rooms).toHaveLength(1)
   }, SLOW)
 

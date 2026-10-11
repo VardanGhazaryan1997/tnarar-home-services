@@ -10,6 +10,7 @@ import Icon from '@/components/ui/Icon/Icon'
 import RequestsTabs from '@/features/requests/RequestsTabs'
 import { useLocalizedPath } from '@/i18n/hooks'
 import PriceListEditor from './PriceListEditor'
+import { useConfirmMyPricesMutation } from './pricesApi'
 import { usePriceList } from './usePriceList'
 import styles from './prices.module.scss'
 
@@ -22,6 +23,8 @@ export default function PricesPage() {
   const path = useLocalizedPath()
   const list = usePriceList()
   const [saved, setSaved] = useState(false)
+  const [confirm, confirming] = useConfirmMyPricesMutation()
+  const staleCount = list.query.data?.staleCount ?? 0
 
   const save = async () => {
     setSaved(false)
@@ -54,6 +57,27 @@ export default function PricesPage() {
             <Alert tone="info" title={t('partner.prices.howTitle')}>
               <p>{t('partner.prices.howText')}</p>
             </Alert>
+            {staleCount > 0 && (
+              <Alert tone="warning" title={t('partner.prices.staleTitle', { count: staleCount })}>
+                <p>{t('partner.prices.staleText', { days: list.query.data.freshDays })}</p>
+                <div className={styles['prices-page__confirm']}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<Icon name="check" />}
+                    loading={confirming.isLoading}
+                    onClick={() => {
+                      setSaved(false)
+                      confirm()
+                    }}
+                  >
+                    {t('partner.prices.confirm')}
+                  </Button>
+                </div>
+              </Alert>
+            )}
+            {confirming.isSuccess && staleCount === 0 && <Alert tone="success" title={t('partner.prices.confirmed')} />}
+            {confirming.error && <Alert tone="danger" title={errorMessage(t, confirming.error)} />}
             {saved && !list.changed && <Alert tone="success" title={t('partner.prices.saved')} />}
             {list.hasErrors && <Alert tone="danger" title={t('partner.prices.errors.fix')} />}
             {list.saving.error && <Alert tone="danger" title={errorMessage(t, list.saving.error)} />}

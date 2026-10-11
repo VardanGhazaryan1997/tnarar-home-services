@@ -13,13 +13,15 @@ internal static class EstimateCalculator
     /// <summary>
     /// Measures and prices <paramref name="rooms"/>. Work that isn't offered (deleted or hidden) fails with
     /// "estimate.work_item_not_found", or with <paramref name="skipUnavailable"/> (saved estimates) is left out of the
-    /// result, so the caller can tell the customer which of their lines are gone.
+    /// result, so the caller can tell the customer which of their lines are gone. With <paramref name="cityId"/>, work
+    /// priced by enough partners in the town's region uses that region's range (C2).
     /// </summary>
     public static async Task<EstimateMeasurementDto> CalculateAsync(
         IAppDbContext db,
         ICurrentLanguage language,
         IReadOnlyList<RoomInput> rooms,
         bool oldBuilding,
+        Guid? cityId,
         bool skipUnavailable,
         CancellationToken cancellationToken)
     {
@@ -37,7 +39,11 @@ internal static class EstimateCalculator
             rooms = rooms.Select(r => r with { Lines = (r.Lines ?? Array.Empty<LineInput>()).Where(l => items.ContainsKey(l.WorkItemId)).ToList() }).ToList();
         }
 
-        var measured = rooms.Select(room => Measure(room, items, oldBuilding, language)).ToList();
+        var regionId = await RegionalPrices.RegionOfCityAsync(db, cityId, cancellationToken);
+        var regional = await RegionalPrices.LoadAsync(db, regionId, items.Keys, cancellationToken);
+        PriceRange? MarketOf(WorkItem item) => regional.TryGetValue(item.Id, out var local) ? local.Range : item.Market;
+
+        var measured = rooms.Select(room => Measure(room, items, MarketOf, oldBuilding, language)).ToList();
         var lines = measured.SelectMany(r => r.Lines).ToList();
         return new EstimateMeasurementDto(
             measured,
@@ -47,7 +53,8 @@ internal static class EstimateCalculator
             lines.Count(l => l.PriceTypical is null));
     }
 
-    private static RoomMeasurementDto Measure(RoomInput room, Dictionary<Guid, WorkItem> items, bool oldBuilding, ICurrentLanguage language)
+    private static RoomMeasurementDto Measure(
+        RoomInput room, Dictionary<Guid, WorkItem> items, Func<WorkItem, PriceRange?> marketOf, bool oldBuilding, ICurrentLanguage language)
     {
         var height = room.Height ?? RoomSize.DefaultHeight;
         var geometry = RoomGeometry.Of(
@@ -61,7 +68,7 @@ internal static class EstimateCalculator
                 var measuredQuantity = geometry.QuantityFor(item.Unit, item.Surface);
                 var quantity = line.Quantity ?? measuredQuantity;
                 var factor = EstimatePricing.Factor(item, height, oldBuilding);
-                var price = quantity is { } q ? EstimatePricing.Price(q, item.Market, factor) : null;
+                var price = quantity is { } q ? EstimatePricing.Price(q, marketOf(item), factor) : null;
                 return new LineMeasurementDto(
                     item.Id,
                     item.Name.Get(language.Code, language.DefaultCode),

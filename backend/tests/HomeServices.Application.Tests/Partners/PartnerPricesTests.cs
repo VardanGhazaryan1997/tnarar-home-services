@@ -4,6 +4,8 @@ using HomeServices.Application.Partners;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Notifications;
+using HomeServices.Domain.Partners;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -56,7 +58,7 @@ public class PartnerPricesTests
     }
 
     private Task<MyPriceListDto> GetAsync() =>
-        new GetMyPricesHandler(Db, _data.Me, new FakeCurrentLanguage("hy")).HandleAsync(new GetMyPrices(), CancellationToken.None);
+        new GetMyPricesHandler(Db, _data.Me, new FakeCurrentLanguage("hy"), Options.Create(new PricingSettings()), _data.Clock).HandleAsync(new GetMyPrices(), CancellationToken.None);
 
     private async Task<MyPriceListDto> SaveAsync(params MyPriceInput[] prices)
     {
@@ -188,5 +190,70 @@ public class PartnerPricesTests
         (await validator.ValidateAsync(new SaveMyPrices([new MyPriceInput(id, 500, 400, false)])))
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "partner_price.invalid" });
         (await validator.ValidateAsync(new SaveMyPrices(null!))).Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "prices.required" });
+    }
+
+    [Fact]
+    public async Task Prices_far_from_the_market_are_refused_as_likely_typos()
+    {
+        await GivenMyProfile();
+
+        // The usual price of a leak repair is 15,000.
+        (await Should.ThrowAsync<DomainException>(() => SaveAsync(new MyPriceInput(_leakRepair.Id, 1000, null, false))))
+            .Code.ShouldBe("partner_price.unrealistic");
+        (await Should.ThrowAsync<DomainException>(() => SaveAsync(new MyPriceInput(_leakRepair.Id, 10000, 200000, false))))
+            .Code.ShouldBe("partner_price.unrealistic");
+
+        // With materials a price can be much higher; work without a market price can't be checked.
+        (await SaveAsync(new MyPriceInput(_leakRepair.Id, 200000, null, true), new MyPriceInput(_jointRepair.Id, 1, null, false)))
+            .PricedCount.ShouldBe(2);
+        (await SaveAsync(new MyPriceInput(_leakRepair.Id, 1500, 150000, false))).PricedCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task Prices_go_out_of_date_after_90_days_until_confirmed()
+    {
+        await GivenMyProfile();
+        await SaveAsync(new MyPriceInput(_leakRepair.Id, 10000, null, false), new MyPriceInput(_pipePoint.Id, 9000, null, false));
+        (await GetAsync()).ShouldSatisfyAllConditions(l => l.StaleCount.ShouldBe(0), l => l.FreshDays.ShouldBe(90));
+
+        _data.Clock.Now = PartnerTestData.Now.AddDays(91);
+        var stale = await GetAsync();
+        stale.StaleCount.ShouldBe(2);
+        stale.Items.First(i => i.PriceFrom is not null).ConfirmedAt.ShouldBe(PartnerTestData.Now);
+
+        Db.ChangeTracker.Clear();
+        var confirmed = await new ConfirmMyPricesHandler(Db, _data.Me, new FakeCurrentLanguage("hy"), Options.Create(new PricingSettings()), _data.Clock)
+            .HandleAsync(new ConfirmMyPrices(), CancellationToken.None);
+        confirmed.StaleCount.ShouldBe(0);
+        confirmed.Items.Where(i => i.PriceFrom is not null).ShouldAllBe(i => i.ConfirmedAt == PartnerTestData.Now.AddDays(91));
+
+        // Saving the list confirms it too.
+        _data.Clock.Now = PartnerTestData.Now.AddDays(200);
+        (await SaveAsync(new MyPriceInput(_leakRepair.Id, 10000, null, false))).StaleCount.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task Partners_with_out_of_date_prices_are_reminded_now_and_then()
+    {
+        var partner = _data.GivenProfile("Aram", PartnerStatus.Approved);
+        var fresh = _data.GivenProfile("Fresh", PartnerStatus.Approved);
+        var draft = _data.GivenProfile("Draft", PartnerStatus.UnderReview);
+        Db.PartnerPrices.AddRange(
+            PartnerPrice.Create(partner.Id, _leakRepair.Id, 10000, null, false, PartnerTestData.Now.AddDays(-100)),
+            PartnerPrice.Create(partner.Id, _pipePoint.Id, 9000, null, false, PartnerTestData.Now.AddDays(-95)),
+            PartnerPrice.Create(fresh.Id, _leakRepair.Id, 10000, null, false, PartnerTestData.Now.AddDays(-10)),
+            PartnerPrice.Create(draft.Id, _leakRepair.Id, 10000, null, false, PartnerTestData.Now.AddDays(-100)));
+        await Db.SaveChangesAsync();
+        Task<int> RemindAsync() =>
+            new RemindStalePricesHandler(Db, Options.Create(new PricingSettings()), _data.Clock).HandleAsync(new RemindStalePrices(), CancellationToken.None);
+
+        (await RemindAsync()).ShouldBe(1);
+        var notice = await Db.Notifications.SingleAsync();
+        (notice.UserId, notice.Type, notice.Link).ShouldBe((partner.UserId, NotificationType.PricesNeedConfirming, "/prices"));
+        notice.Params.ShouldContain("\"count\":\"2\"");
+
+        (await RemindAsync()).ShouldBe(0); // told already
+        _data.Clock.Now = PartnerTestData.Now.AddDays(PricesReminder.RepeatDays + 1);
+        (await RemindAsync()).ShouldBe(1);
     }
 }

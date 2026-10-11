@@ -5,8 +5,8 @@ import Button from '@/components/ui/Button/Button'
 import EmptyState from '@/components/ui/EmptyState/EmptyState'
 import Icon from '@/components/ui/Icon/Icon'
 import { bem } from '@/shared/bem'
-import { formatMoney } from '@/shared/format'
-import { groupItems, pricedCount, rowOf } from './priceList'
+import { formatDate, formatMoney } from '@/shared/format'
+import { groupItems, isFarFromMarket, pricedCount, rowOf } from './priceList'
 import styles from './prices.module.scss'
 
 const b = bem(styles)
@@ -89,6 +89,7 @@ function PriceRow({ item, row, error, onChange }) {
   const lng = i18n.language
   const unit = t(`partner.prices.per.${item.unit}`)
   const priced = row.from.trim() !== '' || row.to.trim() !== ''
+  const far = !error && isFarFromMarket(row, item)
   const market =
     item.marketTypical != null
       ? item.marketMin === item.marketMax
@@ -97,7 +98,7 @@ function PriceRow({ item, row, error, onChange }) {
       : null
 
   return (
-    <li className={b('price-row', { priced, invalid: Boolean(error) })} aria-label={item.name}>
+    <li className={b('price-row', { priced, invalid: Boolean(error), stale: item.isStale })} aria-label={item.name}>
       <div className={styles['price-row__head']}>
         <span className={styles['price-row__name']}>{item.name}</span>
         <span className={styles['price-row__unit']}>{unit}</span>
@@ -105,6 +106,12 @@ function PriceRow({ item, row, error, onChange }) {
       <p className={styles['price-row__market']}>
         {market ? t('partner.prices.market', { range: market }) : t('partner.prices.noMarket')}
       </p>
+      {item.isStale && item.confirmedAt && (
+        <p className={styles['price-row__stale']}>
+          <Icon name="clock" size={16} />
+          {t('partner.prices.staleSince', { date: formatDate(item.confirmedAt, lng) })}
+        </p>
+      )}
       <div className={styles['price-row__inputs']}>
         <TextField
           className={styles['price-row__field']}
@@ -125,6 +132,11 @@ function PriceRow({ item, row, error, onChange }) {
           onChange={(event) => onChange({ to: event.target.value })}
         />
       </div>
+      {far && (
+        <p className={styles['price-row__far']} role="status">
+          {t('partner.prices.farFromMarket')}
+        </p>
+      )}
       <div className={styles['price-row__actions']}>
         <CheckboxField
           label={t('partner.prices.materials')}

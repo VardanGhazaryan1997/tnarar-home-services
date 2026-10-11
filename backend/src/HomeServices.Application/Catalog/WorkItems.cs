@@ -14,13 +14,16 @@ namespace HomeServices.Application.Catalog;
 /// <summary>
 /// Active work items with names in the request language, in catalog order. <paramref name="Category"/> is a category slug:
 /// a subcategory gives its own items, a main category the items of all its subcategories; null gives every item.
+/// <paramref name="Region"/> is a region slug: items with enough partners' prices there get the regional range (C2);
+/// the others, and an unknown region, keep the national range.
 /// </summary>
-public sealed record GetWorkItems(string? Category = null) : IQuery<IReadOnlyList<WorkItemDto>>;
+public sealed record GetWorkItems(string? Category = null, string? Region = null) : IQuery<IReadOnlyList<WorkItemDto>>;
 
 /// <summary>
 /// A work item for the Portal. Prices are the usual market labour price range per unit in AMD (partners' prices once
 /// enough partners priced it, otherwise the staff range; null until priced). <see cref="PartnerCount"/>: how many
-/// partners' prices the range comes from, or null while it's the staff range.
+/// partners' prices the range comes from, or null while it's the staff range. <see cref="Regional"/>: the range is the
+/// asked region's own.
 /// </summary>
 public sealed record WorkItemDto(
     Guid Id,
@@ -32,7 +35,8 @@ public sealed record WorkItemDto(
     int? PriceMin = null,
     int? PriceTypical = null,
     int? PriceMax = null,
-    int? PartnerCount = null);
+    int? PartnerCount = null,
+    bool Regional = false);
 
 /// <summary>
 /// Every work item (hidden ones too) with all translations, for the Back Office. Filters: a category (a main category
@@ -188,19 +192,27 @@ public sealed class GetWorkItemsHandler(IAppDbContext db, ICurrentLanguage langu
         var items = await db.WorkItems.AsNoTracking()
             .Where(w => w.IsActive && ids.Contains(w.CategoryId))
             .ToListAsync(cancellationToken);
+        var regionId = await RegionalPrices.RegionIdAsync(db, query.Region, cancellationToken);
+        var regional = await RegionalPrices.LoadAsync(db, regionId, items.Select(i => i.Id), cancellationToken);
 
         return WorkItemCatalog.Sort(items, wanted)
-            .Select(w => new WorkItemDto(
-                w.Id,
-                w.CategoryId,
-                w.Slug,
-                w.Name.Get(language.Code, language.DefaultCode),
-                w.Unit,
-                w.Surface,
-                w.MarketMin,
-                w.MarketTypical,
-                w.MarketMax,
-                w.MarketSource == MarketPriceSource.Partners ? w.MarketPartnerCount : null))
+            .Select(w =>
+            {
+                var name = w.Name.Get(language.Code, language.DefaultCode);
+                return regional.TryGetValue(w.Id, out var local)
+                    ? new WorkItemDto(w.Id, w.CategoryId, w.Slug, name, w.Unit, w.Surface, local.Min, local.Typical, local.Max, local.PartnerCount, Regional: true)
+                    : new WorkItemDto(
+                        w.Id,
+                        w.CategoryId,
+                        w.Slug,
+                        name,
+                        w.Unit,
+                        w.Surface,
+                        w.MarketMin,
+                        w.MarketTypical,
+                        w.MarketMax,
+                        w.MarketSource == MarketPriceSource.Partners ? w.MarketPartnerCount : null);
+            })
             .ToList();
     }
 }

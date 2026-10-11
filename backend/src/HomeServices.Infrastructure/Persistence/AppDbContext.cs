@@ -46,6 +46,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<PartnerPrice> PartnerPrices => Set<PartnerPrice>();
 
+    public DbSet<RegionalMarketPrice> RegionalMarketPrices => Set<RegionalMarketPrice>();
+
     public DbSet<Estimate> Estimates => Set<Estimate>();
 
     public DbSet<RoomTemplate> RoomTemplates => Set<RoomTemplate>();

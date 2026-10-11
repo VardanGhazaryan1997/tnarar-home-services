@@ -4715,6 +4715,53 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Catalog.RegionalMarketPrice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Max")
+                        .HasColumnType("integer")
+                        .HasColumnName("max");
+
+                    b.Property<int>("Min")
+                        .HasColumnType("integer")
+                        .HasColumnName("min");
+
+                    b.Property<int>("PartnerCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("partner_count");
+
+                    b.Property<Guid>("RegionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("region_id");
+
+                    b.Property<int>("Typical")
+                        .HasColumnType("integer")
+                        .HasColumnName("typical");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("WorkItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("work_item_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_regional_market_prices");
+
+                    b.HasIndex("RegionId")
+                        .HasDatabaseName("ix_regional_market_prices_region_id");
+
+                    b.HasIndex("WorkItemId", "RegionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_regional_market_prices_work_item_id_region_id");
+
+                    b.ToTable("regional_market_prices");
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Catalog.WorkItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -13638,6 +13685,12 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTimeOffset>("ConfirmedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("confirmed_at")
+                        .HasDefaultValueSql("now()");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -13727,6 +13780,10 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("display_name");
+
+                    b.Property<DateTimeOffset?>("PricesRemindedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("prices_reminded_at");
 
                     b.Property<string>("Slug")
                         .HasMaxLength(80)
@@ -14570,6 +14627,23 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_districts_cities_city_id");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Catalog.RegionalMarketPrice", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Catalog.Region", null)
+                        .WithMany()
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_regional_market_prices_regions_region_id");
+
+                    b.HasOne("HomeServices.Domain.Catalog.WorkItem", null)
+                        .WithMany()
+                        .HasForeignKey("WorkItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_regional_market_prices_work_items_work_item_id");
                 });
 
             modelBuilder.Entity("HomeServices.Domain.Catalog.WorkItem", b =>

@@ -10,8 +10,9 @@ namespace HomeServices.Application.Estimates;
 /// Measures and prices rooms without saving anything: floor, wall and ceiling areas, perimeter and skirting length of
 /// each room; the quantity of each work item (measured from the room unless the customer gave one); and its labour price
 /// range from the market range, with the adjustments (see <see cref="EstimatePricing"/>). Anyone can call it.
+/// <paramref name="CityId"/>: the town the work is in; its region's ranges are used where there are enough partners.
 /// </summary>
-public sealed record MeasureEstimate(IReadOnlyList<RoomInput> Rooms, bool OldBuilding = false) : IQuery<EstimateMeasurementDto>;
+public sealed record MeasureEstimate(IReadOnlyList<RoomInput> Rooms, bool OldBuilding = false, Guid? CityId = null) : IQuery<EstimateMeasurementDto>;
 
 /// <summary>A room: length × width, or only the floor area; height defaults to 2.7 m.</summary>
 public sealed record RoomInput(
@@ -98,5 +99,5 @@ public sealed class MeasureEstimateValidator : AbstractValidator<MeasureEstimate
 public sealed class MeasureEstimateHandler(IAppDbContext db, ICurrentLanguage language) : IQueryHandler<MeasureEstimate, EstimateMeasurementDto>
 {
     public Task<EstimateMeasurementDto> HandleAsync(MeasureEstimate query, CancellationToken cancellationToken) =>
-        EstimateCalculator.CalculateAsync(db, language, query.Rooms, query.OldBuilding, skipUnavailable: false, cancellationToken);
+        EstimateCalculator.CalculateAsync(db, language, query.Rooms, query.OldBuilding, query.CityId, skipUnavailable: false, cancellationToken);
 }

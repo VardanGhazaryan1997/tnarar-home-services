@@ -68,6 +68,10 @@ public sealed class PartnerProfile : AuditableEntity, IAudited
     /// <summary>Set while a commission statement is long overdue: the partner gets no new requests until they pay.</summary>
     public DateTimeOffset? DebtPausedSince { get; private set; }
 
+    /// <summary>When the partner was last reminded to confirm prices that went stale (C3). Not audited: bookkeeping.</summary>
+    [NotAudited]
+    public DateTimeOffset? PricesRemindedAt { get; private set; }
+
     public IReadOnlyCollection<PartnerService> Services => _services.AsReadOnly();
 
     public IReadOnlyCollection<PartnerArea> Areas => _areas.AsReadOnly();
@@ -301,6 +305,9 @@ public sealed class PartnerProfile : AuditableEntity, IAudited
         EnsureStatus(PartnerStatus.Suspended, "partner.not_suspended");
         ChangeStatus(PartnerStatus.Approved, comment: null);
     }
+
+    /// <summary>Records that the partner was reminded to confirm their prices.</summary>
+    public void MarkPricesReminded(DateTimeOffset now) => PricesRemindedAt = now;
 
     /// <summary>Stops new requests because commissions are long overdue. Returns false when already paused.</summary>
     public bool PauseForDebt(DateTimeOffset now)

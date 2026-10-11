@@ -37,6 +37,22 @@ export function rowError(row) {
   return null
 }
 
+/** How many times below (or, labour only, above) the usual price a new price may be; the API refuses beyond (C4). */
+export const MAX_DEVIATION = 10
+
+/**
+ * True when the row's price is so far from the item's usual price that it's probably a typo: more than
+ * MAX_DEVIATION times below it, or above it when the price is for labour only. Saving such a changed price fails.
+ */
+export function isFarFromMarket(row, item) {
+  const typical = item?.marketTypical
+  const from = parsePrice(row.from)
+  if (typical == null || from === null || Number.isNaN(from)) return false
+  const to = parsePrice(row.to)
+  const highest = to === null || Number.isNaN(to) ? from : to
+  return from * MAX_DEVIATION < typical || (!row.materials && highest > typical * MAX_DEVIATION)
+}
+
 /** { [workItemId]: errorKey } for the rows with a problem. */
 export function draftErrors(draft) {
   return Object.fromEntries(

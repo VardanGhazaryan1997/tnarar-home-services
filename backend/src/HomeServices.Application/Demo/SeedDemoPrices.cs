@@ -28,6 +28,7 @@ public sealed class SeedDemoPricesHandler(IAppDbContext db, IOptions<PricingSett
             .Where(p => owners.Contains(p.UserId) && !db.PartnerPrices.Any(price => price.PartnerProfileId == p.Id))
             .ToListAsync(cancellationToken);
 
+        var now = clock.GetUtcNow();
         var priced = new HashSet<Guid>();
         var partners = 0;
         foreach (var profile in profiles)
@@ -43,7 +44,7 @@ public sealed class SeedDemoPricesHandler(IAppDbContext db, IOptions<PricingSett
                 }
 
                 var (from, to, materials) = DemoPrice.For(profile.Id, item.Slug, typical, company);
-                db.PartnerPrices.Add(PartnerPrice.Create(profile.Id, item.Id, from, to, materials));
+                db.PartnerPrices.Add(PartnerPrice.Create(profile.Id, item.Id, from, to, materials, now));
                 priced.Add(item.Id);
                 added++;
             }

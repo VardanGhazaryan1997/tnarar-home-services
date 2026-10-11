@@ -10,6 +10,10 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  &__confirm {
+    margin-block-start: space(2);
+  }
 }
 
 .price-list {
@@ -91,6 +95,10 @@
     border-inline-start-color: $color-tuff;
   }
 
+  &--stale {
+    border-inline-start-color: $color-warning;
+  }
+
   &--invalid {
     border-inline-start-color: $color-danger;
   }
@@ -116,6 +124,16 @@
   &__market {
     @include text-small;
     @include text-muted;
+  }
+
+  &__stale,
+  &__far {
+    @include text-small;
+
+    display: flex;
+    gap: space(1);
+    align-items: center;
+    color: $color-warning;
   }
 
   &__inputs {

@@ -5,7 +5,10 @@ const URL = '/me/partner-profile/prices'
 /** The partner's price list (A4): every work item in the services they offer, with the market range and their price. */
 export const pricesApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    /** `{ items: [{ workItemId, name, unit, categoryName, mainCategoryName, marketMin…, priceFrom, priceTo, includesMaterials }] }`. */
+    /**
+     * `{ items: [{ workItemId, name, unit, categoryName, mainCategoryName, marketMin…, priceFrom, priceTo,
+     * includesMaterials, confirmedAt, isStale }], freshDays, staleCount, pricedCount }`.
+     */
     getMyPrices: build.query({ query: () => URL }),
     /** Replaces the list: `[{ workItemId, priceFrom, priceTo, includesMaterials }]`. Returns the new list. */
     saveMyPrices: build.mutation({
@@ -19,7 +22,19 @@ export const pricesApi = baseApi.injectEndpoints({
         }
       },
     }),
+    /** Confirms every price is still right (C3), so out-of-date prices count and show again. Returns the new list. */
+    confirmMyPrices: build.mutation({
+      query: () => ({ url: `${URL}/confirm`, method: 'POST' }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          dispatch(pricesApi.util.upsertQueryData('getMyPrices', undefined, data))
+        } catch {
+          // The page shows the error.
+        }
+      },
+    }),
   }),
 })
 
-export const { useGetMyPricesQuery, useSaveMyPricesMutation } = pricesApi
+export const { useGetMyPricesQuery, useSaveMyPricesMutation, useConfirmMyPricesMutation } = pricesApi

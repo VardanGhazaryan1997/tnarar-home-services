@@ -7,7 +7,7 @@ import Card from '@/components/ui/Card/Card'
 import EmptyState from '@/components/ui/EmptyState/EmptyState'
 import { SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
-import { useCategories } from '@/features/catalog/catalogApi'
+import { useCategories, useRegions } from '@/features/catalog/catalogApi'
 import { useWorkItems } from '@/features/estimator/estimatorApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatMoney } from '@/shared/format'
@@ -16,16 +16,19 @@ import styles from './PriceGuidePage.module.scss'
 
 /**
  * "Renovation prices in Armenia" (A6): the usual labour price of every kind of work, by service, from what
- * specialists on Tnarar charge (or our own estimate until enough of them priced it). Public, for search engines too.
+ * specialists on Tnarar charge (or our own estimate until enough of them priced it). Choosing a region shows its own
+ * prices where enough specialists there priced the work (C2). Public, for search engines too.
  */
 export default function PriceGuidePage() {
   const { t, i18n } = useTranslation()
   const lng = i18n.language
   const path = useLocalizedPath()
   const categories = useCategories()
-  const workItems = useWorkItems()
+  const regions = useRegions()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
+  const [region, setRegion] = useState('')
+  const workItems = useWorkItems({ region })
   const guide = useMemo(
     () => (categories.data && workItems.data ? priceGuide(categories.data, workItems.data, { search, category }) : []),
     [categories.data, workItems.data, search, category],
@@ -55,6 +58,13 @@ export default function PriceGuidePage() {
           onChange={(event) => setCategory(event.target.value)}
           options={(categories.data ?? []).map((main) => ({ value: main.id, label: main.name }))}
         />
+        <SelectField
+          label={t('public.priceGuide.region')}
+          placeholder={t('public.priceGuide.allRegions')}
+          value={region}
+          onChange={(event) => setRegion(event.target.value)}
+          options={(regions.data ?? []).map((item) => ({ value: item.slug, label: item.name }))}
+        />
       </div>
       <QueryState query={workItems.isError ? workItems : categories}>
         {() =>
@@ -72,7 +82,11 @@ export default function PriceGuidePage() {
                           <span className={styles['price-guide__name']}>
                             {item.name}
                             <span className={styles['price-guide__source']}>
-                              {item.partnerCount ? t('public.priceGuide.fromSpecialists', { n: item.partnerCount }) : t('public.priceGuide.ourEstimate')}
+                              {item.regional
+                                ? t('public.priceGuide.fromLocalSpecialists', { n: item.partnerCount })
+                                : item.partnerCount
+                                  ? t('public.priceGuide.fromSpecialists', { n: item.partnerCount })
+                                  : t('public.priceGuide.ourEstimate')}
                             </span>
                           </span>
                           <span className={styles['price-guide__price']}>

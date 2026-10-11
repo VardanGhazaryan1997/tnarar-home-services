@@ -384,7 +384,8 @@
     },
     "partner_price": {
       "invalid": "Check the prices: whole drams, \"up to\" not below the price.",
-      "not_offered": "You can only price work in the services you offer. Refresh the page."
+      "not_offered": "You can only price work in the services you offer. Refresh the page.",
+      "unrealistic": "A price is far from the usual price for that work. Check for a missing or extra zero."
     },
     "prices": {
       "duplicate": "The same work is listed twice. Refresh the page.",
@@ -1083,9 +1084,12 @@
       "note": "Labour only, without materials, in drams. Ranges come from the prices specialists on Tnarar charge (the middle half of them), or our own estimate until enough specialists have priced the work.",
       "search": "Find work",
       "service": "Service",
+      "region": "Region",
       "allServices": "All services",
+      "allRegions": "All of Armenia",
       "none": "No prices found",
       "fromSpecialists": "From {{n}} specialists' prices",
+      "fromLocalSpecialists": "From {{n}} local specialists' prices",
       "ourEstimate": "Our estimate",
       "usually": "usually {{amount}} per {{unit}}",
       "ctaTitle": "Know what your renovation will cost",
@@ -1207,6 +1211,12 @@
       "howText": "Enter a price per unit, or a range (from – to) if it depends on the job. Prices are for labour; tick \"Includes materials\" if yours do. The usual market price is shown under each item.",
       "save": "Save prices",
       "saved": "Prices saved",
+      "staleTitle": "Prices out of date: {{count}}",
+      "staleText": "Your prices count towards market prices and show on your profile for {{days}} days after you set or confirm them. Check them and confirm they are still right.",
+      "confirm": "My prices are still right",
+      "confirmed": "Prices confirmed",
+      "staleSince": "Not confirmed since {{date}}",
+      "farFromMarket": "This is far from the usual price. Check for a missing or extra zero.",
       "search": "Search work",
       "count": "{{priced}} of {{total}} priced",
       "fillTypical": "Use usual prices for empty ones",
@@ -1317,7 +1327,8 @@
       "CommissionOverdue": "Your commission statement is overdue: {{amount}} still to pay.",
       "CommissionSettled": "We recorded your payment of {{amount}}. Still to pay: {{outstanding}}.",
       "PartnerPausedForDebt": "New requests are paused because a commission statement has been unpaid for too long.",
-      "PartnerResumed": "Thank you for paying. You're receiving new requests again."
+      "PartnerResumed": "Thank you for paying. You're receiving new requests again.",
+      "PricesNeedConfirming": "Some of your prices ({{count}}) are out of date. Confirm they are still right so customers see them."
     }
   },
   "commissions": {
@@ -1482,6 +1493,9 @@
     },
     "editor": {
       "title": "Estimate name",
+      "town": "Town or village",
+      "anyTown": "Anywhere in Armenia",
+      "townHint": "Prices follow the region where enough local specialists priced the work.",
       "oldBuildingHint": "Older buildings usually cost about 15% more: uneven walls, old pipes and wiring.",
       "noRooms": "No rooms yet",
       "noRoomsText": "Add the rooms you want to renovate. The usual work for each room is ticked for you.",

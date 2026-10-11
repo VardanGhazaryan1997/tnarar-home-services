@@ -1,5 +1,5 @@
 import { priceList } from '@/test/fixtures'
-import { draftErrors, draftFrom, fillWithTypical, groupItems, isChanged, parsePrice, pricedCount, rowError, toPayload } from './priceList'
+import { draftErrors, draftFrom, fillWithTypical, groupItems, isChanged, isFarFromMarket, parsePrice, pricedCount, rowError, toPayload } from './priceList'
 
 const row = (from = '', to = '', materials = false) => ({ from, to, materials })
 
@@ -71,5 +71,15 @@ describe('price list helpers', () => {
     expect(groupItems(items, 'FAUCET')[0].subcategories[0].items.map((item) => item.slug)).toEqual(['faucet-installation'])
     expect(groupItems(items, 'fixture')[0].subcategories[0].items).toHaveLength(2)
     expect(groupItems(items, 'zzz')).toEqual([])
+  })
+
+  it('spots prices far from the usual price', () => {
+    const item = { marketTypical: 10000 }
+    expect(isFarFromMarket(row('999'), item)).toBe(true)
+    expect(isFarFromMarket(row('1000'), item)).toBe(false)
+    expect(isFarFromMarket(row('5000', '100001'), item)).toBe(true)
+    expect(isFarFromMarket(row('100001', '', true), item)).toBe(false) // materials can cost much more
+    expect(isFarFromMarket(row('5'), { marketTypical: null })).toBe(false)
+    expect(isFarFromMarket(row(''), item)).toBe(false)
   })
 })

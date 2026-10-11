@@ -100,7 +100,7 @@ public sealed class QuickEstimateHandler(IAppDbContext db, ICurrentLanguage lang
         var templates = await RoomTemplateData.ActiveAsync(db, query.RoomType, cancellationToken);
         var lines = templates.Select(t => new LineInput(t.Item.Id, t.Template.DefaultQuantity(query.Area))).ToList();
         var room = new RoomInput(query.RoomType, null, null, query.Area, query.Height, Lines: lines);
-        return await EstimateCalculator.CalculateAsync(db, language, [room], query.OldBuilding, skipUnavailable: false, cancellationToken);
+        return await EstimateCalculator.CalculateAsync(db, language, [room], query.OldBuilding, cityId: null, skipUnavailable: false, cancellationToken);
     }
 }
 

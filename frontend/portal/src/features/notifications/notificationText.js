@@ -39,6 +39,7 @@ const ICONS = {
   CommissionSettled: 'money',
   PartnerPausedForDebt: 'shield',
   PartnerResumed: 'shield',
+  PricesNeedConfirming: 'clock',
 }
 
 export const notificationIcon = (type) => ICONS[type] ?? 'orders'

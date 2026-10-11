@@ -446,5 +446,5 @@ export const priceList = () => {
       marketMax: null,
     }),
   ]
-  return { items, pricedCount: 1 }
+  return { items, pricedCount: 1, freshDays: 90, staleCount: 0 }
 }

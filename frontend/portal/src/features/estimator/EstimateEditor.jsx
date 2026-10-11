@@ -11,6 +11,11 @@ import {
   TextField,
 } from "@/components/ui/Field/Field";
 import Icon from "@/components/ui/Icon/Icon";
+import {
+  cityOptionGroups,
+  useCities,
+  useRegions,
+} from "@/features/catalog/catalogApi";
 import { formatMoney } from "@/shared/format";
 import { LIMITS, isRoomValid, newRoom, roomName } from "./draft";
 import { ROOM_TYPES, useRoomTemplates, useWorkItems } from "./estimatorApi";
@@ -20,7 +25,7 @@ import WorkPicker from "./WorkPicker";
 import styles from "./estimator.module.scss";
 
 /**
- * The room-by-room estimator: a title, "old building", the rooms, and a summary with the total price range that
+ * The room-by-room estimator: a title, the town (prices follow its region), "old building", the rooms, and a summary with the total price range that
  * updates as the customer types. `actions` go under the total (save, share…); `notice` above the rooms.
  */
 export default function EstimateEditor({ draft, onChange, actions, notice }) {
@@ -33,6 +38,8 @@ export default function EstimateEditor({ draft, onChange, actions, notice }) {
     [workItemList],
   );
   const measure = useMeasure(draft);
+  const cities = useCities();
+  const regions = useRegions();
   const [newType, setNewType] = useState("Bedroom");
   // The key of the room the work picker adds to, while it's open.
   const [picking, setPicking] = useState(null);
@@ -79,6 +86,18 @@ export default function EstimateEditor({ draft, onChange, actions, notice }) {
                 onChange({ ...draft, title: event.target.value })
               }
             />
+            <SelectField
+              label={t("estimator.editor.town")}
+              placeholder={t("estimator.editor.anyTown")}
+              value={draft.cityId ?? ""}
+              onChange={(event) =>
+                onChange({ ...draft, cityId: event.target.value || null })
+              }
+              options={cityOptionGroups(cities.data, regions.data)}
+            />
+            <p className={styles["estimator__hint"]}>
+              {t("estimator.editor.townHint")}
+            </p>
             <CheckboxField
               label={t("estimator.oldBuilding")}
               checked={draft.oldBuilding}

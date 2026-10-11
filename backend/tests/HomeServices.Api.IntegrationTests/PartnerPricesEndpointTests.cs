@@ -107,4 +107,25 @@ public class PartnerPricesEndpointTests(ApiFactory factory)
         notOffered.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
         (await notOffered.Content.ReadAsStringAsync()).ShouldContain("partner_price.not_offered");
     }
+
+    [Fact]
+    public async Task Prices_far_from_the_market_are_refused_and_prices_can_be_confirmed()
+    {
+        var client = await PlumberAsync();
+        var list = (await client.GetFromJsonAsync<MyPriceListDto>(Url, Json))!;
+        list.FreshDays.ShouldBe(90);
+        var toilet = list.Items.Single(i => i.Slug == "toilet-installation"); // usually 15,000
+
+        var typo = await client.PutAsJsonAsync(Url, new { prices = new[] { new { workItemId = toilet.WorkItemId, priceFrom = 150, priceTo = (int?)null, includesMaterials = false } } });
+        typo.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+        (await typo.Content.ReadAsStringAsync()).ShouldContain("partner_price.unrealistic");
+
+        (await client.PutAsJsonAsync(Url, new { prices = new[] { new { workItemId = toilet.WorkItemId, priceFrom = 15000, priceTo = (int?)null, includesMaterials = false } } }))
+            .StatusCode.ShouldBe(HttpStatusCode.OK);
+        var confirmed = await client.PostAsync($"{Url}/confirm", null);
+        confirmed.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var after = (await confirmed.Content.ReadFromJsonAsync<MyPriceListDto>(Json))!;
+        after.StaleCount.ShouldBe(0);
+        after.Items.Single(i => i.Slug == "toilet-installation").ConfirmedAt.ShouldNotBeNull();
+    }
 }

@@ -77,7 +77,9 @@ public static class DependencyInjection
             .Validate(s => s.MinPartners is >= 1 and <= 1000, "Pricing:MinPartners must be between 1 and 1000.")
             .Validate(s => s.RecalculateHours is >= 1 and <= 168, "Pricing:RecalculateHours must be between 1 and 168.")
             .Validate(s => s.AcceptedOfferWeight is >= 1 and <= 10, "Pricing:AcceptedOfferWeight must be between 1 and 10.")
-            .Validate(s => s.AcceptedOfferDays is >= 1 and <= 3650, "Pricing:AcceptedOfferDays must be between 1 and 3650.");
+            .Validate(s => s.AcceptedOfferDays is >= 1 and <= 3650, "Pricing:AcceptedOfferDays must be between 1 and 3650.")
+            .Validate(s => s.PriceFreshDays is >= 7 and <= 3650, "Pricing:PriceFreshDays must be between 7 and 3650.")
+            .Validate(s => s.MaxPriceDeviation is >= 2 and <= 100, "Pricing:MaxPriceDeviation must be between 2 and 100.");
         services.AddOptions<NotificationSettings>()
             .BindConfiguration(NotificationSettings.SectionName)
             .Validate(s => Uri.TryCreate(s.PortalUrl, UriKind.Absolute, out _), "Notifications:PortalUrl must be an absolute URL.")

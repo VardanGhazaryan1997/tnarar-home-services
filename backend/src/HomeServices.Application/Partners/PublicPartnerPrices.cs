@@ -1,14 +1,17 @@
 using HomeServices.Application.Abstractions;
+using HomeServices.Application.Catalog;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Messaging;
 using HomeServices.Domain.Catalog;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Partners;
 
 /// <summary>
 /// A partner's public price list (A7): their prices for work they still offer, in catalog order, each next to the
-/// market range. Anyone can see it, like the rest of the public profile; 404 "partner.not_found" when it isn't public.
+/// market range. Prices not confirmed in the last <see cref="PricingSettings.PriceFreshDays"/> days are left out (C3).
+/// Anyone can see it, like the rest of the public profile; 404 "partner.not_found" when it isn't public.
 /// </summary>
 public sealed record GetPublicPartnerPrices(string Slug) : IQuery<IReadOnlyList<PublicPriceDto>>;
 
@@ -33,7 +36,7 @@ public sealed record PublicPriceDto(
     int? MarketMax,
     string? Comparison);
 
-public sealed class GetPublicPartnerPricesHandler(IAppDbContext db, ICurrentLanguage language)
+public sealed class GetPublicPartnerPricesHandler(IAppDbContext db, ICurrentLanguage language, IOptions<PricingSettings> settings, TimeProvider clock)
     : IQueryHandler<GetPublicPartnerPrices, IReadOnlyList<PublicPriceDto>>
 {
     public async Task<IReadOnlyList<PublicPriceDto>> HandleAsync(GetPublicPartnerPrices query, CancellationToken cancellationToken)
@@ -45,8 +48,9 @@ public sealed class GetPublicPartnerPricesHandler(IAppDbContext db, ICurrentLang
             ?? throw new NotFoundException("Partner not found.", "partner.not_found");
 
         var offered = await MyPriceList.OfferedItemsAsync(db, partner, cancellationToken);
+        var freshSince = clock.GetUtcNow() - settings.Value.PriceFreshFor;
         var prices = await db.PartnerPrices.AsNoTracking()
-            .Where(p => p.PartnerProfileId == partner.Id)
+            .Where(p => p.PartnerProfileId == partner.Id && p.ConfirmedAt >= freshSince)
             .ToDictionaryAsync(p => p.WorkItemId, cancellationToken);
 
         return offered

@@ -1,8 +1,10 @@
+using HomeServices.Application.Catalog;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Partners;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Partners;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Tests.Partners;
 
@@ -38,17 +40,18 @@ public class PublicPartnerPricesTests
     }
 
     private Task<IReadOnlyList<PublicPriceDto>> PricesAsync(string slug) =>
-        new GetPublicPartnerPricesHandler(_data.Db, new FakeCurrentLanguage("hy")).HandleAsync(new GetPublicPartnerPrices(slug), CancellationToken.None);
+        new GetPublicPartnerPricesHandler(_data.Db, new FakeCurrentLanguage("hy"), Options.Create(new PricingSettings()), _data.Clock).HandleAsync(new GetPublicPartnerPrices(slug), CancellationToken.None);
 
     [Fact]
     public async Task Visitors_see_a_partners_prices_next_to_the_market()
     {
         var partner = _data.GivenProfile("Aram", PartnerStatus.Approved);
         _data.Db.PartnerPrices.AddRange(
-            PartnerPrice.Create(partner.Id, _leaks.Id, 8_000, null, false),
-            PartnerPrice.Create(partner.Id, _taps.Id, 6_000, 8_000, false),
-            PartnerPrice.Create(partner.Id, _pipes.Id, 9_000, null, true),
-            PartnerPrice.Create(partner.Id, _windows.Id, 1_000, null, false)); // not a service they offer
+            PartnerPrice.Create(partner.Id, _leaks.Id, 8_000, null, false, PartnerTestData.Now),
+            PartnerPrice.Create(partner.Id, _taps.Id, 6_000, 8_000, false, PartnerTestData.Now),
+            PartnerPrice.Create(partner.Id, _pipes.Id, 9_000, null, true, PartnerTestData.Now),
+            PartnerPrice.Create(partner.Id, _windows.Id, 1_000, null, false, PartnerTestData.Now), // not a service they offer
+            PartnerPrice.Create(partner.Id, _unpriced.Id, 2_000, null, false, PartnerTestData.Now.AddDays(-91))); // out of date
         await _data.Db.SaveChangesAsync();
 
         var prices = await PricesAsync(partner.Slug!.ToUpperInvariant());

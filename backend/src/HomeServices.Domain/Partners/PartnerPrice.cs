@@ -5,7 +5,8 @@ namespace HomeServices.Domain.Partners;
 
 /// <summary>
 /// A partner's own labour price for a work item, per the item's unit in AMD: a single price ("from" only) or a range
-/// ("from–to"), and whether it includes materials. Partners keep their price list up to date themselves.
+/// ("from–to"), and whether it includes materials. Partners keep their price list up to date themselves and confirm it
+/// now and then (<see cref="ConfirmedAt"/>); a price nobody confirmed for long stops counting (C3).
 /// </summary>
 public sealed class PartnerPrice : AuditableEntity
 {
@@ -25,12 +26,21 @@ public sealed class PartnerPrice : AuditableEntity
 
     public bool IncludesMaterials { get; private set; }
 
-    public static PartnerPrice Create(Guid partnerProfileId, Guid workItemId, int priceFrom, int? priceTo, bool includesMaterials)
+    /// <summary>When the partner last set or confirmed this price.</summary>
+    public DateTimeOffset ConfirmedAt { get; private set; }
+
+    public static PartnerPrice Create(Guid partnerProfileId, Guid workItemId, int priceFrom, int? priceTo, bool includesMaterials, DateTimeOffset now)
     {
-        var price = new PartnerPrice { PartnerProfileId = partnerProfileId, WorkItemId = workItemId };
+        var price = new PartnerPrice { PartnerProfileId = partnerProfileId, WorkItemId = workItemId, ConfirmedAt = now };
         price.Change(priceFrom, priceTo, includesMaterials);
         return price;
     }
+
+    /// <summary>The partner says the price is still right.</summary>
+    public void Confirm(DateTimeOffset now) => ConfirmedAt = now;
+
+    /// <summary>True when the price was last confirmed more than <paramref name="freshFor"/> ago.</summary>
+    public bool IsStale(DateTimeOffset now, TimeSpan freshFor) => ConfirmedAt < now - freshFor;
 
     /// <summary>Sets the price (a range when <paramref name="priceTo"/> is above <paramref name="priceFrom"/>).</summary>
     public void Change(int priceFrom, int? priceTo, bool includesMaterials)

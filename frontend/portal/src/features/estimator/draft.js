@@ -123,7 +123,7 @@ export function toRoomInput(room) {
 /** The whole estimate as the API saves it. */
 export const toRequest = (draft) => ({
   title: draft.title.trim(),
-  cityId: null,
+  cityId: draft.cityId || null,
   oldBuilding: draft.oldBuilding,
   rooms: draft.rooms.map(toRoomInput),
 })
@@ -136,7 +136,11 @@ export function measureRequest(draft) {
   const indexes = draft.rooms.map((room, index) => (isRoomValid(room) ? index : -1)).filter((index) => index >= 0)
   if (!indexes.length) return null
   return {
-    body: { oldBuilding: draft.oldBuilding, rooms: indexes.map((index) => toRoomInput(draft.rooms[index])) },
+    body: {
+      oldBuilding: draft.oldBuilding,
+      ...(draft.cityId ? { cityId: draft.cityId } : {}),
+      rooms: indexes.map((index) => toRoomInput(draft.rooms[index])),
+    },
     indexes,
   }
 }
@@ -180,6 +184,7 @@ const text = (value) => (value == null ? '' : String(value))
 export function fromEstimate(estimate) {
   return {
     title: estimate.title,
+    cityId: estimate.cityId ?? null,
     oldBuilding: estimate.oldBuilding,
     rooms: estimate.rooms.map((room) => ({
       key: room.id ?? newKey('room'),

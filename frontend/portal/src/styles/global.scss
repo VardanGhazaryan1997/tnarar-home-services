@@ -11,6 +11,12 @@ html {
   text-size-adjust: 100%;
 }
 
+// Safety net: no page scrolls sideways on phones. `clip` (unlike `hidden`) keeps the sticky header working.
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   font-family: $font-family;

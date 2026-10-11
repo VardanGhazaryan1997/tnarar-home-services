@@ -2,14 +2,14 @@
 
 .category-tiles {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: space(3);
   padding: 0;
   margin: 0;
   list-style: none;
 
   @include up(md) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   &__tile {
@@ -52,5 +52,7 @@
   &__name {
     font-weight: $font-weight-semibold;
     line-height: $line-height-tight;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 }

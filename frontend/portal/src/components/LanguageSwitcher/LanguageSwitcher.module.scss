@@ -4,6 +4,7 @@
 .language-switcher {
   display: inline-flex;
   align-items: center;
+  min-width: 0;
 
   &__label {
     @include visually-hidden;
@@ -12,6 +13,8 @@
   &__select {
     @include focus-ring;
 
+    min-width: 0;
+    max-width: 100%;
     min-height: 36px;
     padding: 0 space(2);
     color: $color-night;

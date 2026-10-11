@@ -7,13 +7,14 @@
 
   &__list {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: space(3);
     padding: 0;
     margin: 0;
     list-style: none;
 
     @include up(md) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
@@ -56,6 +57,9 @@
     @include heading-3;
 
     flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   &__chevron {
@@ -77,8 +81,10 @@
 
     display: inline-flex;
     align-items: center;
+    max-width: 100%;
     min-height: 36px;
     padding: 0 space(3);
+    overflow-wrap: anywhere;
     color: $color-text;
     text-decoration: none;
     background: $color-surface-sunken;

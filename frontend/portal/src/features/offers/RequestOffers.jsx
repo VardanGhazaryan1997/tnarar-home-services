@@ -12,7 +12,7 @@ import StartChatButton from '@/features/chat/StartChatButton'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatMoney } from '@/shared/format'
 import OfferCard from './OfferCard'
-import OfferComparison from './OfferComparison'
+import OfferComparison from './OfferComparison.jsx'
 import { useAcceptOfferMutation, useGetRequestOffersQuery, useRejectOfferMutation } from './offersApi'
 import styles from './offers.module.scss'
 

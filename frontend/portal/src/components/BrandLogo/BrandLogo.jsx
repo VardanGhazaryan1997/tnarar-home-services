@@ -1,4 +1,7 @@
+import { bem } from '@/shared/bem'
 import styles from './BrandLogo.module.scss'
+
+const b = bem(styles)
 
 /** The house mark: roof, a tuff-brick wall and a sparkle (construction + cleaning). Same drawing as the Back Office. */
 export function BrandMark({ size = 32 }) {
@@ -15,10 +18,13 @@ export function BrandMark({ size = 32 }) {
   )
 }
 
-/** The Tnarar logo: the mark and the wordmark "Tnarar" ("Tna" in Ararat Night, "rar" in Tuff Stone). */
-export default function BrandLogo({ size = 32 }) {
+/**
+ * The Tnarar logo: the mark and the wordmark "Tnarar" ("Tna" in Ararat Night, "rar" in Tuff Stone).
+ * `compact`: on the narrowest phones only the mark shows, leaving room for the header tools.
+ */
+export default function BrandLogo({ size = 32, compact = false }) {
   return (
-    <span className={styles['brand-logo']} role="img" aria-label="Tnarar">
+    <span className={b('brand-logo', { compact })} role="img" aria-label="Tnarar">
       <BrandMark size={size} />
       <span className={styles['brand-logo__word']} aria-hidden="true">
         Tna<span className={styles['brand-logo__accent']}>rar</span>

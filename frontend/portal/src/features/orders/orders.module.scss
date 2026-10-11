@@ -101,7 +101,7 @@
 // Phones: four dots on a line with the current step named; desktop: every step named.
 .order-progress {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   padding: 0;
   margin: 0;
   list-style: none;
@@ -433,7 +433,7 @@
     gap: space(4);
 
     @include up(sm) {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
 }

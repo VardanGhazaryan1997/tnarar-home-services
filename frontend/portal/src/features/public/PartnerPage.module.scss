@@ -80,7 +80,7 @@
     align-items: start;
 
     @include up(lg) {
-      grid-template-columns: 1fr 340px;
+      grid-template-columns: minmax(0, 1fr) 340px;
       gap: space(5);
     }
   }

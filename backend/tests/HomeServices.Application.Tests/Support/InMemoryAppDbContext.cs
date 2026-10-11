@@ -137,6 +137,12 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
         modelBuilder.Entity<RequestMedia>().Property(m => m.Id).ValueGeneratedNever();
         modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Recipients).WithOne().HasForeignKey(x => x.RequestId);
         modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Media).WithOne().HasForeignKey(m => m.RequestId);
+        modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Lines).WithOne().HasForeignKey(l => l.RequestId);
+
+        // Same shape as Infrastructure/Persistence/Configurations/EstimateConfiguration.cs.
+        modelBuilder.Entity<Estimate>().HasMany(e => e.Rooms).WithOne().HasForeignKey(r => r.EstimateId);
+        modelBuilder.Entity<EstimateRoom>().HasMany(r => r.Openings).WithOne().HasForeignKey(o => o.RoomId);
+        modelBuilder.Entity<EstimateRoom>().HasMany(r => r.Lines).WithOne().HasForeignKey(l => l.RoomId);
         modelBuilder.Entity<ServiceRequest>().Ignore(r => r.NeedsAttention);
 
         // Same shape as Infrastructure/Persistence/Configurations/OfferConfiguration.cs and OrderConfiguration.cs.

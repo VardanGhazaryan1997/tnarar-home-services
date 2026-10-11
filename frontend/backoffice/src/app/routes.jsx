@@ -48,6 +48,18 @@ export const routes = [
                 ],
               },
               {
+                path: 'estimates',
+                element: (
+                  <RequirePermission permission={permissionOf('estimates')}>
+                    <Outlet />
+                  </RequirePermission>
+                ),
+                children: [
+                  { index: true, lazy: page(() => import('@/features/estimates/EstimatesPage')) },
+                  { path: ':id', lazy: page(() => import('@/features/estimates/EstimateDetailPage')) },
+                ],
+              },
+              {
                 path: 'orders',
                 element: (
                   <RequirePermission permission={permissionOf('orders')}>

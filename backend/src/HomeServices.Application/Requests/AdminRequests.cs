@@ -150,6 +150,7 @@ public sealed class GetAdminRequestsHandler(IAppDbContext db, ICurrentLanguage l
                 SentTo = r.Recipients.Count,
                 Responded = r.Recipients.Count(x => x.Status == RecipientStatus.Responded),
                 Declined = r.Recipients.Count(x => x.Status == RecipientStatus.Declined),
+                Lines = r.Lines.Count,
             })
             .ToDictionaryAsync(r => r.Id, cancellationToken);
 
@@ -169,7 +170,8 @@ public sealed class GetAdminRequestsHandler(IAppDbContext db, ICurrentLanguage l
                 counts[p.Request.Id].Declined,
                 p.Request.AttentionReason?.ToString(),
                 p.Request.NeedsAttentionSince,
-                p.Request.CreatedAt))
+                p.Request.CreatedAt,
+                counts[p.Request.Id].Lines))
             .ToList();
         return new PagedResult<AdminRequestListItemDto>(items, query.Page, query.PageSize, total);
     }
@@ -257,6 +259,7 @@ internal static class AdminRequestLoader
         await db.ServiceRequests
             .Include(r => r.Recipients)
             .Include(r => r.Media)
+            .Include(r => r.Lines)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken)
         ?? throw MyRequests.NotFound();
 
@@ -302,6 +305,8 @@ internal static class AdminRequestLoader
             request.NeedsAttentionSince,
             request.CreatedAt,
             request.CancelledAt,
-            request.CancelReason);
+            request.CancelReason,
+            request.EstimateId,
+            await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken));
     }
 }

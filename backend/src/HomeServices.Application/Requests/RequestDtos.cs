@@ -102,7 +102,8 @@ public sealed record AdminRequestListItemDto(
     int Declined,
     string? AttentionReason,
     DateTimeOffset? NeedsAttentionSince,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    int LineCount = 0);
 
 public sealed record RequestCustomerDto(Guid UserId, string Phone, string? FullName, string? Email, bool IsBlocked);
 
@@ -135,4 +136,6 @@ public sealed record AdminRequestDto(
     DateTimeOffset? NeedsAttentionSince,
     DateTimeOffset CreatedAt,
     DateTimeOffset? CancelledAt,
-    string? CancelReason);
+    string? CancelReason,
+    Guid? EstimateId,
+    IReadOnlyList<RequestLineDto> Lines);

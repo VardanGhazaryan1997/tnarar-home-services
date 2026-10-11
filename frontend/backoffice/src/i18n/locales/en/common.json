@@ -14,6 +14,7 @@
     "staff": "Staff and roles",
     "audit": "Audit log",
     "requests": "Requests",
+    "estimates": "Estimates",
     "orders": "Orders",
     "payments": "Payments",
     "reviews": "Reviews",
@@ -363,6 +364,9 @@
       "required": "Add at least one line",
       "too_many": "A room can have up to 60 lines",
       "duplicate": "Each work can be added once"
+    },
+    "estimate": {
+      "not_found": "This estimate doesn't exist."
     }
   },
   "catalog": {
@@ -1166,7 +1170,10 @@
       "source": "How",
       "sent": "Sent",
       "waitingSince": "Waiting for an operator since {{date}}.",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "lines": "Work, room by room",
+      "openEstimate": "Open the estimate",
+      "estimated": "Estimated labour"
     },
     "assign": {
       "button": "Send to partners",
@@ -1449,5 +1456,55 @@
       "range": "0 to {{max}}%",
       "empty": "No categories"
     }
+  },
+  "estimates": {
+    "columns": {
+      "room": "Room",
+      "work": "Work",
+      "amount": "Amount",
+      "price": "Labour",
+      "estimate": "Estimate",
+      "owner": "Customer",
+      "total": "Total",
+      "requests": "Requests",
+      "updated": "Changed",
+      "request": "Request",
+      "lines": "Lines",
+      "created": "Created"
+    },
+    "toAgree": "to agree",
+    "size": "Rooms: {{rooms}} · work: {{lines}}",
+    "requestCount": "Requests: {{n}}",
+    "noRequest": "No request",
+    "shared": "Shared",
+    "stats": {
+      "total": "Estimates",
+      "withRequest": "Became requests",
+      "conversion": "Conversion",
+      "last30": "Last 30 days"
+    },
+    "statsHelp": "Conversion: estimates that became at least one request. Last 30 days: became requests / made.",
+    "filters": {
+      "show": "Show",
+      "all": "All",
+      "withRequest": "Became requests",
+      "withoutRequest": "No request yet",
+      "search": "Search",
+      "searchPlaceholder": "Title or customer's phone",
+      "shared": "Share link",
+      "sharedAny": "Shared or not",
+      "shared_yes": "Shared",
+      "shared_no": "Not shared"
+    },
+    "empty": "No estimates match",
+    "back": "Estimates",
+    "oldBuilding": "Old building",
+    "summary": "Estimate",
+    "usually": "usually {{amount}}",
+    "unpriced": "Lines without a price",
+    "requestsTitle": "Requests made from it",
+    "noRequestYet": "No request yet",
+    "geometry": "Floor {{floor}} m² · walls {{walls}} m² · ceiling {{height}} m · doors and windows: {{openings}}",
+    "gone": "Work no longer offered, left out of the prices: {{n}}"
   }
 }

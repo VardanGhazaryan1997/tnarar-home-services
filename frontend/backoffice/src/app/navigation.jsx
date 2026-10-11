@@ -1,5 +1,6 @@
 import {
   AppstoreOutlined,
+  CalculatorOutlined,
   DashboardOutlined,
   FileTextOutlined,
   HistoryOutlined,
@@ -20,6 +21,7 @@ import { hasPermission } from '@/features/auth/permissions'
 export const NAV_ITEMS = [
   { key: 'dashboard', path: '/', icon: <DashboardOutlined /> },
   { key: 'requests', path: '/requests', icon: <InboxOutlined />, permission: 'requests.view' },
+  { key: 'estimates', path: '/estimates', icon: <CalculatorOutlined />, permission: 'requests.view' },
   { key: 'orders', path: '/orders', icon: <ShoppingOutlined />, permission: 'orders.view' },
   { key: 'payments', path: '/payments', icon: <WalletOutlined />, permission: 'payments.view' },
   { key: 'commissions', path: '/commissions', icon: <PercentageOutlined />, permission: 'commissions.view' },

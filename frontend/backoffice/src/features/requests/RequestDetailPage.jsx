@@ -7,6 +7,7 @@ import { Link, useParams } from 'react-router'
 import { errorMessage } from '@/api/errors'
 import ReasonModal from '@/components/ReasonModal/ReasonModal'
 import { selectStaff } from '@/features/auth/authSlice'
+import WorkLines from '@/features/estimates/WorkLines'
 import { hasPermission } from '@/features/auth/permissions'
 import { formatDate, formatMoney } from '@/i18n/format'
 import AssignModal from './AssignModal'
@@ -140,6 +141,26 @@ export default function RequestDetailPage() {
           </Image.PreviewGroup>
         )}
       </Card>
+
+      {request.lines?.length > 0 && (
+        <Card
+          title={t('requests.detail.lines')}
+          extra={request.estimateId && <Link to={`/estimates/${request.estimateId}`}>{t('requests.detail.openEstimate')}</Link>}
+        >
+          <WorkLines
+            priceTitle={t('requests.detail.estimated')}
+            lines={request.lines.map((line) => ({
+              key: line.id,
+              room: line.roomName,
+              name: line.name,
+              unit: line.unit,
+              quantity: line.quantity,
+              min: line.estimateMin,
+              max: line.estimateMax,
+            }))}
+          />
+        </Card>
+      )}
 
       <Card title={t('requests.detail.customer')}>
         <Descriptions column={{ xs: 1, md: 2 }} size="small">

@@ -335,6 +335,7 @@ Broken JSON, an unknown enum name or a missing required field return the usual 4
 | `POST /api/v1/me/estimates`, `PUT …/{id}`, `DELETE …/{id}` | Save a new estimate (201), replace one (title, `cityId`, `oldBuilding`, all rooms), delete one |
 | `POST …/{id}/share`, `DELETE …/{id}/share` | Turn the share link on (a random 22-character `shareToken`) or off |
 | `GET /api/v1/admin/catalog/room-templates`, `PUT …/room-templates/{roomType}` | Back Office (`catalog.manage`): every room type's usual work; replace one type's list |
+| `GET /api/v1/admin/estimates?search=&withRequest=&shared=&page=`, `GET …/stats`, `GET …/{id}` | Back Office (`requests.view`): customers' estimates with owner, totals and requests made from them; how many became requests (conversion, all time and last 30 days) |
 
 - Prices are labour only: quantity × the work item's market range, +15% in an old building, +10% on wall and ceiling work under ceilings above 3 m. Amounts are rounded (10 under 1,000, 100 under 100,000, else 1,000).
 - Visitors keep their estimate in the browser; it's saved on the server once they sign in. A saved estimate keeps lines for work hidden since; its prices leave them out (the line is missing from `measurement`).

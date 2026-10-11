@@ -17,6 +17,7 @@ import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate, formatDateTime } from '@/shared/format'
 import { MediaGallery, RequestFacts, RequestStatusTag } from './components/RequestParts'
 import RequestLines from './components/RequestLines'
+import RequestMaterials from './components/RequestMaterials'
 import { useCancelMyRequestMutation, useGetMyRequestQuery } from './requestsApi'
 import styles from './requests.module.scss'
 
@@ -89,6 +90,7 @@ export default function MyRequestPage() {
                   <RequestLines lines={request.lines} showEstimate />
                 </Card>
               )}
+              <RequestMaterials request={request} showEstimate />
             </div>
             <aside className={styles['request-page__side']}>
               <Card title={t('requests.whoHasIt')}>

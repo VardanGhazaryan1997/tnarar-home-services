@@ -208,7 +208,15 @@ public sealed class AdminCatalogController : ControllerBase
                 id, request.Slug, request.Name, request.Unit, request.PriceBudget, request.PriceStandard, request.PricePremium, request.SortOrder, request.IsActive),
             cancellationToken);
 
-    /// <summary>Deletes a material; 422 "material.in_use" while work items use it.</summary>
+    /// <summary>Marks the material's prices as checked and still right.</summary>
+    [HttpPost("materials/{id:guid}/confirm-prices")]
+    public Task<AdminMaterialDto> ConfirmMaterialPrices(
+        Guid id,
+        [FromServices] ICommandHandler<ConfirmMaterialPrices, AdminMaterialDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new ConfirmMaterialPrices(id), cancellationToken);
+
+    /// <summary>Deletes a material; 422 "material.in_use" while work items or requests use it.</summary>
     [HttpDelete("materials/{id:guid}")]
     public async Task<IActionResult> DeleteMaterialAsync(
         Guid id,

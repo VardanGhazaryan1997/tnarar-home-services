@@ -182,7 +182,8 @@
       "already_responded": "You already responded to this request.",
       "too_many_lines": "A request can carry at most 200 lines of work.",
       "line_invalid": "One of the estimate's lines isn't right.",
-      "estimate_invalid": "This estimate can't be used."
+      "estimate_invalid": "This estimate can't be used.",
+      "material_invalid": "The estimate's materials could not be copied. Try again."
     },
     "offer": {
       "already_sent": "You already have a waiting offer of this type. Withdraw it to send a new one.",
@@ -193,7 +194,8 @@
       "not_found": "Offer not found.",
       "lines_unpriced": "Price every included line, or none.",
       "lines_sum_mismatch": "The lines must add up to the price.",
-      "line_invalid": "One of the lines isn't right. Check the amounts and prices."
+      "line_invalid": "One of the lines isn't right. Check the amounts and prices.",
+      "materials_amount_invalid": "Materials priced separately must be included and be less than the price."
     },
     "order": {
       "not_found": "Order not found.",
@@ -518,6 +520,9 @@
       "summary": "Rooms: {{rooms}}, kinds of work: {{lines}}.",
       "range": "Estimated labour: {{range}}.",
       "private": "Specialists see the rooms, work and amounts, not the estimated prices or your budget."
+    },
+    "materials": {
+      "partnerHint": "The materials the customer's estimate counted for this work. Say in your offer whether you include them and how much they cost."
     }
   },
   "inbox": {
@@ -573,6 +578,7 @@
       "lineTitle": "Item {{n}}",
       "lineKind": "Item {{n}} is",
       "materialsIncluded": "Materials are included in the price",
+      "materialsAmount": "Materials part of the price, ֏",
       "materialsNote": "About materials",
       "price": "Price (֏)",
       "fee": "Visit fee (֏)",
@@ -620,7 +626,8 @@
     "errors": {
       "summaryShort": "Write at least {{min}} characters.",
       "priceRequired": "Enter the price.",
-      "visitAtRequired": "Choose the visit time."
+      "visitAtRequired": "Choose the visit time.",
+      "materialsAmount": "The materials part must be above 0 and less than the price."
     },
     "newTitle": "Send an offer",
     "backToRequest": "Back to the request",
@@ -681,8 +688,13 @@
       "notIncluded": "not included",
       "inPrice": "in the price",
       "other": "Other work",
+      "materials": "Materials",
+      "materialsNotIncluded": "customer buys",
       "total": "Total"
-    }
+    },
+    "materialsAmountHint": "Optional: how much of the price is materials, so the customer can compare offers fairly.",
+    "materialsAmountHintEstimate": "Optional: how much of the price is materials. The customer's estimate counted the materials listed on the request.",
+    "materialsPart": "Included: {{amount}} (labour {{labour}})"
   },
   "orders": {
     "title": "Orders",
@@ -1579,7 +1591,8 @@
         "RunningMeter": "m",
         "CubicMeter": "m³",
         "Piece": "pcs"
-      }
+      },
+      "listSummary": "Materials ({{count}})"
     }
   }
 }

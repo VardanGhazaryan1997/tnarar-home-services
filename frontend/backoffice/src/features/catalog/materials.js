@@ -18,13 +18,17 @@ export function materialPriceProblem({ priceBudget, priceStandard, pricePremium 
   return null
 }
 
-/** Materials matching the text in the slug or any name, and the status ("all", "active", "hidden", "unused"). */
+/**
+ * Materials matching the text in the slug or any name, and the status ("all", "active", "hidden", "unused",
+ * "outdated": prices not checked for 90 days).
+ */
 export function filterMaterials(materials, { search = '', status = 'all' } = {}) {
   const term = search.trim().toLocaleLowerCase()
   return materials.filter((material) => {
     if (status === 'active' && !material.isActive) return false
     if (status === 'hidden' && material.isActive) return false
     if (status === 'unused' && material.workItemCount > 0) return false
+    if (status === 'outdated' && !material.pricesNeedChecking) return false
     return !term || [material.slug, ...Object.values(material.name ?? {})].some((text) => text?.toLocaleLowerCase().includes(term))
   })
 }

@@ -532,7 +532,8 @@
         "all": "All",
         "active": "Counted",
         "hidden": "Hidden",
-        "unused": "Not used by any work"
+        "unused": "Not used by any work",
+        "outdated": "Prices to check"
       },
       "units": {
         "Kilogram": "kg",
@@ -541,7 +542,11 @@
         "RunningMeter": "m",
         "CubicMeter": "m³",
         "Piece": "pcs"
-      }
+      },
+      "checked": "Prices checked",
+      "needsChecking": "Check prices",
+      "confirmPrices": "Prices are still right",
+      "pricesConfirmed": "Prices marked as checked"
     },
     "workItemMaterials": {
       "open": "Materials",
@@ -1233,7 +1238,8 @@
       "cancelled": "Cancelled",
       "lines": "Work, room by room",
       "openEstimate": "Open the estimate",
-      "estimated": "Estimated labour"
+      "estimated": "Estimated labour",
+      "materials": "Materials: {{grade}}"
     },
     "assign": {
       "button": "Send to partners",
@@ -1565,6 +1571,11 @@
     "requestsTitle": "Requests made from it",
     "noRequestYet": "No request yet",
     "geometry": "Floor {{floor}} m² · walls {{walls}} m² · ceiling {{height}} m · doors and windows: {{openings}}",
-    "gone": "Work no longer offered, left out of the prices: {{n}}"
+    "gone": "Work no longer offered, left out of the prices: {{n}}",
+    "grades": {
+      "Budget": "budget",
+      "Standard": "standard",
+      "Premium": "premium"
+    }
   }
 }

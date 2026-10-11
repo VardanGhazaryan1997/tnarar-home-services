@@ -225,4 +225,18 @@ public class OfferTests
     }
 
     private static string Code(Action action) => Should.Throw<DomainException>(action).Code;
+
+    [Fact]
+    public void Materials_can_be_priced_apart_from_the_labour_lines()
+    {
+        var line = Guid.NewGuid();
+        var offer = NewOffer(Work(price: 40_000, lines: [new OfferLine("Tiling", true, line, 4m, 6_500)]) with { MaterialsAmount = 14_000 });
+
+        (offer.MaterialsAmount, offer.LabourPrice).ShouldBe(((int?)14_000, 26_000));
+        Code(() => NewOffer(Work(price: 40_000) with { MaterialsAmount = 40_000 })).ShouldBe("offer.materials_amount_invalid");
+        Code(() => NewOffer(Work(price: 40_000) with { MaterialsIncluded = false, MaterialsAmount = 1_000 })).ShouldBe("offer.materials_amount_invalid");
+        Code(() => NewOffer(Work(price: 40_000, lines: [new OfferLine("Tiling", true, line, 4m, 6_500)]) with { MaterialsAmount = 10_000 }))
+            .ShouldBe("offer.lines_sum_mismatch");
+        Code(() => NewOffer(Visit() with { MaterialsAmount = 1 }, OfferKind.Visit)).ShouldBe("offer.visit_terms_invalid");
+    }
 }

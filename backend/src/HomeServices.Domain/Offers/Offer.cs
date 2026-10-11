@@ -45,6 +45,15 @@ public sealed class Offer : AuditableEntity, IAudited
 
     public string? MaterialsNote { get; private set; }
 
+    /// <summary>
+    /// The part of <see cref="Price"/> that is materials, when the partner includes materials and says how much; the
+    /// rest is labour. Null when materials aren't included or aren't priced separately.
+    /// </summary>
+    public int? MaterialsAmount { get; private set; }
+
+    /// <summary>The labour part of the price: the price without <see cref="MaterialsAmount"/>.</summary>
+    public int LabourPrice => Price - (MaterialsAmount ?? 0);
+
     public DateOnly? StartDate { get; private set; }
 
     public int? DurationDays { get; private set; }
@@ -104,6 +113,11 @@ public sealed class Offer : AuditableEntity, IAudited
                 throw new DomainException("offer.visit_terms_invalid", "A visit offer has a time and a fee only.");
             }
 
+            if (terms.MaterialsAmount is not null)
+            {
+                throw new DomainException("offer.visit_terms_invalid", "A visit offer has a time and a fee only.");
+            }
+
             if (terms.VisitAt is not { } visitAt || visitAt <= now)
             {
                 throw new DomainException("offer.visit_time_invalid", "A visit needs a time in the future.");
@@ -125,6 +139,7 @@ public sealed class Offer : AuditableEntity, IAudited
 
             offer.StartDate = terms.StartDate;
             offer.DurationDays = terms.DurationDays;
+            offer.MaterialsAmount = CheckMaterialsAmount(terms);
             offer.AddLines(terms.Lines);
         }
 
@@ -217,6 +232,23 @@ public sealed class Offer : AuditableEntity, IAudited
         return price;
     }
 
+    // Materials priced separately must be included and leave something for labour.
+    private static int? CheckMaterialsAmount(OfferTerms terms)
+    {
+        if (terms.MaterialsAmount is not { } amount)
+        {
+            return null;
+        }
+
+        if (!terms.MaterialsIncluded || amount < 1 || amount >= terms.Price)
+        {
+            throw new DomainException(
+                "offer.materials_amount_invalid", "The materials part needs materials included and must be less than the price.");
+        }
+
+        return amount;
+    }
+
     private static string? CleanMaterialsNote(string? note)
     {
         var clean = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
@@ -258,7 +290,8 @@ public sealed class Offer : AuditableEntity, IAudited
             _items.Add(new OfferItem(Id, title, line.Included, _items.Count + 1, line.RequestLineId, quantity, line.UnitPrice, amount));
         }
 
-        // Priced line by line: every included line has a price and they add up to the offer's price.
+        // Priced line by line: every included line has a price and they add up to the offer's price (its labour part when
+        // materials are priced separately).
         if (_items.Any(i => i.Amount is not null))
         {
             if (_items.Any(i => i.Included && i.Amount is null))
@@ -266,9 +299,9 @@ public sealed class Offer : AuditableEntity, IAudited
                 throw new DomainException("offer.lines_unpriced", "Price every included line, or none.");
             }
 
-            if (_items.Sum(i => (long)(i.Amount ?? 0)) != Price)
+            if (_items.Sum(i => (long)(i.Amount ?? 0)) != LabourPrice)
             {
-                throw new DomainException("offer.lines_sum_mismatch", "The priced lines must add up to the price.");
+                throw new DomainException("offer.lines_sum_mismatch", "The priced lines must add up to the price (without the materials part).");
             }
         }
     }

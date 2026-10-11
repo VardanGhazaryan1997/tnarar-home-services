@@ -134,6 +134,8 @@ export const MATERIALS = [
     sortOrder: 1,
     isActive: true,
     workItemCount: 2,
+    pricesCheckedAt: '2026-10-11T00:00:00Z',
+    pricesNeedChecking: false,
   },
   {
     id: 'mat-primer',
@@ -146,6 +148,8 @@ export const MATERIALS = [
     sortOrder: 2,
     isActive: false,
     workItemCount: 0,
+    pricesCheckedAt: '2026-05-01T00:00:00Z',
+    pricesNeedChecking: true,
   },
 ]
 

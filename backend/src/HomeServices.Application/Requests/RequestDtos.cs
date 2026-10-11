@@ -21,6 +21,12 @@ public sealed record RequestLineDto(
     int? EstimateMin = null,
     int? EstimateMax = null);
 
+/// <summary>
+/// A material the estimate counted for the request (E1): amount in its unit, waste included. The estimated cost only in
+/// the customer's view.
+/// </summary>
+public sealed record RequestMaterialDto(Guid MaterialId, string Name, MaterialUnit Unit, decimal Quantity, int? EstimateCost = null);
+
 /// <summary>A request in the customer's list. <see cref="FindingPartners"/>: no partner could take it yet and an operator is on it.</summary>
 public sealed record MyRequestListItemDto(
     Guid Id,
@@ -55,7 +61,9 @@ public sealed record MyRequestDto(
     DateTimeOffset? CancelledAt,
     string? CancelReason,
     Guid? EstimateId,
-    IReadOnlyList<RequestLineDto> Lines);
+    IReadOnlyList<RequestLineDto> Lines,
+    MaterialGrade? MaterialGrade = null,
+    IReadOnlyList<RequestMaterialDto>? Materials = null);
 
 /// <summary>A request in a partner's inbox. <see cref="MyStatus"/>: New, Viewed, Declined or Responded.</summary>
 public sealed record InboxItemDto(
@@ -86,7 +94,9 @@ public sealed record InboxRequestDto(
     string? CustomerFirstName,
     DateTimeOffset SentAt,
     DateTimeOffset CreatedAt,
-    IReadOnlyList<RequestLineDto> Lines);
+    IReadOnlyList<RequestLineDto> Lines,
+    MaterialGrade? MaterialGrade = null,
+    IReadOnlyList<RequestMaterialDto>? Materials = null);
 
 public sealed record AdminRequestListItemDto(
     Guid Id,
@@ -138,4 +148,6 @@ public sealed record AdminRequestDto(
     DateTimeOffset? CancelledAt,
     string? CancelReason,
     Guid? EstimateId,
-    IReadOnlyList<RequestLineDto> Lines);
+    IReadOnlyList<RequestLineDto> Lines,
+    MaterialGrade? MaterialGrade = null,
+    IReadOnlyList<RequestMaterialDto>? Materials = null);

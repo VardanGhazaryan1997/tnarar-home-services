@@ -74,6 +74,22 @@ describe('Materials tab', () => {
     expect(await screen.findByText(hy.catalog.created)).toBeInTheDocument()
   }, SLOW)
 
+  it('flags prices to check and confirms them', async () => {
+    const requests = capture('post', 'materials/mat-primer/confirm-prices', () => HttpResponse.json({}))
+    const user = userEvent.setup()
+    renderRoute('/catalog/materials')
+
+    const table = (await screen.findByText('Գրունտ')).closest('table')
+    expect(within(table).getAllByText(m.needsChecking)).toHaveLength(1)
+    await user.click(screen.getByLabelText(hy.catalog.columns.status))
+    await user.click((await screen.findAllByTitle(m.statuses.outdated)).find((element) => element.closest('.ant-select-dropdown')))
+    await waitFor(() => expect(within(table).queryByText('Վերջնական շպաքլ')).not.toBeInTheDocument())
+
+    await user.click(within(table).getByRole('button', { name: `${m.confirmPrices}: Գրունտ` }))
+    await waitFor(() => expect(requests).toHaveLength(1))
+    expect(await screen.findByText(m.pricesConfirmed)).toBeInTheDocument()
+  }, SLOW)
+
   it('explains why a material in use can’t be deleted', async () => {
     capture('delete', 'materials/mat-putty', () => HttpResponse.json({ status: 422, code: 'material.in_use' }, { status: 422 }))
     const user = userEvent.setup()

@@ -161,3 +161,41 @@ public sealed class RequestLine : Entity, IAudited
 
     public int? EstimateMax { get; private set; }
 }
+
+/// <summary>
+/// A material the customer's estimate counted for the request's work (E1): how much (waste included) and, for the
+/// customer only, the estimated cost at the chosen grade. Partners see the list to quote materials.
+/// </summary>
+public sealed class RequestMaterial : Entity, IAudited
+{
+    private RequestMaterial()
+    {
+    }
+
+    internal RequestMaterial(Guid requestId, int sortOrder, Guid materialId, MaterialUnit unit, decimal quantity, int estimateCost)
+    {
+        if (materialId == Guid.Empty || !Enum.IsDefined(unit) || quantity is <= 0 or > RequestLine.MaxQuantity || estimateCost < 0)
+        {
+            throw new DomainException("request.material_invalid", "A material needs an amount and a cost.");
+        }
+
+        RequestId = requestId;
+        SortOrder = sortOrder;
+        MaterialId = materialId;
+        Unit = unit;
+        Quantity = Math.Round(quantity, 2, MidpointRounding.AwayFromZero);
+        EstimateCost = estimateCost;
+    }
+
+    public Guid RequestId { get; private set; }
+
+    public int SortOrder { get; private set; }
+
+    public Guid MaterialId { get; private set; }
+
+    public MaterialUnit Unit { get; private set; }
+
+    public decimal Quantity { get; private set; }
+
+    public int EstimateCost { get; private set; }
+}

@@ -4632,6 +4632,12 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("price_standard");
 
+                    b.Property<DateTimeOffset>("PricesCheckedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("prices_checked_at")
+                        .HasDefaultValueSql("now()");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -4669,6 +4675,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 90,
                             PricePremium = 170,
                             PriceStandard = 120,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "gypsum-plaster",
                             SortOrder = 1,
                             Unit = "Kilogram"
@@ -4681,6 +4688,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 100,
                             PricePremium = 200,
                             PriceStandard = 140,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "base-putty",
                             SortOrder = 2,
                             Unit = "Kilogram"
@@ -4693,6 +4701,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 150,
                             PricePremium = 380,
                             PriceStandard = 230,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "finishing-putty",
                             SortOrder = 3,
                             Unit = "Kilogram"
@@ -4705,6 +4714,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 500,
                             PricePremium = 1400,
                             PriceStandard = 850,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "primer",
                             SortOrder = 4,
                             Unit = "Liter"
@@ -4717,6 +4727,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1200,
                             PricePremium = 5000,
                             PriceStandard = 2500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "interior-paint",
                             SortOrder = 5,
                             Unit = "Liter"
@@ -4729,6 +4740,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 2500,
                             PricePremium = 7000,
                             PriceStandard = 4000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "enamel-paint",
                             SortOrder = 6,
                             Unit = "Liter"
@@ -4741,6 +4753,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 800,
                             PricePremium = 5000,
                             PriceStandard = 2000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "wallpaper",
                             SortOrder = 7,
                             Unit = "SquareMeter"
@@ -4753,6 +4766,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 2000,
                             PricePremium = 4500,
                             PriceStandard = 3000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "wallpaper-paste",
                             SortOrder = 8,
                             Unit = "Kilogram"
@@ -4765,6 +4779,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 900,
                             PricePremium = 2500,
                             PriceStandard = 1500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "glass-fibre-wallpaper",
                             SortOrder = 9,
                             Unit = "SquareMeter"
@@ -4777,6 +4792,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 5000,
                             PricePremium = 18000,
                             PriceStandard = 9000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "wall-tiles",
                             SortOrder = 10,
                             Unit = "SquareMeter"
@@ -4789,6 +4805,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 6000,
                             PricePremium = 20000,
                             PriceStandard = 10000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "floor-tiles",
                             SortOrder = 11,
                             Unit = "SquareMeter"
@@ -4801,6 +4818,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 12000,
                             PricePremium = 40000,
                             PriceStandard = 20000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "large-porcelain-tiles",
                             SortOrder = 12,
                             Unit = "SquareMeter"
@@ -4813,6 +4831,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 15000,
                             PricePremium = 45000,
                             PriceStandard = 25000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "mosaic-tiles",
                             SortOrder = 13,
                             Unit = "SquareMeter"
@@ -4825,6 +4844,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 100,
                             PricePremium = 260,
                             PriceStandard = 160,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "tile-adhesive",
                             SortOrder = 14,
                             Unit = "Kilogram"
@@ -4837,6 +4857,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 600,
                             PricePremium = 3000,
                             PriceStandard = 1200,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "tile-grout",
                             SortOrder = 15,
                             Unit = "Kilogram"
@@ -4849,6 +4870,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 3500,
                             PricePremium = 10000,
                             PriceStandard = 6000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "laminate",
                             SortOrder = 16,
                             Unit = "SquareMeter"
@@ -4861,6 +4883,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 300,
                             PricePremium = 1200,
                             PriceStandard = 600,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "floor-underlay",
                             SortOrder = 17,
                             Unit = "SquareMeter"
@@ -4873,6 +4896,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 12000,
                             PricePremium = 35000,
                             PriceStandard = 20000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "parquet",
                             SortOrder = 18,
                             Unit = "SquareMeter"
@@ -4885,6 +4909,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1500,
                             PricePremium = 4000,
                             PriceStandard = 2500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "parquet-adhesive",
                             SortOrder = 19,
                             Unit = "Kilogram"
@@ -4897,6 +4922,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 4000,
                             PricePremium = 12000,
                             PriceStandard = 7000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "vinyl-flooring",
                             SortOrder = 20,
                             Unit = "SquareMeter"
@@ -4909,6 +4935,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 600,
                             PricePremium = 2500,
                             PriceStandard = 1200,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "skirting-board",
                             SortOrder = 21,
                             Unit = "RunningMeter"
@@ -4921,6 +4948,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 40,
                             PricePremium = 75,
                             PriceStandard = 55,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "screed-mix",
                             SortOrder = 22,
                             Unit = "Kilogram"
@@ -4933,6 +4961,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 200,
                             PricePremium = 450,
                             PriceStandard = 300,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "self-levelling-mix",
                             SortOrder = 23,
                             Unit = "Kilogram"
@@ -4945,6 +4974,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 2000,
                             PricePremium = 4000,
                             PriceStandard = 2800,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "drywall-sheet",
                             SortOrder = 24,
                             Unit = "SquareMeter"
@@ -4957,6 +4987,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 400,
                             PricePremium = 900,
                             PriceStandard = 600,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "metal-profile",
                             SortOrder = 25,
                             Unit = "RunningMeter"
@@ -4969,6 +5000,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1200,
                             PricePremium = 3000,
                             PriceStandard = 2000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "mineral-wool",
                             SortOrder = 26,
                             Unit = "SquareMeter"
@@ -4981,6 +5013,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1500,
                             PricePremium = 4000,
                             PriceStandard = 2500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "polystyrene-board",
                             SortOrder = 27,
                             Unit = "SquareMeter"
@@ -4993,6 +5026,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 2500,
                             PricePremium = 8000,
                             PriceStandard = 4500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "stretch-ceiling-film",
                             SortOrder = 28,
                             Unit = "SquareMeter"
@@ -5005,6 +5039,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 500,
                             PricePremium = 3000,
                             PriceStandard = 1200,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "ceiling-cornice",
                             SortOrder = 29,
                             Unit = "RunningMeter"
@@ -5017,6 +5052,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 200,
                             PricePremium = 500,
                             PriceStandard = 300,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "corner-bead",
                             SortOrder = 30,
                             Unit = "RunningMeter"
@@ -5029,6 +5065,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 350,
                             PricePremium = 800,
                             PriceStandard = 500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "electric-cable",
                             SortOrder = 31,
                             Unit = "RunningMeter"
@@ -5041,6 +5078,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 100,
                             PricePremium = 250,
                             PriceStandard = 150,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "back-box",
                             SortOrder = 32,
                             Unit = "Piece"
@@ -5053,6 +5091,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1500,
                             PricePremium = 8000,
                             PriceStandard = 3500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "socket",
                             SortOrder = 33,
                             Unit = "Piece"
@@ -5065,6 +5104,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1500,
                             PricePremium = 8000,
                             PriceStandard = 3500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "light-switch",
                             SortOrder = 34,
                             Unit = "Piece"
@@ -5077,6 +5117,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 8000,
                             PricePremium = 50000,
                             PriceStandard = 20000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "ceiling-light",
                             SortOrder = 35,
                             Unit = "Piece"
@@ -5089,6 +5130,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 2000,
                             PricePremium = 8000,
                             PriceStandard = 4000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "spotlight",
                             SortOrder = 36,
                             Unit = "Piece"
@@ -5101,6 +5143,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 600,
                             PricePremium = 1500,
                             PriceStandard = 900,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "waterproofing-mix",
                             SortOrder = 37,
                             Unit = "Kilogram"
@@ -5113,6 +5156,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 600,
                             PricePremium = 2500,
                             PriceStandard = 1200,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "decorative-plaster",
                             SortOrder = 38,
                             Unit = "Kilogram"
@@ -5125,6 +5169,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 1500,
                             PricePremium = 4000,
                             PriceStandard = 2500,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "silicone-sealant",
                             SortOrder = 39,
                             Unit = "Piece"
@@ -5137,6 +5182,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 40000,
                             PricePremium = 250000,
                             PriceStandard = 90000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "toilet",
                             SortOrder = 40,
                             Unit = "Piece"
@@ -5149,6 +5195,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 25000,
                             PricePremium = 150000,
                             PriceStandard = 60000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "washbasin",
                             SortOrder = 41,
                             Unit = "Piece"
@@ -5161,6 +5208,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 12000,
                             PricePremium = 80000,
                             PriceStandard = 30000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "mixer-tap",
                             SortOrder = 42,
                             Unit = "Piece"
@@ -5173,6 +5221,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 60000,
                             PricePremium = 400000,
                             PriceStandard = 150000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "bathtub",
                             SortOrder = 43,
                             Unit = "Piece"
@@ -5185,6 +5234,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 120000,
                             PricePremium = 600000,
                             PriceStandard = 250000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "shower-cabin",
                             SortOrder = 44,
                             Unit = "Piece"
@@ -5197,6 +5247,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 40000,
                             PricePremium = 180000,
                             PriceStandard = 80000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "interior-door",
                             SortOrder = 45,
                             Unit = "Piece"
@@ -5209,6 +5260,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 30000,
                             PricePremium = 120000,
                             PriceStandard = 60000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "radiator",
                             SortOrder = 46,
                             Unit = "Piece"
@@ -5221,6 +5273,7 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                             PriceBudget = 4000,
                             PricePremium = 15000,
                             PriceStandard = 7000,
+                            PricesCheckedAt = new DateTimeOffset(new DateTime(2026, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Slug = "window-sill",
                             SortOrder = 47,
                             Unit = "RunningMeter"
@@ -14619,6 +14672,10 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(16)")
                         .HasColumnName("kind");
 
+                    b.Property<int?>("MaterialsAmount")
+                        .HasColumnType("integer")
+                        .HasColumnName("materials_amount");
+
                     b.Property<bool>("MaterialsIncluded")
                         .HasColumnType("boolean")
                         .HasColumnName("materials_included");
@@ -15590,6 +15647,51 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                     b.ToTable("request_lines", (string)null);
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Requests.RequestMaterial", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("EstimateCost")
+                        .HasColumnType("integer")
+                        .HasColumnName("estimate_cost");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("material_id");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("quantity");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("request_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("unit");
+
+                    b.HasKey("Id")
+                        .HasName("pk_request_materials");
+
+                    b.HasIndex("MaterialId")
+                        .HasDatabaseName("ix_request_materials_material_id");
+
+                    b.HasIndex("RequestId", "SortOrder")
+                        .HasDatabaseName("ix_request_materials_request_id_sort_order");
+
+                    b.ToTable("request_materials", (string)null);
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Requests.RequestMedia", b =>
                 {
                     b.Property<Guid>("Id")
@@ -15752,6 +15854,11 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("kind");
+
+                    b.Property<string>("MaterialGrade")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("material_grade");
 
                     b.Property<DateTimeOffset?>("NeedsAttentionSince")
                         .HasColumnType("timestamp with time zone")
@@ -16651,6 +16758,23 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_request_lines_work_items_work_item_id");
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Requests.RequestMaterial", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Catalog.Material", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_request_materials_materials_material_id");
+
+                    b.HasOne("HomeServices.Domain.Requests.ServiceRequest", null)
+                        .WithMany("Materials")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_request_materials_service_requests_request_id");
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Requests.RequestMedia", b =>
                 {
                     b.HasOne("HomeServices.Domain.Files.StoredFile", null)
@@ -16824,6 +16948,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("HomeServices.Domain.Requests.ServiceRequest", b =>
                 {
                     b.Navigation("Lines");
+
+                    b.Navigation("Materials");
 
                     b.Navigation("Media");
 

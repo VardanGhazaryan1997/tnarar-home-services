@@ -11,7 +11,10 @@ namespace HomeServices.Application.Tests.Catalog;
 
 public class MaterialsTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 10, 11, 9, 0, 0, TimeSpan.Zero);
+
     private readonly InMemoryAppDbContext _db = InMemoryAppDbContext.Create();
+    private readonly FakeClock _clock = new(Now);
     private readonly WorkItem _tiling;
     private readonly WorkItem _sockets;
     private readonly Material _tiles;
@@ -27,10 +30,10 @@ public class MaterialsTests
         _sockets = WorkItem.Create(category.Id, "sockets", Text("sockets", "Sockets"), WorkUnit.Point, WorkSurface.None, 2);
         _db.WorkItems.AddRange(_tiling, _sockets);
 
-        _tiles = Material.Create("floor-tiles", Text("tiles", "Floor tiles"), MaterialUnit.SquareMeter, 5000, 9000, 18000, 1);
-        _adhesive = Material.Create("tile-adhesive", Text("adhesive", "Tile adhesive"), MaterialUnit.Kilogram, 100, 160, 260, 2);
-        _socket = Material.Create("socket", Text("socket", "Socket"), MaterialUnit.Piece, 1500, 3500, 8000, 3);
-        _hidden = Material.Create("hidden", Text("hidden", "Hidden"), MaterialUnit.Piece, 1, 1, 1, 4);
+        _tiles = Material.Create("floor-tiles", Text("tiles", "Floor tiles"), MaterialUnit.SquareMeter, 5000, 9000, 18000, 1, Now);
+        _adhesive = Material.Create("tile-adhesive", Text("adhesive", "Tile adhesive"), MaterialUnit.Kilogram, 100, 160, 260, 2, Now);
+        _socket = Material.Create("socket", Text("socket", "Socket"), MaterialUnit.Piece, 1500, 3500, 8000, 3, Now);
+        _hidden = Material.Create("hidden", Text("hidden", "Hidden"), MaterialUnit.Piece, 1, 1, 1, 4, Now);
         _hidden.Deactivate();
         _db.Materials.AddRange(_tiles, _adhesive, _socket, _hidden);
         _db.WorkItemMaterials.AddRange(
@@ -93,21 +96,21 @@ public class MaterialsTests
     [Fact]
     public async Task Staff_manage_materials()
     {
-        var created = await new CreateMaterialHandler(_db).HandleAsync(
+        var created = await new CreateMaterialHandler(_db, _clock).HandleAsync(
             new CreateMaterial("Primer", Name("Primer"), MaterialUnit.Liter, 500, 850, 1400, 5),
             CancellationToken.None);
         (created.Slug, created.Unit, created.PriceStandard, created.IsActive).ShouldBe(("primer", MaterialUnit.Liter, 850, true));
 
-        (await Should.ThrowAsync<ConflictException>(() => new CreateMaterialHandler(_db).HandleAsync(
+        (await Should.ThrowAsync<ConflictException>(() => new CreateMaterialHandler(_db, _clock).HandleAsync(
             new CreateMaterial("primer", Name("Again"), MaterialUnit.Liter, 1, 1, 1, 6), CancellationToken.None)))
             .Code.ShouldBe("material.slug_taken");
 
-        var updated = await new UpdateMaterialHandler(_db).HandleAsync(
+        var updated = await new UpdateMaterialHandler(_db, _clock).HandleAsync(
             new UpdateMaterial(created.Id, "primer", Name("Deep primer"), MaterialUnit.Liter, 600, 900, 1500, 5, IsActive: false),
             CancellationToken.None);
         (updated.Name["en"], updated.PriceBudget, updated.IsActive).ShouldBe(("Deep primer", 600, false));
 
-        var list = await new GetAdminMaterialsHandler(_db).HandleAsync(new GetAdminMaterials(), CancellationToken.None);
+        var list = await new GetAdminMaterialsHandler(_db, _clock).HandleAsync(new GetAdminMaterials(), CancellationToken.None);
         list.Select(m => m.Slug).ShouldBe(new[] { "floor-tiles", "tile-adhesive", "socket", "hidden", "primer" });
         list[0].WorkItemCount.ShouldBe(1);
 
@@ -150,5 +153,16 @@ public class MaterialsTests
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "work_item_material.invalid" });
         (await validator.ValidateAsync(new SetWorkItemMaterials(_tiling.Id, [new WorkItemMaterialInput(id, 1m, 101)])))
             .Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "work_item_material.invalid" });
+    }
+
+    [Fact]
+    public async Task Staff_see_which_prices_need_checking_and_confirm_them()
+    {
+        _clock.Now = Now.AddDays(MaterialData.CheckEveryDays + 1);
+        var list = await new GetAdminMaterialsHandler(_db, _clock).HandleAsync(new GetAdminMaterials(), CancellationToken.None);
+        list.ShouldAllBe(m => m.PricesNeedChecking);
+
+        var confirmed = await new ConfirmMaterialPricesHandler(_db, _clock).HandleAsync(new ConfirmMaterialPrices(_tiles.Id), CancellationToken.None);
+        (confirmed.PricesCheckedAt, confirmed.PricesNeedChecking, confirmed.WorkItemCount).ShouldBe(((DateTimeOffset?)_clock.Now, false, 1));
     }
 }

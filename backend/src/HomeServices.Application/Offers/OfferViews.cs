@@ -58,7 +58,8 @@ internal static class OfferViews
         offer.CreatedAt,
         offer.DecidedAt,
         offer.RejectReason,
-        offer.OrderId);
+        offer.OrderId,
+        offer.MaterialsAmount);
 }
 
 /// <summary>When a request ends (closed by an accepted work offer, or cancelled), offers still waiting on it close too.</summary>

@@ -178,7 +178,7 @@ public sealed class CreateRequestHandler(
         return await MyRequests.ToDtoAsync(db, language, files, request, cancellationToken);
     }
 
-    // The estimate's work as it's priced now: work removed from the catalog since is left out.
+    // The estimate's work as it's priced now: work removed from the catalog since is left out. Materials too.
     private async Task CopyEstimateAsync(ServiceRequest request, Guid estimateId, CancellationToken cancellationToken)
     {
         var estimate = await MyEstimateData.LoadAsync(db.Estimates.AsNoTracking(), currentUser, estimateId, cancellationToken);
@@ -190,6 +190,15 @@ public sealed class CreateRequestHandler(
             foreach (var line in measurement.Rooms[i].Lines)
             {
                 request.AddLine(rooms[i].Name, line.WorkItemId, line.Unit, line.Quantity, line.PriceMin, line.PriceMax);
+            }
+        }
+
+        // The materials the estimate counted (E1), so partners can quote them.
+        if (measurement.MaterialGrade is { } grade)
+        {
+            foreach (var material in measurement.Materials ?? [])
+            {
+                request.AddMaterial(grade, material.MaterialId, material.Unit, material.Quantity, material.Cost);
             }
         }
     }
@@ -267,6 +276,7 @@ internal static class MyRequests
             .Include(r => r.Recipients)
             .Include(r => r.Media)
             .Include(r => r.Lines)
+            .Include(r => r.Materials)
             .SingleOrDefaultAsync(r => r.Id == id && r.CustomerId == customerId, cancellationToken)
             ?? throw NotFound();
     }
@@ -308,7 +318,9 @@ internal static class MyRequests
             request.CancelledAt,
             request.CancelReason,
             request.EstimateId,
-            await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken));
+            await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken),
+            request.MaterialGrade,
+            await RequestLookup.MaterialsAsync(db, language, request, withEstimate: true, cancellationToken));
     }
 }
 

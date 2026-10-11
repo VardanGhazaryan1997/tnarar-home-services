@@ -121,4 +121,37 @@ public class RequestFromEstimateTests
         (await validator.ValidateAsync(excludedWithPrice)).Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "lines.price_invalid" });
         (await validator.ValidateAsync(badQuantity)).Errors.Select(e => e.ErrorCode).ShouldBe(new[] { "lines.price_invalid" });
     }
+
+    [Fact]
+    public async Task The_estimates_materials_go_with_the_request_and_offers_can_price_them_apart()
+    {
+        var tiles = Material.Create("floor-tiles", LocalizedText.Empty.With("hy", "Սալիկ"), MaterialUnit.SquareMeter, 5_000, 9_000, 18_000, 1, OfferTestData.Now);
+        var db = _data.Requests.Db;
+        db.Materials.Add(tiles);
+        db.WorkItemMaterials.Add(WorkItemMaterial.Create(_tiling.Id, tiles.Id, 1m, 10, 1));
+        _estimate.SetMaterials(MaterialGrade.Standard);
+        await db.SaveChangesAsync();
+        var plumber = _data.Requests.GivenPartner("Plumber");
+
+        var request = await _data.Requests.CreateAsync(_data.Requests.OpenRequest() with { EstimateId = _estimate.Id });
+
+        request.MaterialGrade.ShouldBe(MaterialGrade.Standard);
+        request.Materials!.Select(m => (m.Name, m.Unit, m.Quantity, m.EstimateCost)).ShouldBe(new[] { ("Սալիկ", MaterialUnit.SquareMeter, 4.4m, (int?)39_600) });
+        var seen = await new GetInboxRequestHandler(db, OfferTestData.As(plumber), _data.Requests.Language, _data.Requests.Files, _data.Requests.Clock)
+            .HandleAsync(new GetInboxRequest(request.Id), CancellationToken.None);
+        seen.Materials!.Single().ShouldSatisfyAllConditions(m => m.Quantity.ShouldBe(4.4m), m => m.EstimateCost.ShouldBeNull());
+
+        var (bath, kitchen) = (request.Lines[0], request.Lines[1]);
+        var sent = await _data.SendAsync(plumber, _data.Work(request.Id, 100_000) with
+        {
+            Lines =
+            [
+                new OfferLine("Bath · floor-tiling", true, bath.Id, 4m, 7_000),
+                new OfferLine("Kitchen · boiler-installation", true, kitchen.Id, 1m, 33_000),
+            ],
+            Stages = null,
+            MaterialsAmount = 39_000,
+        });
+        (sent.Price, sent.MaterialsAmount).ShouldBe((100_000, (int?)39_000));
+    }
 }

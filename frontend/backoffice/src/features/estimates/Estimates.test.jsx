@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
+import i18n from '@/i18n'
 import hy from '@/i18n/locales/hy/common.json'
 import { problem, signedInAs, staffMember } from '@/test/auth'
 import { requestDetail } from '@/test/operations'
@@ -143,6 +144,8 @@ describe('Estimates', () => {
           requestDetail({
             estimateId: 'est-1',
             lines: [{ id: 'l1', roomName: 'Լոգարան', workItemId: 'w-tiles', name: 'Սալիկապատում', unit: 'SquareMeter', quantity: 4, estimateMin: 20000, estimateMax: 36000 }],
+            materialGrade: 'Standard',
+            materials: [{ materialId: 'm-tiles', name: 'Սալիկ', unit: 'SquareMeter', quantity: 4.4, estimateCost: 39600 }],
           }),
         ),
       ),
@@ -153,5 +156,8 @@ describe('Estimates', () => {
     expect(within(card).getByText('Սալիկապատում')).toBeInTheDocument()
     expect(within(card).getByText(/20[\s,.]?000 ֏ – 36[\s,.]?000 ֏/)).toBeInTheDocument()
     expect(within(card).getByRole('link', { name: hy.requests.detail.openEstimate })).toHaveAttribute('href', '/estimates/est-1')
+    const materials = screen.getByText(i18n.t('requests.detail.materials', { grade: hy.estimates.grades.Standard })).closest('.ant-card')
+    expect(within(materials).getByText('Սալիկ')).toBeInTheDocument()
+    expect(within(materials).getByText(/39[\s,.]?600 ֏/)).toBeInTheDocument()
   }, SLOW)
 })

@@ -1,20 +1,27 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { Alert, App, Button, Flex, Input, Popconfirm, Select, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { errorMessage } from '@/api/errors'
-import { formatMoney } from '@/i18n/format'
-import { useCreateMaterialMutation, useDeleteMaterialMutation, useGetMaterialsQuery, useUpdateMaterialMutation } from './catalogApi'
+import { formatDate, formatMoney } from '@/i18n/format'
+import {
+  useConfirmMaterialPricesMutation,
+  useCreateMaterialMutation,
+  useDeleteMaterialMutation,
+  useGetMaterialsQuery,
+  useUpdateMaterialMutation,
+} from './catalogApi'
 import MaterialFormModal from './MaterialFormModal'
 import { filterMaterials } from './materials'
 import { localizedName } from './names'
 import { useCatalogLanguages } from './useCatalogLanguages'
 
-const STATUSES = ['all', 'active', 'hidden', 'unused']
+const STATUSES = ['all', 'active', 'hidden', 'unused', 'outdated']
 
 /**
  * Materials the estimator counts (E1): each with a unit and a usual price per unit for budget, standard and premium
- * materials. Which work uses how much of them is set on the work items.
+ * materials. Which work uses how much of them is set on the work items. Store prices drift, so prices not checked for
+ * 90 days are flagged; staff confirm them or save new ones.
  */
 export default function MaterialsTab() {
   const { t, i18n } = useTranslation()
@@ -25,6 +32,7 @@ export default function MaterialsTab() {
   const [createMaterial] = useCreateMaterialMutation()
   const [updateMaterial] = useUpdateMaterialMutation()
   const [deleteMaterial] = useDeleteMaterialMutation()
+  const [confirmPrices] = useConfirmMaterialPricesMutation()
   const [status, setStatus] = useState('all')
   const [search, setSearch] = useState('')
   // { material } while the dialog is open; material is null when adding.
@@ -33,6 +41,15 @@ export default function MaterialsTab() {
   const rows = useMemo(() => filterMaterials(data, { search, status }), [data, search, status])
   const nameOf = (material) => localizedName(material.name, lng, defaultCode)
   const save = (body) => (dialog?.material ? updateMaterial({ id: dialog.material.id, ...body }) : createMaterial(body)).unwrap()
+
+  const confirm = async (material) => {
+    try {
+      await confirmPrices(material.id).unwrap()
+      message.success(t('catalog.materials.pricesConfirmed'))
+    } catch (failure) {
+      message.error(errorMessage(t, failure))
+    }
+  }
 
   const remove = async (material) => {
     try {
@@ -69,6 +86,21 @@ export default function MaterialsTab() {
       render: (_, material) => formatMoney(material[field], lng),
     })),
     {
+      title: t('catalog.materials.checked'),
+      key: 'checked',
+      width: 140,
+      render: (_, material) => (
+        <Flex vertical>
+          <span>{material.pricesCheckedAt ? formatDate(material.pricesCheckedAt, lng) : '—'}</span>
+          {material.pricesNeedChecking && (
+            <Tag color="orange" style={{ width: 'fit-content' }}>
+              {t('catalog.materials.needsChecking')}
+            </Tag>
+          )}
+        </Flex>
+      ),
+    },
+    {
       title: t('catalog.materials.usedBy'),
       key: 'usedBy',
       width: 110,
@@ -96,6 +128,14 @@ export default function MaterialsTab() {
           <Space size={0}>
             <Tooltip title={t('catalog.actions.edit')}>
               <Button type="text" icon={<EditOutlined />} aria-label={`${t('catalog.actions.edit')}: ${name}`} onClick={() => setDialog({ material })} />
+            </Tooltip>
+            <Tooltip title={t('catalog.materials.confirmPrices')}>
+              <Button
+                type="text"
+                icon={<CheckCircleOutlined />}
+                aria-label={`${t('catalog.materials.confirmPrices')}: ${name}`}
+                onClick={() => confirm(material)}
+              />
             </Tooltip>
             <Popconfirm
               title={t('catalog.materials.deleteConfirm', { name })}

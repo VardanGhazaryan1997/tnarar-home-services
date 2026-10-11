@@ -40,6 +40,28 @@ function answerWith(body, requests = []) {
 
 
 describe('QuickEstimate', () => {
+  it('adds the materials at the chosen grade', async () => {
+    const user = userEvent.setup()
+    const requests = answerWith({
+      ...estimate([line()], { totalMin: 30000, totalTypical: 45000, totalMax: 60000 }),
+      materialGrade: 'Premium',
+      materials: [{ materialId: 'm1', name: 'Interior paint', unit: 'Liter', quantity: 9.5, unitPrice: 5000, cost: 47500 }],
+      materialsTotal: 47500,
+    })
+    renderRoute('/en')
+
+    const section = await screen.findByRole('region', { name: en.estimator.quick.title })
+    await user.type(within(section).getByLabelText(en.estimator.area), '14')
+    await user.selectOptions(within(section).getByLabelText(en.estimator.materials.label), 'Premium')
+    await user.click(within(section).getByRole('button', { name: en.estimator.quick.calculate }))
+
+    expect(await within(section).findByText(en.estimator.materials.resultLabel)).toBeInTheDocument()
+    expect(requests).toEqual([{ roomType: 'Bedroom', area: 14, oldBuilding: false, materials: 'Premium' }])
+    expect(within(section).getByText(/77[\s,.]?500 ֏ – 107[\s,.]?500 ֏/)).toBeInTheDocument()
+    expect(within(section).getByText('Interior paint')).toBeInTheDocument()
+    expect(within(section).getByText(/9\.5 l/)).toBeInTheDocument()
+  })
+
   it('prices a room from its type and floor area', async () => {
     const user = userEvent.setup()
     const requests = answerWith(

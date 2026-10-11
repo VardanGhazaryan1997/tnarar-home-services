@@ -13,6 +13,8 @@ public sealed record OfferStageTerms(string? Title, PaymentPurpose Purpose, int 
 /// <summary>
 /// What the partner proposes. A work offer has a scope, a price (above zero), optionally a start date, a duration
 /// and payment stages. A visit offer has a time and a fee (zero means free); it has no lines, dates or stages.
+/// <see cref="MaterialsAmount"/>: the part of the price that is materials, when they're included and the partner says
+/// how much (E1); the rest is labour.
 /// </summary>
 public sealed record OfferTerms(
     string Summary,
@@ -23,4 +25,5 @@ public sealed record OfferTerms(
     DateOnly? StartDate,
     int? DurationDays,
     DateTimeOffset? VisitAt,
-    IReadOnlyList<OfferStageTerms> Stages);
+    IReadOnlyList<OfferStageTerms> Stages,
+    int? MaterialsAmount = null);

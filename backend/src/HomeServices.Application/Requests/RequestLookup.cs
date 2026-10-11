@@ -91,6 +91,33 @@ internal sealed class RequestLookup
             .ToList();
     }
 
+    /// <summary>
+    /// The materials the request's estimate counted, named in the request language, in order. Estimated costs only when
+    /// <paramref name="withEstimate"/> (the customer's view).
+    /// </summary>
+    public static async Task<IReadOnlyList<RequestMaterialDto>> MaterialsAsync(
+        IAppDbContext db, ICurrentLanguage language, ServiceRequest request, bool withEstimate, CancellationToken cancellationToken)
+    {
+        if (request.Materials.Count == 0)
+        {
+            return [];
+        }
+
+        var ids = request.Materials.Select(m => m.MaterialId).Distinct().ToList();
+        var names = await db.Materials.AsNoTracking()
+            .Where(m => ids.Contains(m.Id))
+            .ToDictionaryAsync(m => m.Id, m => m.Name, cancellationToken);
+        return request.Materials
+            .OrderBy(m => m.SortOrder)
+            .Select(m => new RequestMaterialDto(
+                m.MaterialId,
+                names.GetValueOrDefault(m.MaterialId)?.Get(language.Code, language.DefaultCode) ?? string.Empty,
+                m.Unit,
+                m.Quantity,
+                withEstimate ? m.EstimateCost : null))
+            .ToList();
+    }
+
     public RequestPlaceDto Place(ServiceRequest request)
     {
         var city = _cities.GetValueOrDefault(request.CityId);

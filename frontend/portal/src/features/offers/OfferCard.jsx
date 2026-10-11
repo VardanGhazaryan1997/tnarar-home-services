@@ -72,7 +72,13 @@ export function OfferTerms({ terms, kind }) {
             </div>
             <div>
               <dt>{t('offers.fields.materials')}</dt>
-              <dd>{terms.materialsIncluded ? t('offers.materialsIncluded') : t('offers.materialsNotIncluded')}</dd>
+              <dd>
+                {terms.materialsAmount != null
+                  ? t('offers.materialsPart', { amount: formatMoney(terms.materialsAmount, i18n.language), labour: formatMoney(terms.price - terms.materialsAmount, i18n.language) })
+                  : terms.materialsIncluded
+                    ? t('offers.materialsIncluded')
+                    : t('offers.materialsNotIncluded')}
+              </dd>
             </div>
           </>
         )}

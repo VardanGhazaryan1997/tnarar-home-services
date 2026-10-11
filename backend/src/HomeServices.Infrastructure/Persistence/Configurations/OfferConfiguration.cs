@@ -17,6 +17,7 @@ internal sealed class OfferConfiguration : IEntityTypeConfiguration<Offer>
         builder.Property(o => o.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(o => o.Summary).HasMaxLength(Offer.SummaryMaxLength);
         builder.Property(o => o.MaterialsNote).HasMaxLength(Offer.MaterialsNoteMaxLength);
+        builder.Ignore(o => o.LabourPrice);
         builder.Property(o => o.RejectReason).HasMaxLength(Offer.ReasonMaxLength);
 
         // PostgreSQL's xmin: two people deciding on the same offer at once → the second save fails (409).

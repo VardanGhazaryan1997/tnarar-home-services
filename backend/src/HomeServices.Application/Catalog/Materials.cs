@@ -13,7 +13,10 @@ namespace HomeServices.Application.Catalog;
 /// <summary>Every material (hidden ones too) with all translations, in display order, for the Back Office.</summary>
 public sealed record GetAdminMaterials : IQuery<IReadOnlyList<AdminMaterialDto>>;
 
-/// <summary>A material with its prices per unit (AMD) and <see cref="WorkItemCount"/>: how many work items use it.</summary>
+/// <summary>
+/// A material with its prices per unit (AMD) and <see cref="WorkItemCount"/>: how many work items use it.
+/// <see cref="PricesNeedChecking"/>: the prices weren't checked in the last <see cref="MaterialData.CheckEveryDays"/> days.
+/// </summary>
 public sealed record AdminMaterialDto(
     Guid Id,
     string Slug,
@@ -24,9 +27,11 @@ public sealed record AdminMaterialDto(
     int PricePremium,
     int SortOrder,
     bool IsActive,
-    int WorkItemCount = 0)
+    int WorkItemCount = 0,
+    DateTimeOffset? PricesCheckedAt = null,
+    bool PricesNeedChecking = false)
 {
-    public static AdminMaterialDto From(Material material, int workItemCount = 0) =>
+    public static AdminMaterialDto From(Material material, DateTimeOffset now, int workItemCount = 0) =>
         new(
             material.Id,
             material.Slug,
@@ -37,7 +42,9 @@ public sealed record AdminMaterialDto(
             material.PricePremium,
             material.SortOrder,
             material.IsActive,
-            workItemCount);
+            workItemCount,
+            material.PricesCheckedAt,
+            material.PricesNeedChecking(now, MaterialData.CheckEvery));
 }
 
 /// <summary>The fields a staff member edits on a material.</summary>
@@ -82,7 +89,10 @@ public sealed record UpdateMaterial(
     int SortOrder,
     bool IsActive = true) : ICommand<AdminMaterialDto>, IMaterialFields;
 
-/// <summary>Deletes a material no work item uses; 422 "material.in_use" otherwise (hide it instead).</summary>
+/// <summary>Staff checked a material's prices and they're still right.</summary>
+public sealed record ConfirmMaterialPrices(Guid Id) : ICommand<AdminMaterialDto>;
+
+/// <summary>Deletes a material no work item or request uses; 422 "material.in_use" otherwise (hide it instead).</summary>
 public sealed record DeleteMaterial(Guid Id) : ICommand<bool>;
 
 /// <summary>The materials a work item uses, in order.</summary>
@@ -131,23 +141,37 @@ public sealed class SetWorkItemMaterialsValidator : AbstractValidator<SetWorkIte
     }
 }
 
-public sealed class GetAdminMaterialsHandler(IAppDbContext db) : IQueryHandler<GetAdminMaterials, IReadOnlyList<AdminMaterialDto>>
+public sealed class GetAdminMaterialsHandler(IAppDbContext db, TimeProvider clock) : IQueryHandler<GetAdminMaterials, IReadOnlyList<AdminMaterialDto>>
 {
     public async Task<IReadOnlyList<AdminMaterialDto>> HandleAsync(GetAdminMaterials query, CancellationToken cancellationToken)
     {
         var materials = await db.Materials.AsNoTracking().OrderBy(m => m.SortOrder).ThenBy(m => m.Slug).ToListAsync(cancellationToken);
         var counts = await MaterialData.WorkItemCountsAsync(db, cancellationToken);
-        return materials.Select(m => AdminMaterialDto.From(m, counts.GetValueOrDefault(m.Id))).ToList();
+        var now = clock.GetUtcNow();
+        return materials.Select(m => AdminMaterialDto.From(m, now, counts.GetValueOrDefault(m.Id))).ToList();
     }
 }
 
-public sealed class CreateMaterialHandler(IAppDbContext db) : ICommandHandler<CreateMaterial, AdminMaterialDto>
+public sealed class ConfirmMaterialPricesHandler(IAppDbContext db, TimeProvider clock) : ICommandHandler<ConfirmMaterialPrices, AdminMaterialDto>
+{
+    public async Task<AdminMaterialDto> HandleAsync(ConfirmMaterialPrices command, CancellationToken cancellationToken)
+    {
+        var material = await MaterialData.LoadAsync(db, command.Id, cancellationToken);
+        var now = clock.GetUtcNow();
+        material.ConfirmPrices(now);
+        await db.SaveChangesAsync(cancellationToken);
+        return AdminMaterialDto.From(material, now, await db.WorkItemMaterials.CountAsync(m => m.MaterialId == material.Id, cancellationToken));
+    }
+}
+
+public sealed class CreateMaterialHandler(IAppDbContext db, TimeProvider clock) : ICommandHandler<CreateMaterial, AdminMaterialDto>
 {
     public async Task<AdminMaterialDto> HandleAsync(CreateMaterial command, CancellationToken cancellationToken)
     {
         await MaterialData.EnsureSlugFreeAsync(db, command.Slug, exceptId: null, cancellationToken);
+        var now = clock.GetUtcNow();
         var material = Material.Create(
-            command.Slug, LocalizedText.From(command.Name), command.Unit, command.PriceBudget, command.PriceStandard, command.PricePremium, command.SortOrder);
+            command.Slug, LocalizedText.From(command.Name), command.Unit, command.PriceBudget, command.PriceStandard, command.PricePremium, command.SortOrder, now);
         if (!command.IsActive)
         {
             material.Deactivate();
@@ -155,18 +179,19 @@ public sealed class CreateMaterialHandler(IAppDbContext db) : ICommandHandler<Cr
 
         db.Materials.Add(material);
         await db.SaveChangesAsync(cancellationToken);
-        return AdminMaterialDto.From(material);
+        return AdminMaterialDto.From(material, now);
     }
 }
 
-public sealed class UpdateMaterialHandler(IAppDbContext db) : ICommandHandler<UpdateMaterial, AdminMaterialDto>
+public sealed class UpdateMaterialHandler(IAppDbContext db, TimeProvider clock) : ICommandHandler<UpdateMaterial, AdminMaterialDto>
 {
     public async Task<AdminMaterialDto> HandleAsync(UpdateMaterial command, CancellationToken cancellationToken)
     {
         var material = await MaterialData.LoadAsync(db, command.Id, cancellationToken);
         await MaterialData.EnsureSlugFreeAsync(db, command.Slug, material.Id, cancellationToken);
+        var now = clock.GetUtcNow();
         material.Update(
-            command.Slug, LocalizedText.From(command.Name), command.Unit, command.PriceBudget, command.PriceStandard, command.PricePremium, command.SortOrder);
+            command.Slug, LocalizedText.From(command.Name), command.Unit, command.PriceBudget, command.PriceStandard, command.PricePremium, command.SortOrder, now);
         if (command.IsActive)
         {
             material.Activate();
@@ -177,7 +202,7 @@ public sealed class UpdateMaterialHandler(IAppDbContext db) : ICommandHandler<Up
         }
 
         await db.SaveChangesAsync(cancellationToken);
-        return AdminMaterialDto.From(material, await db.WorkItemMaterials.CountAsync(m => m.MaterialId == material.Id, cancellationToken));
+        return AdminMaterialDto.From(material, now, await db.WorkItemMaterials.CountAsync(m => m.MaterialId == material.Id, cancellationToken));
     }
 }
 
@@ -186,7 +211,8 @@ public sealed class DeleteMaterialHandler(IAppDbContext db) : ICommandHandler<De
     public async Task<bool> HandleAsync(DeleteMaterial command, CancellationToken cancellationToken)
     {
         var material = await MaterialData.LoadAsync(db, command.Id, cancellationToken);
-        if (await db.WorkItemMaterials.AnyAsync(m => m.MaterialId == material.Id, cancellationToken))
+        if (await db.WorkItemMaterials.AnyAsync(m => m.MaterialId == material.Id, cancellationToken)
+            || await db.ServiceRequests.AnyAsync(r => r.Materials.Any(m => m.MaterialId == material.Id), cancellationToken))
         {
             throw new DomainException("material.in_use", "Work items use this material. Hide it instead.");
         }
@@ -239,13 +265,18 @@ public sealed class SetWorkItemMaterialsHandler(IAppDbContext db) : ICommandHand
     }
 }
 
-internal static class MaterialData
+public static class MaterialData
 {
-    public static async Task<Material> LoadAsync(IAppDbContext db, Guid id, CancellationToken cancellationToken) =>
+    /// <summary>How often staff should check material prices (store prices drift).</summary>
+    public const int CheckEveryDays = 90;
+
+    public static TimeSpan CheckEvery => TimeSpan.FromDays(CheckEveryDays);
+
+    internal static async Task<Material> LoadAsync(IAppDbContext db, Guid id, CancellationToken cancellationToken) =>
         await db.Materials.SingleOrDefaultAsync(m => m.Id == id, cancellationToken)
         ?? throw new NotFoundException("The material does not exist.", "material.not_found");
 
-    public static async Task EnsureSlugFreeAsync(IAppDbContext db, string slug, Guid? exceptId, CancellationToken cancellationToken)
+    internal static async Task EnsureSlugFreeAsync(IAppDbContext db, string slug, Guid? exceptId, CancellationToken cancellationToken)
     {
         var normalized = slug.Trim().ToLowerInvariant();
         if (await db.Materials.AnyAsync(m => m.Slug == normalized && m.Id != exceptId, cancellationToken))
@@ -255,12 +286,12 @@ internal static class MaterialData
     }
 
     /// <summary>How many work items use each material.</summary>
-    public static Task<Dictionary<Guid, int>> WorkItemCountsAsync(IAppDbContext db, CancellationToken cancellationToken) =>
+    internal static Task<Dictionary<Guid, int>> WorkItemCountsAsync(IAppDbContext db, CancellationToken cancellationToken) =>
         db.WorkItemMaterials.AsNoTracking()
             .GroupBy(m => m.MaterialId)
             .Select(g => new { MaterialId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(g => g.MaterialId, g => g.Count, cancellationToken);
 
-    public static List<WorkItemMaterialInput> Inputs(IEnumerable<WorkItemMaterial> links) =>
+    internal static List<WorkItemMaterialInput> Inputs(IEnumerable<WorkItemMaterial> links) =>
         links.OrderBy(m => m.SortOrder).Select(m => new WorkItemMaterialInput(m.MaterialId, m.QuantityPerUnit, m.WastePercent)).ToList();
 }

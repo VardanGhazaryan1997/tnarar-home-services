@@ -34,15 +34,23 @@ public sealed class Material : Entity, IAudited
     /// <summary>Hidden materials aren't counted in estimates.</summary>
     public bool IsActive { get; private set; }
 
-    public static Material Create(string slug, LocalizedText name, MaterialUnit unit, int priceBudget, int priceStandard, int pricePremium, int sortOrder)
+    /// <summary>When staff last set or checked the prices; store prices drift, so they're checked now and then.</summary>
+    public DateTimeOffset PricesCheckedAt { get; private set; }
+
+    public static Material Create(
+        string slug, LocalizedText name, MaterialUnit unit, int priceBudget, int priceStandard, int pricePremium, int sortOrder, DateTimeOffset now)
     {
-        var material = new Material { IsActive = true };
-        material.Update(slug, name, unit, priceBudget, priceStandard, pricePremium, sortOrder);
+        var material = new Material { IsActive = true, PricesCheckedAt = now };
+        material.Update(slug, name, unit, priceBudget, priceStandard, pricePremium, sortOrder, now);
         return material;
     }
 
-    /// <summary>Changes every edited field at once. The caller checks that the slug is free.</summary>
-    public void Update(string slug, LocalizedText name, MaterialUnit unit, int priceBudget, int priceStandard, int pricePremium, int sortOrder)
+    /// <summary>
+    /// Changes every edited field at once; new prices count as checked <paramref name="now"/>. The caller checks that the
+    /// slug is free.
+    /// </summary>
+    public void Update(
+        string slug, LocalizedText name, MaterialUnit unit, int priceBudget, int priceStandard, int pricePremium, int sortOrder, DateTimeOffset now)
     {
         if (name.Values.Count == 0)
         {
@@ -57,6 +65,11 @@ public sealed class Material : Entity, IAudited
         if (!ArePricesValid(priceBudget, priceStandard, pricePremium))
         {
             throw new DomainException("material.price_invalid", $"Prices are 1–{PriceLimit} AMD, budget ≤ standard ≤ premium.");
+        }
+
+        if (priceBudget != PriceBudget || priceStandard != PriceStandard || pricePremium != PricePremium)
+        {
+            PricesCheckedAt = now;
         }
 
         Slug = Common.Slug.Normalize(slug, "material.slug_invalid");
@@ -78,6 +91,12 @@ public sealed class Material : Entity, IAudited
         MaterialGrade.Premium => PricePremium,
         _ => PriceStandard,
     };
+
+    /// <summary>Staff checked the prices and they're still right.</summary>
+    public void ConfirmPrices(DateTimeOffset now) => PricesCheckedAt = now;
+
+    /// <summary>True when the prices weren't checked within <paramref name="checkEvery"/>.</summary>
+    public bool PricesNeedChecking(DateTimeOffset now, TimeSpan checkEvery) => PricesCheckedAt < now - checkEvery;
 
     public void Activate() => IsActive = true;
 

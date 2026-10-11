@@ -28,7 +28,8 @@ public sealed record SendOffer(
     int? DurationDays,
     DateTimeOffset? VisitAt,
     IReadOnlyList<OfferStageTerms>? Stages,
-    int? ValidDays) : ICommand<OfferDto>
+    int? ValidDays,
+    int? MaterialsAmount = null) : ICommand<OfferDto>
 {
     public const int DefaultValidDays = 7;
     public const int MaxValidDays = 30;
@@ -164,7 +165,8 @@ public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser,
             command.StartDate,
             command.DurationDays,
             command.VisitAt,
-            command.Stages ?? []);
+            command.Stages ?? [],
+            command.MaterialsAmount);
         var offer = Offer.Create(request.Id, partnerId, command.Kind, terms, now.AddDays(command.ValidDays ?? SendOffer.DefaultValidDays), now);
         request.MarkResponded(partnerId, now);
 

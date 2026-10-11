@@ -14,7 +14,14 @@ export default function OfferComparison({ request, offers }) {
   const table = compareOffers(request.lines, offers)
   if (!table) return null
   const money = (amount) => formatMoney(amount, lng)
+  const estimatedMaterials = (request.materials ?? []).reduce((sum, material) => sum + (material.estimateCost ?? 0), 0)
   const showEstimate = request.lines.some((line) => line.estimateMax != null)
+  // A materials row once the estimate counted materials or any offer includes them (E1).
+  const showMaterials = estimatedMaterials > 0 || table.offers.some((offer) => offer.materialsIncluded)
+  const materialsCell = (offer) => {
+    if (offer.materialsAmount != null) return money(offer.materialsAmount)
+    return <span className={styles['offer-compare__muted']}>{t(offer.materialsIncluded ? 'offers.compare.inPrice' : 'offers.compare.materialsNotIncluded')}</span>
+  }
 
   const cell = (entry, best) => {
     if (!entry) return <span className={styles['offer-compare__muted']}>—</span>
@@ -64,9 +71,24 @@ export default function OfferComparison({ request, offers }) {
               ))}
             </tr>
           )}
+          {showMaterials && (
+            <tr>
+              <td>{t('offers.compare.materials')}</td>
+              {showEstimate && <td className={styles['offer-compare__muted']}>{estimatedMaterials > 0 ? money(estimatedMaterials) : '—'}</td>}
+              {table.offers.map((offer) => (
+                <td key={offer.id}>{materialsCell(offer)}</td>
+              ))}
+            </tr>
+          )}
           <tr className={styles['offer-compare__total']}>
             <td>{t('offers.compare.total')}</td>
-            {showEstimate && <td>{table.estimate ? `${money(table.estimate.min)} – ${money(table.estimate.max)}` : '—'}</td>}
+            {showEstimate && (
+              <td>
+                {table.estimate
+                  ? `${money(table.estimate.min + estimatedMaterials)} – ${money(table.estimate.max + estimatedMaterials)}`
+                  : '—'}
+              </td>
+            )}
             {table.offers.map((offer) => (
               <td key={offer.id}>{money(offer.price)}</td>
             ))}

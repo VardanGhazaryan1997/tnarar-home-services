@@ -114,7 +114,7 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var type in new[] { typeof(Language), typeof(Category), typeof(WorkItem), typeof(Material), typeof(WorkItemMaterial), typeof(PartnerPrice), typeof(RegionalMarketPrice), typeof(Estimate), typeof(EstimateRoom), typeof(EstimateOpening), typeof(EstimateLine), typeof(RoomTemplate), typeof(Region), typeof(City), typeof(District), typeof(User), typeof(OtpCode), typeof(RefreshToken), typeof(StaffUser), typeof(StaffRefreshToken), typeof(Role), typeof(AuditLogEntry), typeof(StoredFile), typeof(PartnerProfile), typeof(PartnerArea), typeof(PartnerMedia), typeof(PartnerStatusChange), typeof(UiTranslation), typeof(StaticPage), typeof(FaqItem), typeof(ServiceRequest), typeof(RequestRecipient), typeof(RequestMedia), typeof(RequestLine), typeof(Offer), typeof(OfferItem), typeof(OfferPaymentStage), typeof(Order), typeof(OrderStage), typeof(OrderStatusChange), typeof(OrderChangeRequest), typeof(Conversation), typeof(Message), typeof(MessageAttachment), typeof(Payment), typeof(Review), typeof(Notification), typeof(CommissionRate), typeof(CommissionObligation), typeof(CommissionStatement), typeof(Settlement) })
+        foreach (var type in new[] { typeof(Language), typeof(Category), typeof(WorkItem), typeof(Material), typeof(WorkItemMaterial), typeof(PartnerPrice), typeof(RegionalMarketPrice), typeof(Estimate), typeof(EstimateRoom), typeof(EstimateOpening), typeof(EstimateLine), typeof(RoomTemplate), typeof(Region), typeof(City), typeof(District), typeof(User), typeof(OtpCode), typeof(RefreshToken), typeof(StaffUser), typeof(StaffRefreshToken), typeof(Role), typeof(AuditLogEntry), typeof(StoredFile), typeof(PartnerProfile), typeof(PartnerArea), typeof(PartnerMedia), typeof(PartnerStatusChange), typeof(UiTranslation), typeof(StaticPage), typeof(FaqItem), typeof(ServiceRequest), typeof(RequestRecipient), typeof(RequestMedia), typeof(RequestLine), typeof(RequestMaterial), typeof(Offer), typeof(OfferItem), typeof(OfferPaymentStage), typeof(Order), typeof(OrderStage), typeof(OrderStatusChange), typeof(OrderChangeRequest), typeof(Conversation), typeof(Message), typeof(MessageAttachment), typeof(Payment), typeof(Review), typeof(Notification), typeof(CommissionRate), typeof(CommissionObligation), typeof(CommissionStatement), typeof(Settlement) })
         {
             modelBuilder.Entity(type).Ignore(nameof(Entity.DomainEvents));
         }
@@ -144,6 +144,8 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
         modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Recipients).WithOne().HasForeignKey(x => x.RequestId);
         modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Media).WithOne().HasForeignKey(m => m.RequestId);
         modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Lines).WithOne().HasForeignKey(l => l.RequestId);
+        modelBuilder.Entity<ServiceRequest>().HasMany(r => r.Materials).WithOne().HasForeignKey(m => m.RequestId);
+        modelBuilder.Entity<RequestMaterial>().Property(m => m.Id).ValueGeneratedNever();
 
         // Same shape as Infrastructure/Persistence/Configurations/EstimateConfiguration.cs.
         modelBuilder.Entity<Estimate>().HasMany(e => e.Rooms).WithOne().HasForeignKey(r => r.EstimateId);
@@ -155,6 +157,7 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
         modelBuilder.Entity<OfferItem>().Property(i => i.Id).ValueGeneratedNever();
         modelBuilder.Entity<OfferPaymentStage>().Property(s => s.Id).ValueGeneratedNever();
         modelBuilder.Entity<Offer>().HasMany(o => o.Items).WithOne().HasForeignKey(i => i.OfferId);
+        modelBuilder.Entity<Offer>().Ignore(o => o.LabourPrice);
         modelBuilder.Entity<Offer>().HasMany(o => o.Stages).WithOne().HasForeignKey(s => s.OfferId);
         modelBuilder.Entity<OrderStage>().Property(s => s.Id).ValueGeneratedNever();
         modelBuilder.Entity<OrderStatusChange>().Property(c => c.Id).ValueGeneratedNever();

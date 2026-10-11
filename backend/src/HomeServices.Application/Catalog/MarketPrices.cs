@@ -32,7 +32,8 @@ public sealed class RecalculateMarketPricesHandler(IAppDbContext db, IOptions<Pr
 /// <item>approved, visible partners' labour-only prices confirmed in the last <see cref="PricingSettings.PriceFreshDays"/>
 /// days (C3); a from–to range counts as its middle;</item>
 /// <item>the line prices of work offers customers accepted in the last <see cref="PricingSettings.AcceptedOfferDays"/>
-/// days without materials (C1): real deals, so they count <see cref="PricingSettings.AcceptedOfferWeight"/> times; one
+/// days whose lines are labour only (no materials, or materials priced apart, E1) (C1): real deals, so they count
+/// <see cref="PricingSettings.AcceptedOfferWeight"/> times; one
 /// partner's deals for a work item count as one price, their median (C4), so nobody moves the market with many deals.</item>
 /// </list>
 /// Prices far outside the rest (beyond 1.5× the interquartile range, with at least four prices) are left out (C4). The
@@ -139,7 +140,7 @@ public static class MarketPrices
 
         var acceptedSince = now.AddDays(-settings.AcceptedOfferDays);
         var deals = await db.Offers.AsNoTracking()
-            .Where(o => o.Kind == OfferKind.Work && o.Status == OfferStatus.Accepted && o.DecidedAt >= acceptedSince && !o.MaterialsIncluded)
+            .Where(o => o.Kind == OfferKind.Work && o.Status == OfferStatus.Accepted && o.DecidedAt >= acceptedSince && (!o.MaterialsIncluded || o.MaterialsAmount != null))
             .SelectMany(o => o.Items
                 .Where(i => i.Included && i.UnitPrice != null && i.RequestLineId != null)
                 .Select(i => new { o.PartnerProfileId, RequestLineId = i.RequestLineId!.Value, UnitPrice = i.UnitPrice!.Value }))

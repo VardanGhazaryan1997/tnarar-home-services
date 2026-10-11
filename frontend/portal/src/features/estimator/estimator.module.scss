@@ -26,7 +26,7 @@
     align-items: end;
 
     @include up(md) {
-      grid-template-columns: 1.4fr 1fr auto auto;
+      grid-template-columns: 1.4fr 1fr 1.2fr auto auto;
     }
   }
 

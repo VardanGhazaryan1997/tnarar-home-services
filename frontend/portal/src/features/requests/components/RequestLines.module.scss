@@ -56,4 +56,17 @@
       text-align: end;
     }
   }
+
+  &__hint {
+    @include text-small;
+    @include text-muted;
+
+    margin-block-end: space(2);
+  }
+
+  &__total {
+    margin-block-start: space(2);
+    font-weight: $font-weight-semibold;
+    text-align: end;
+  }
 }

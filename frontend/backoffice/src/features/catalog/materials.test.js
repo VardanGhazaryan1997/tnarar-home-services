@@ -10,13 +10,14 @@ describe('material helpers', () => {
 
   it('filters by text and status', () => {
     const materials = [
-      { slug: 'primer', name: { en: 'Primer' }, isActive: true, workItemCount: 0 },
+      { slug: 'primer', name: { en: 'Primer' }, isActive: true, workItemCount: 0, pricesNeedChecking: true },
       { slug: 'putty', name: { hy: 'Շպաքլ' }, isActive: false, workItemCount: 3 },
     ]
     expect(filterMaterials(materials, { search: 'շպ' }).map((m) => m.slug)).toEqual(['putty'])
     expect(filterMaterials(materials, { status: 'hidden' }).map((m) => m.slug)).toEqual(['putty'])
     expect(filterMaterials(materials, { status: 'unused' }).map((m) => m.slug)).toEqual(['primer'])
     expect(filterMaterials(materials, { status: 'active' }).map((m) => m.slug)).toEqual(['primer'])
+    expect(filterMaterials(materials, { status: 'outdated' }).map((m) => m.slug)).toEqual(['primer'])
   })
 
   it('edits and checks the materials of a work item', () => {

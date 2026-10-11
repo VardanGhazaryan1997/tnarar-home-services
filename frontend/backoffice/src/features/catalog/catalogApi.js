@@ -62,6 +62,10 @@ export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories',
       query: ({ id, ...body }) => ({ url: `${BASE}/materials/${id}`, method: 'PUT', body }),
       invalidatesTags: ['Materials'],
     }),
+    confirmMaterialPrices: build.mutation({
+      query: (id) => ({ url: `${BASE}/materials/${id}/confirm-prices`, method: 'POST' }),
+      invalidatesTags: ['Materials'],
+    }),
     deleteMaterial: build.mutation({
       query: (id) => ({ url: `${BASE}/materials/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Materials'],
@@ -137,6 +141,7 @@ export const {
   useCreateMaterialMutation,
   useUpdateMaterialMutation,
   useDeleteMaterialMutation,
+  useConfirmMaterialPricesMutation,
   useGetWorkItemMaterialsQuery,
   useSetWorkItemMaterialsMutation,
   useGetRoomTemplatesQuery,

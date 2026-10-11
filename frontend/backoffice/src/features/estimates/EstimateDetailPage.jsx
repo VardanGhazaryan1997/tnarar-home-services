@@ -6,6 +6,7 @@ import { errorMessage } from '@/api/errors'
 import { REQUEST_STATUS_COLORS } from '@/features/requests/requestParts'
 import { formatDate, formatMoney } from '@/i18n/format'
 import { useGetEstimateQuery } from './estimatesApi'
+import MaterialLines from './MaterialLines'
 import WorkLines from './WorkLines'
 
 /** One customer estimate: owner, total, every room with its work and prices, and the requests made from it. */
@@ -124,6 +125,14 @@ export default function EstimateDetailPage() {
           </Card>
         )
       })}
+      {estimate.measurement.materialGrade && estimate.measurement.materials?.length > 0 && (
+        <Card
+          title={t('requests.detail.materials', { grade: t(`estimates.grades.${estimate.measurement.materialGrade}`) })}
+          extra={formatMoney(estimate.measurement.materialsTotal, lng)}
+        >
+          <MaterialLines materials={estimate.measurement.materials} />
+        </Card>
+      )}
     </Flex>
   )
 }

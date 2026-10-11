@@ -39,6 +39,24 @@ internal sealed class ServiceRequestConfiguration : IEntityTypeConfiguration<Ser
         builder.HasOne<Estimate>().WithMany().HasForeignKey(r => r.EstimateId).OnDelete(DeleteBehavior.SetNull);
         builder.HasMany(r => r.Lines).WithOne().HasForeignKey(l => l.RequestId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(r => r.Lines).HasField("_lines");
+        builder.Property(r => r.MaterialGrade).HasConversion<string>().HasMaxLength(16);
+        builder.HasMany(r => r.Materials).WithOne().HasForeignKey(m => m.RequestId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(r => r.Materials).HasField("_materials");
+    }
+}
+
+internal sealed class RequestMaterialConfiguration : IEntityTypeConfiguration<RequestMaterial>
+{
+    public void Configure(EntityTypeBuilder<RequestMaterial> builder)
+    {
+        builder.ToTable("RequestMaterials");
+        builder.Property(m => m.Id).ValueGeneratedNever();
+        builder.Property(m => m.Unit).HasConversion<string>().HasMaxLength(16);
+        builder.Property(m => m.Quantity).HasPrecision(10, 2);
+        builder.HasIndex(m => new { m.RequestId, m.SortOrder });
+
+        // A material requests list can't be deleted (staff hide it instead).
+        builder.HasOne<Material>().WithMany().HasForeignKey(m => m.MaterialId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 

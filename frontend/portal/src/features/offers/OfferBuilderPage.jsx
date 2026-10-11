@@ -44,7 +44,7 @@ export default function OfferBuilderPage() {
   const request = useGetInboxRequestQuery(id)
   const [sendOffer, sending] = useSendOfferMutation()
   const [kind, setKind] = useState('Work')
-  const [form, setForm] = useState({ summary: '', price: '', materialsIncluded: false, materialsNote: '', startDate: '', durationDays: '', visitAt: '', validDays: '7' })
+  const [form, setForm] = useState({ summary: '', price: '', materialsIncluded: false, materialsNote: '', materialsAmount: '', startDate: '', durationDays: '', visitAt: '', validDays: '7' })
   const [lines, setLines] = useState([])
   const [stages, setStages] = useState([])
   const [showErrors, setShowErrors] = useState(false)
@@ -62,7 +62,9 @@ export default function OfferBuilderPage() {
   const removeRow = (setRows, rowKey) => setRows((rows) => rows.filter((row) => row.key !== rowKey))
 
   const extraPriced = lines.reduce((sum, line) => sum + (line.included ? (toInt(line.price) ?? 0) : 0), 0)
-  const price = byLine ? total(rows) + extraPriced : (toInt(form.price) ?? 0)
+  // The part of the price that is materials, when included and given (E1); line prices are labour.
+  const materialsAmount = kind === 'Work' && form.materialsIncluded ? toInt(form.materialsAmount) : null
+  const price = byLine ? total(rows) + extraPriced + (materialsAmount ?? 0) : (toInt(form.price) ?? 0)
   const stagesTotal = stages.reduce((sum, stage) => sum + (toInt(stage.amount) ?? 0), 0)
   const apiErrors = fieldErrors(t, sending.error)
   const local = {
@@ -70,6 +72,7 @@ export default function OfferBuilderPage() {
     price: (kind === 'Work' ? price < 1 : form.price === '' || price < 0) && t('offers.errors.priceRequired'),
     visitAt: kind === 'Visit' && Number.isNaN(Date.parse(form.visitAt)) && t('offers.errors.visitAtRequired'),
     stages: kind === 'Work' && stages.length > 0 && stagesTotal !== price && t('errors.stages.sum_mismatch'),
+    materialsAmount: materialsAmount != null && (materialsAmount < 1 || materialsAmount >= price) && t('offers.errors.materialsAmount'),
     lines:
       (kind === 'Work' && lines.some((line) => !line.title.trim()) && t('errors.lines.invalid')) ||
       (byLine && (!allPriced(rows) || lines.some((line) => line.included && toInt(line.price) == null)) && t('offers.linePricing.priceEvery')),
@@ -100,6 +103,7 @@ export default function OfferBuilderPage() {
       price,
       materialsIncluded: work && form.materialsIncluded,
       materialsNote: (work && form.materialsNote.trim()) || null,
+      ...(materialsAmount != null ? { materialsAmount } : {}),
       startDate: (work && form.startDate) || null,
       durationDays: work ? toInt(form.durationDays) : null,
       visitAt: work ? null : new Date(form.visitAt).toISOString(),
@@ -200,6 +204,19 @@ export default function OfferBuilderPage() {
                       </Button>
                     </div>
                     <CheckboxField label={t('offers.fields.materialsIncluded')} checked={form.materialsIncluded} onChange={set('materialsIncluded')} />
+                    {form.materialsIncluded && (
+                      <TextField
+                        label={t('offers.fields.materialsAmount')}
+                        hint={data.materials?.length ? t('offers.materialsAmountHintEstimate') : t('offers.materialsAmountHint')}
+                        optionalText={t('common.optional')}
+                        type="number"
+                        inputMode="numeric"
+                        min={0}
+                        value={form.materialsAmount}
+                        onChange={set('materialsAmount')}
+                        error={errorFor('materialsAmount')}
+                      />
+                    )}
                     <TextField
                       label={t('offers.fields.materialsNote')}
                       optionalText={t('common.optional')}

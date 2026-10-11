@@ -131,6 +131,7 @@ internal static class Inbox
             .Include(r => r.Recipients)
             .Include(r => r.Media)
             .Include(r => r.Lines)
+            .Include(r => r.Materials)
             .SingleOrDefaultAsync(r => r.Id == id && r.Recipients.Any(x => x.PartnerProfileId == partnerId), cancellationToken)
             ?? throw MyRequests.NotFound();
         return (request, partnerId);
@@ -164,7 +165,9 @@ internal static class Inbox
             FirstName(customerName),
             recipient.SentAt,
             request.CreatedAt,
-            await RequestLookup.LinesAsync(db, language, request, withEstimate: false, cancellationToken));
+            await RequestLookup.LinesAsync(db, language, request, withEstimate: false, cancellationToken),
+            request.MaterialGrade,
+            await RequestLookup.MaterialsAsync(db, language, request, withEstimate: false, cancellationToken));
     }
 
     private static string? FirstName(string? fullName) =>

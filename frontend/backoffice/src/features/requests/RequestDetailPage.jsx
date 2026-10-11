@@ -7,6 +7,7 @@ import { Link, useParams } from 'react-router'
 import { errorMessage } from '@/api/errors'
 import ReasonModal from '@/components/ReasonModal/ReasonModal'
 import { selectStaff } from '@/features/auth/authSlice'
+import MaterialLines from '@/features/estimates/MaterialLines'
 import WorkLines from '@/features/estimates/WorkLines'
 import { hasPermission } from '@/features/auth/permissions'
 import { formatDate, formatMoney } from '@/i18n/format'
@@ -159,6 +160,12 @@ export default function RequestDetailPage() {
               max: line.estimateMax,
             }))}
           />
+        </Card>
+      )}
+
+      {request.materialGrade && request.materials?.length > 0 && (
+        <Card title={t('requests.detail.materials', { grade: t(`estimates.grades.${request.materialGrade}`) })}>
+          <MaterialLines materials={request.materials.map((material) => ({ ...material, cost: material.estimateCost }))} />
         </Card>
       )}
 

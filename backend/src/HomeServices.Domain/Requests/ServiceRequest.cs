@@ -21,6 +21,7 @@ public sealed class ServiceRequest : AuditableEntity, IAudited
     private readonly List<RequestRecipient> _recipients = [];
     private readonly List<RequestMedia> _media = [];
     private readonly List<RequestLine> _lines = [];
+    private readonly List<RequestMaterial> _materials = [];
 
     private ServiceRequest()
     {
@@ -72,6 +73,12 @@ public sealed class ServiceRequest : AuditableEntity, IAudited
 
     /// <summary>The work wanted, room by room, copied from an estimate; empty for a request described in words only.</summary>
     public IReadOnlyCollection<RequestLine> Lines => _lines.AsReadOnly();
+
+    /// <summary>The grade of materials the estimate counted, or null when it was labour only (E1).</summary>
+    public MaterialGrade? MaterialGrade { get; private set; }
+
+    /// <summary>The materials the estimate counted for this work, copied with the lines.</summary>
+    public IReadOnlyCollection<RequestMaterial> Materials => _materials.AsReadOnly();
 
     public bool NeedsAttention => NeedsAttentionSince is not null;
 
@@ -178,6 +185,28 @@ public sealed class ServiceRequest : AuditableEntity, IAudited
         var line = new RequestLine(Id, _lines.Count + 1, roomName, workItemId, unit, quantity, estimateMin, estimateMax);
         _lines.Add(line);
         return line;
+    }
+
+    /// <summary>
+    /// Adds a material the estimate counted, priced for <paramref name="grade"/>: how much and its estimated cost. Like
+    /// lines, materials are fixed once the request is sent.
+    /// </summary>
+    public RequestMaterial AddMaterial(MaterialGrade grade, Guid materialId, MaterialUnit unit, decimal quantity, int estimateCost)
+    {
+        if (!Enum.IsDefined(grade) || (MaterialGrade is { } current && current != grade))
+        {
+            throw new DomainException("request.material_invalid", "All materials come from one grade.");
+        }
+
+        if (_materials.Count >= MaxLines)
+        {
+            throw new DomainException("request.too_many_lines", $"A request has at most {MaxLines} materials.");
+        }
+
+        MaterialGrade = grade;
+        var material = new RequestMaterial(Id, _materials.Count + 1, materialId, unit, quantity, estimateCost);
+        _materials.Add(material);
+        return material;
     }
 
     /// <summary>

@@ -9,11 +9,13 @@ import { intlLocale } from '@/i18n/languages'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatMoney } from '@/shared/format'
 import { MAX_AREA, parseArea, ROOM_TYPES, useQuickEstimateMutation } from './estimatorApi'
+import { MATERIAL_GRADES, grandTotal, hasMaterials } from './materials'
 import styles from './estimator.module.scss'
 
 /**
  * "How much will it cost?": pick a room and its floor area and get a labour price range for the usual work in such a
- * room, from market prices. A first idea only: the final price comes after a specialist sees the place.
+ * room, from market prices, with the materials it needs at the chosen grade (or labour only). A first idea only: the
+ * final price comes after a specialist sees the place.
  */
 export default function QuickEstimate() {
   const { t, i18n } = useTranslation()
@@ -21,6 +23,7 @@ export default function QuickEstimate() {
   const [roomType, setRoomType] = useState('Bedroom')
   const [area, setArea] = useState('')
   const [oldBuilding, setOldBuilding] = useState(false)
+  const [materials, setMaterials] = useState('')
   const [areaError, setAreaError] = useState(null)
   const [estimate, result] = useQuickEstimateMutation()
   const lng = i18n.language
@@ -35,10 +38,12 @@ export default function QuickEstimate() {
     }
 
     setAreaError(null)
-    estimate({ roomType, area: value, oldBuilding })
+    estimate({ roomType, area: value, oldBuilding, ...(materials ? { materials } : {}) })
   }
 
   const data = result.data
+  const total = grandTotal(data)
+  const withMaterials = hasMaterials(data)
   const lines = data?.rooms?.[0]?.lines.filter((line) => line.priceTypical != null) ?? []
 
   return (
@@ -65,6 +70,15 @@ export default function QuickEstimate() {
           error={areaError}
           onChange={(event) => setArea(event.target.value)}
         />
+        <SelectField
+          label={t('estimator.materials.label')}
+          value={materials}
+          onChange={(event) => setMaterials(event.target.value)}
+          options={[
+            { value: '', label: t('estimator.materials.none') },
+            ...MATERIAL_GRADES.map((grade) => ({ value: grade, label: t(`estimator.materials.grades.${grade}`) })),
+          ]}
+        />
         <CheckboxField
           className={styles['quick-estimate__check']}
           label={t('estimator.oldBuilding')}
@@ -80,13 +94,20 @@ export default function QuickEstimate() {
 
       {data && !result.isLoading && (
         <div className={styles['quick-estimate__result']} aria-live="polite">
-          {data.totalTypical > 0 ? (
+          {total.typical > 0 ? (
             <>
-              <p className={styles['quick-estimate__label']}>{t('estimator.quick.resultLabel')}</p>
+              <p className={styles['quick-estimate__label']}>{t(withMaterials ? 'estimator.materials.resultLabel' : 'estimator.quick.resultLabel')}</p>
               <p className={styles['quick-estimate__range']}>
-                {formatMoney(data.totalMin, lng)} – {formatMoney(data.totalMax, lng)}
+                {formatMoney(total.min, lng)} – {formatMoney(total.max, lng)}
               </p>
-              <p className={styles['quick-estimate__typical']}>{t('estimator.quick.usually', { amount: formatMoney(data.totalTypical, lng) })}</p>
+              <p className={styles['quick-estimate__typical']}>{t('estimator.quick.usually', { amount: formatMoney(total.typical, lng) })}</p>
+              {withMaterials && (
+                <p className={styles['quick-estimate__note']}>
+                  {t('estimator.materials.labour', { range: `${formatMoney(data.totalMin, lng)} – ${formatMoney(data.totalMax, lng)}` })}
+                  {' · '}
+                  {t('estimator.materials.total', { amount: formatMoney(data.materialsTotal, lng) })}
+                </p>
+              )}
               <p className={styles['quick-estimate__note']}>{t('estimator.quick.note')}</p>
               <details className={styles['quick-estimate__details']}>
                 <summary>{t('estimator.quick.included', { count: lines.length })}</summary>
@@ -107,6 +128,25 @@ export default function QuickEstimate() {
                   ))}
                 </ul>
               </details>
+              {withMaterials && (
+                <details className={styles['quick-estimate__details']}>
+                  <summary>{t('estimator.materials.listSummary', { count: data.materials.length })}</summary>
+                  <ul className={styles['quick-estimate__lines']}>
+                    {data.materials.map((material) => (
+                      <li key={material.materialId} className={styles['quick-estimate__line']}>
+                        <span>
+                          {material.name}
+                          <span className={styles['quick-estimate__quantity']}>
+                            {' · '}
+                            {quantity(material.quantity)} {t(`estimator.materials.units.${material.unit}`)}
+                          </span>
+                        </span>
+                        <span className={styles['quick-estimate__line-price']}>{formatMoney(material.cost, lng)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
             </>
           ) : (
             <p>{t('estimator.quick.noPrices')}</p>

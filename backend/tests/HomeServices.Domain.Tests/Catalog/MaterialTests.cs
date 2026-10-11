@@ -5,12 +5,14 @@ namespace HomeServices.Domain.Tests.Catalog;
 
 public class MaterialTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 10, 11, 0, 0, 0, TimeSpan.Zero);
+
     private static readonly LocalizedText Name = LocalizedText.Empty.With("hy", "Ներկ").With("en", "Paint");
 
     [Fact]
     public void A_material_has_a_price_per_grade()
     {
-        var paint = Material.Create(" Interior-Paint ", Name, MaterialUnit.Liter, 1200, 2500, 5000, 3);
+        var paint = Material.Create(" Interior-Paint ", Name, MaterialUnit.Liter, 1200, 2500, 5000, 3, Now);
 
         (paint.Slug, paint.Unit, paint.IsActive).ShouldBe(("interior-paint", MaterialUnit.Liter, true));
         paint.PriceFor(MaterialGrade.Budget).ShouldBe(1200);
@@ -26,14 +28,14 @@ public class MaterialTests
     [InlineData(1, 3, 2)]
     [InlineData(1, 1, Material.PriceLimit + 1)]
     public void Prices_go_up_with_the_grade(int budget, int standard, int premium) =>
-        Should.Throw<DomainException>(() => Material.Create("paint", Name, MaterialUnit.Liter, budget, standard, premium, 1))
+        Should.Throw<DomainException>(() => Material.Create("paint", Name, MaterialUnit.Liter, budget, standard, premium, 1, Now))
             .Code.ShouldBe("material.price_invalid");
 
     [Fact]
     public void A_material_needs_a_name_and_a_known_unit()
     {
-        Should.Throw<DomainException>(() => Material.Create("paint", LocalizedText.Empty, MaterialUnit.Liter, 1, 1, 1, 1)).Code.ShouldBe("material.name_required");
-        Should.Throw<DomainException>(() => Material.Create("paint", Name, (MaterialUnit)99, 1, 1, 1, 1)).Code.ShouldBe("material.unit_invalid");
+        Should.Throw<DomainException>(() => Material.Create("paint", LocalizedText.Empty, MaterialUnit.Liter, 1, 1, 1, 1, Now)).Code.ShouldBe("material.name_required");
+        Should.Throw<DomainException>(() => Material.Create("paint", Name, (MaterialUnit)99, 1, 1, 1, 1, Now)).Code.ShouldBe("material.unit_invalid");
     }
 
     [Fact]
@@ -44,5 +46,22 @@ public class MaterialTests
         link.AmountFor(10m).ShouldBe(13.2m);
         Should.Throw<DomainException>(() => WorkItemMaterial.Create(Guid.NewGuid(), Guid.NewGuid(), 0m, 10, 1)).Code.ShouldBe("work_item_material.invalid");
         Should.Throw<DomainException>(() => WorkItemMaterial.Create(Guid.NewGuid(), Guid.NewGuid(), 1m, -1, 1)).Code.ShouldBe("work_item_material.invalid");
+    }
+
+    [Fact]
+    public void Prices_are_checked_when_they_change_or_are_confirmed()
+    {
+        var paint = Material.Create("paint", Name, MaterialUnit.Liter, 1200, 2500, 5000, 3, Now);
+        var every = TimeSpan.FromDays(90);
+        paint.PricesCheckedAt.ShouldBe(Now);
+
+        paint.Update("paint", Name, MaterialUnit.Liter, 1200, 2500, 5000, 4, Now.AddDays(10)); // same prices
+        paint.PricesCheckedAt.ShouldBe(Now);
+        paint.PricesNeedChecking(Now.AddDays(91), every).ShouldBeTrue();
+
+        paint.Update("paint", Name, MaterialUnit.Liter, 1300, 2500, 5000, 4, Now.AddDays(91));
+        paint.PricesCheckedAt.ShouldBe(Now.AddDays(91));
+        paint.ConfirmPrices(Now.AddDays(200));
+        paint.PricesNeedChecking(Now.AddDays(250), every).ShouldBeFalse();
     }
 }

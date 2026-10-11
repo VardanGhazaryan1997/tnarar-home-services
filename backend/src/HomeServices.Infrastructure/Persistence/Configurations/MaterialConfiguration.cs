@@ -7,12 +7,15 @@ namespace HomeServices.Infrastructure.Persistence.Configurations;
 
 internal sealed class MaterialConfiguration : IEntityTypeConfiguration<Material>
 {
+    private static readonly DateTimeOffset SeededAt = new(2026, 10, 11, 0, 0, 0, TimeSpan.Zero);
+
     public void Configure(EntityTypeBuilder<Material> builder)
     {
         builder.Property(m => m.Id).ValueGeneratedNever();
         builder.Property(m => m.Slug).HasMaxLength(Slug.MaxLength);
         builder.Property(m => m.Unit).HasConversion<string>().HasMaxLength(16);
         builder.HasIndex(m => m.Slug).IsUnique();
+        builder.Property(m => m.PricesCheckedAt).HasDefaultValueSql("now()");
         builder.ToTable(t => t.HasCheckConstraint(
             "ck_materials_prices",
             "price_budget >= 1 AND price_budget <= price_standard AND price_standard <= price_premium"));
@@ -29,6 +32,7 @@ internal sealed class MaterialConfiguration : IEntityTypeConfiguration<Material>
             m.PricePremium,
             SortOrder = index + 1,
             IsActive = true,
+            PricesCheckedAt = SeededAt,
         }));
     }
 }

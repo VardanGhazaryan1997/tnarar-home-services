@@ -48,7 +48,8 @@ public sealed class RequestsController : ControllerBase
         int? DurationDays,
         DateTimeOffset? VisitAt,
         IReadOnlyList<OfferStageTerms>? Stages,
-        int? ValidDays);
+        int? ValidDays,
+        int? MaterialsAmount = null);
 
     /// <summary>
     /// Creates a request. <c>Direct</c> needs <c>partnerId</c> (422 "request.partner_unavailable" if that partner can't
@@ -157,7 +158,8 @@ public sealed class RequestsController : ControllerBase
                     body.DurationDays,
                     body.VisitAt,
                     body.Stages,
-                    body.ValidDays),
+                    body.ValidDays,
+                    body.MaterialsAmount),
                 cancellationToken));
 
     /// <summary>

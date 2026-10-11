@@ -260,6 +260,7 @@ internal static class AdminRequestLoader
             .Include(r => r.Recipients)
             .Include(r => r.Media)
             .Include(r => r.Lines)
+            .Include(r => r.Materials)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken)
         ?? throw MyRequests.NotFound();
 
@@ -307,6 +308,8 @@ internal static class AdminRequestLoader
             request.CancelledAt,
             request.CancelReason,
             request.EstimateId,
-            await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken));
+            await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken),
+            request.MaterialGrade,
+            await RequestLookup.MaterialsAsync(db, language, request, withEstimate: true, cancellationToken));
     }
 }

@@ -36,7 +36,8 @@ public sealed record OfferDto(
     DateTimeOffset SentAt,
     DateTimeOffset? DecidedAt,
     string? RejectReason,
-    Guid? OrderId);
+    Guid? OrderId,
+    int? MaterialsAmount = null);
 
 /// <summary>An offer in the partner's list of sent offers.</summary>
 public sealed record MyOfferListItemDto(

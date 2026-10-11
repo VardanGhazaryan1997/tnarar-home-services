@@ -34,18 +34,23 @@
 
   &__bar {
     display: flex;
-    gap: space(4);
+    gap: space(2);
     align-items: center;
     max-width: $content-width;
     height: $header-height;
     padding: 0 space(4);
     margin: 0 auto;
+
+    @include up(md) {
+      gap: space(4);
+    }
   }
 
   &__logo {
     @include focus-ring;
 
     display: inline-flex;
+    flex: none;
     text-decoration: none;
     border-radius: $radius-sm;
   }
@@ -84,9 +89,14 @@
 
   &__tools {
     display: flex;
-    gap: space(3);
+    gap: space(2);
     align-items: center;
+    min-width: 0;
     margin-inline-start: auto;
+
+    @include up(md) {
+      gap: space(3);
+    }
   }
 
   &__account {

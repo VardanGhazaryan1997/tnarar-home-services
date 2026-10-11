@@ -1,4 +1,5 @@
 using HomeServices.Api.Authorization;
+using HomeServices.Application.Catalog;
 using HomeServices.Application.Common;
 using HomeServices.Application.Messaging;
 using HomeServices.Application.Stores;
@@ -57,6 +58,16 @@ public sealed class AdminStoresController : ControllerBase
         [FromQuery] bool? isActive,
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new GetAdminStores(search, isActive), cancellationToken);
+
+    /// <summary>
+    /// The materials products can be linked to (every material, hidden ones included, with its staff and store prices), so
+    /// staff who manage prices don't need <c>catalog.manage</c> to pick one.
+    /// </summary>
+    [HttpGet("materials")]
+    public Task<IReadOnlyList<AdminMaterialDto>> GetMaterials(
+        [FromServices] IQueryHandler<GetAdminMaterials, IReadOnlyList<AdminMaterialDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminMaterials(), cancellationToken);
 
     /// <summary>One store with its branches.</summary>
     [HttpGet("{id:guid}")]

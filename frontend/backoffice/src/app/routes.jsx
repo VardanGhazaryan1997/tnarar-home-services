@@ -125,6 +125,18 @@ export const routes = [
                 ],
               },
               {
+                path: 'stores',
+                element: (
+                  <RequirePermission permission={permissionOf('stores')}>
+                    <Outlet />
+                  </RequirePermission>
+                ),
+                children: [
+                  { index: true, lazy: page(() => import('@/features/stores/StoresPage')) },
+                  { path: ':id', lazy: page(() => import('@/features/stores/StoreDetailPage')) },
+                ],
+              },
+              {
                 path: 'users',
                 element: (
                   <RequirePermission permission={permissionOf('users')}>

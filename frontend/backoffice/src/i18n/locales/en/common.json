@@ -18,7 +18,8 @@
     "orders": "Orders",
     "payments": "Payments",
     "reviews": "Reviews",
-    "commissions": "Commissions"
+    "commissions": "Commissions",
+    "stores": "Stores"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -235,7 +236,8 @@
       "not_found": "This page no longer exists.",
       "slug_taken": "Another page already uses this address",
       "title_required": "A page needs a title",
-      "body_required": "Write the text in the default language before publishing"
+      "body_required": "Write the text in the default language before publishing",
+      "invalid": "Not a valid page"
     },
     "faq": {
       "not_found": "This question no longer exists.",
@@ -377,6 +379,69 @@
     "work_item_material": {
       "invalid": "Check the amounts: above 0, waste 0–100%",
       "material_not_found": "Some of the materials no longer exist. Refresh the page."
+    },
+    "store": {
+      "not_found": "This store no longer exists. Refresh the page.",
+      "slug_taken": "Another store already uses this slug",
+      "slug_invalid": "Use lower-case latin letters, digits and dashes",
+      "name_required": "Enter a name",
+      "website_invalid": "Enter an address starting with http:// or https://",
+      "invalid": "Check the store details",
+      "too_many_branches": "A store can have up to 50 branches",
+      "has_products": "This store has products. Hide it instead.",
+      "file_invalid": "This picture can’t be used. Upload it again."
+    },
+    "store_branch": {
+      "city_not_found": "This town no longer exists. Choose another.",
+      "district_invalid": "The district doesn’t belong to this town",
+      "invalid": "Check the branch details"
+    },
+    "store_product": {
+      "not_found": "This product no longer exists. Refresh the page.",
+      "code_taken": "This store already has a product with this code",
+      "material_not_found": "This material no longer exists. Choose another.",
+      "grade_required": "Choose the grade this product counts as",
+      "invalid": "Check the product details",
+      "sale_invalid": "The sale needs a price below the usual one and an end date"
+    },
+    "website": {
+      "invalid": "Enter an address starting with http:// or https://"
+    },
+    "branches": {
+      "required": "Send the list of branches",
+      "too_many": "A store can have up to 50 branches"
+    },
+    "branch": {
+      "invalid": "Check the branch details"
+    },
+    "brand": {
+      "too_long": "The brand is too long"
+    },
+    "pack_label": {
+      "too_long": "The pack label is too long"
+    },
+    "pack_size": {
+      "invalid": "Enter a pack size above zero"
+    },
+    "grade": {
+      "required": "Choose the grade this product counts as",
+      "invalid": "Choose Budget, Standard or Premium"
+    },
+    "sale": {
+      "invalid": "The sale needs a price below the usual one and an end date"
+    },
+    "phone": {
+      "too_long": "The phone number is too long"
+    },
+    "page_size": {
+      "invalid": "Not a valid page size"
+    },
+    "file": {
+      "not_found": "The file wasn’t found. Upload it again.",
+      "not_uploaded": "The file didn’t finish uploading. Try again.",
+      "too_large": "The file is too large",
+      "invalid_content": "The file isn’t the kind it claims to be",
+      "too_many_uploads": "Too many uploads. Wait a little and try again."
     }
   },
   "catalog": {
@@ -546,7 +611,13 @@
       "checked": "Prices checked",
       "needsChecking": "Check prices",
       "confirmPrices": "Prices are still right",
-      "pricesConfirmed": "Prices marked as checked"
+      "pricesConfirmed": "Prices marked as checked",
+      "fromStores": "From stores",
+      "storeCount_one": "{{count}} store",
+      "storeCount_other": "{{count}} stores",
+      "compare": "Compare in stores",
+      "locked": "Keep staff prices",
+      "lockedHelp": "When on, store prices don’t change this material’s prices."
     },
     "workItemMaterials": {
       "open": "Materials",
@@ -1576,6 +1647,131 @@
       "Budget": "budget",
       "Standard": "standard",
       "Premium": "premium"
+    }
+  },
+  "files": {
+    "preview": "Picture",
+    "choose": "Choose a picture",
+    "replace": "Replace",
+    "remove": "Remove",
+    "stillUploading": "Wait for the picture to finish uploading",
+    "typeNotAllowed": "Use a JPEG, PNG or WebP picture",
+    "tooLarge": "The picture is too large (up to 10 MB)",
+    "uploadFailed": "The upload failed. Try again."
+  },
+  "stores": {
+    "help": "Stores whose prices customers compare. Add a store, then its branches and products; linked products set the market prices of materials.",
+    "add": "Add store",
+    "back": "Back to stores",
+    "search": "Find a store",
+    "empty": "No stores yet",
+    "deleteConfirm": "Delete “{{name}}”?",
+    "deleteHelp": "A store with products can’t be deleted: hide it instead.",
+    "statuses": {
+      "all": "All",
+      "active": "Shown",
+      "hidden": "Hidden"
+    },
+    "columns": {
+      "name": "Store",
+      "branches": "Branches",
+      "products": "Products",
+      "linked": "Linked",
+      "linkedHelp": "Products linked to a material",
+      "stale": "Old prices",
+      "staleHelp": "Products whose price nobody checked lately"
+    },
+    "tabs": {
+      "details": "Details",
+      "branches": "Branches",
+      "products": "Products"
+    },
+    "grades": {
+      "Budget": "Budget",
+      "Standard": "Standard",
+      "Premium": "Premium"
+    },
+    "form": {
+      "name": "Name",
+      "nameHelp": "Shown to customers as is",
+      "nameRequired": "Enter a name",
+      "descriptionIn": "Description ({{language}})",
+      "website": "Website",
+      "websiteInvalid": "Enter an address starting with http:// or https://",
+      "phone": "Phone",
+      "logo": "Logo",
+      "active": "Shown to customers",
+      "activeHelp": "A hidden store’s prices are left out of market prices"
+    },
+    "branches": {
+      "help": "Branches are saved all at once: change the rows, then save.",
+      "empty": "No branches yet",
+      "branch": "Branch {{number}}",
+      "name": "Branch name",
+      "nameRequired": "Enter a name",
+      "town": "Town",
+      "townRequired": "Choose a town",
+      "district": "District",
+      "address": "Address",
+      "addressRequired": "Enter an address",
+      "hours": "Opening hours",
+      "add": "Add branch",
+      "limit": "A store can have up to {{max}} branches",
+      "save": "Save branches",
+      "otherRegion": "Other"
+    },
+    "product": {
+      "help": "A product linked to a material and grade sets that material’s market price once enough stores sell it.",
+      "add": "Add product",
+      "edit": "Edit product",
+      "name": "Product",
+      "brand": "Brand",
+      "code": "Store code",
+      "codeHelp": "The store’s own article number, if it has one",
+      "material": "Material",
+      "materialHelp": "Leave empty to keep the product out of price comparison",
+      "notLinked": "Not linked",
+      "grade": "Grade",
+      "gradeRequired": "Choose the grade this product counts as",
+      "pack": "Pack",
+      "packSize": "Pack size",
+      "packSizeIn": "Pack size ({{unit}})",
+      "packSizeRequired": "Enter the pack size",
+      "packLabel": "Pack label",
+      "packLabelHelp": "As on the shelf, e.g. 25 kg bag",
+      "price": "Price",
+      "priceRequired": "Enter the price",
+      "salePrice": "Sale price",
+      "saleEndsOn": "Sale ends on",
+      "saleNeedsBoth": "Enter both the sale price and the day it ends",
+      "saleTooHigh": "The sale price must be lower than the price",
+      "unitPrice": "Per unit",
+      "photo": "Photo",
+      "inStock": "In stock",
+      "outOfStock": "Out of stock",
+      "stock": "Stock",
+      "active": "Counted in prices",
+      "activeHelp": "Hidden products are left out of prices",
+      "updated": "Price updated",
+      "stale": "Check price",
+      "confirmPrice": "Price is still right",
+      "priceConfirmed": "Price marked as checked",
+      "deleteConfirm": "Delete “{{name}}”?",
+      "show": "Show",
+      "shown": {
+        "all": "All products",
+        "linked": "Linked to a material",
+        "unlinked": "Not linked",
+        "stale": "Prices to check"
+      },
+      "search": "Find a product",
+      "empty": "No products"
+    },
+    "offers": {
+      "title": "Stores selling {{name}}",
+      "help": "Products linked to this material, with the price per unit that goes into its market price.",
+      "store": "Store",
+      "empty": "No store sells this material yet"
     }
   }
 }

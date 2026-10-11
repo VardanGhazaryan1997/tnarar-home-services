@@ -448,3 +448,82 @@ export const priceList = () => {
   ]
   return { items, pricedCount: 1, freshDays: 90, staleCount: 0 }
 }
+
+// --- Store prices (E2): GET /materials, /materials/{slug}, /stores/{slug} ---
+
+export const gradePrice = (price, source = 'Staff') => ({ price, source })
+
+export const materialRow = (overrides = {}) => ({
+  slug: 'finishing-putty',
+  name: 'Finishing putty',
+  unit: 'Kilogram',
+  prices: { budget: gradePrice(150), standard: gradePrice(230, 'Stores'), premium: gradePrice(380) },
+  storeCount: 3,
+  lowestUnitPrice: 210,
+  ...overrides,
+})
+
+export const MATERIAL_ROWS = [
+  materialRow(),
+  materialRow({ slug: 'primer', name: 'Primer', unit: 'Liter', prices: { budget: gradePrice(500), standard: gradePrice(850), premium: gradePrice(1400) }, storeCount: 0, lowestUnitPrice: null }),
+]
+
+export const offerProduct = (overrides = {}) => ({
+  id: 'product-1',
+  name: 'Putty 25 kg',
+  brand: 'DemoBrand',
+  grade: 'Standard',
+  packLabel: '25 kg bag',
+  packSize: 25,
+  price: 5500,
+  salePrice: null,
+  saleEndsOn: null,
+  currentPrice: 5500,
+  unitPrice: 220,
+  inStock: true,
+  photoUrl: null,
+  priceUpdatedAt: '2026-10-05T09:00:00Z',
+  ...overrides,
+})
+
+export const offerStore = (overrides = {}) => ({
+  slug: 'demo-market',
+  name: 'Demo Market',
+  logoUrl: null,
+  website: 'https://demo-market.example',
+  branches: [{ name: 'Komitas', city: 'Yerevan', district: 'Kentron', address: 'Komitas 1', phone: null, openingHours: null }],
+  ...overrides,
+})
+
+export const materialDetail = (overrides = {}) => ({
+  slug: 'finishing-putty',
+  name: 'Finishing putty',
+  unit: 'Kilogram',
+  prices: { budget: gradePrice(150), standard: gradePrice(230, 'Stores'), premium: gradePrice(380) },
+  storeCount: 2,
+  offers: [
+    { store: offerStore(), product: offerProduct({ id: 'p-cheap', unitPrice: 210, price: 5250, currentPrice: 5250 }) },
+    {
+      store: offerStore({ slug: 'demo-home', name: 'Demo Home', branches: [] }),
+      product: offerProduct({ id: 'p-sale', name: 'Putty 5 kg', packLabel: null, brand: null, packSize: 5, price: 1500, salePrice: 1000, saleEndsOn: '2026-11-01', currentPrice: 1000, unitPrice: 200, inStock: false, photoUrl: 'https://storage.test/p.jpg' }),
+    },
+  ],
+  ...overrides,
+})
+
+export const storeDetail = (overrides = {}) => ({
+  slug: 'demo-market',
+  name: 'Demo Market',
+  description: 'Building materials for every room',
+  website: 'https://demo-market.example',
+  phone: '+374 10 000000',
+  logoUrl: null,
+  branches: [
+    { name: 'Komitas', city: 'Yerevan', district: 'Kentron', address: 'Komitas 1', phone: '+374 10 111111', openingHours: 'Mon–Sat 9–19' },
+    { name: 'Gyumri', city: 'Gyumri', district: null, address: 'Garegin 3', phone: null, openingHours: null },
+  ],
+  materials: [
+    { slug: 'finishing-putty', name: 'Finishing putty', unit: 'Kilogram', products: [offerProduct(), offerProduct({ id: 'p-prem', name: 'Premium putty', grade: 'Premium', price: 8000, currentPrice: 8000, unitPrice: 320 })] },
+  ],
+  ...overrides,
+})

@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import i18n from '@/i18n'
 import hy from '@/i18n/locales/hy/common.json'
+import { MATERIALS } from '@/test/catalog'
+import { signedInAs, staffMember } from '@/test/auth'
 import { renderRoute } from '@/test/renderWithProviders'
 import { server } from '@/test/server'
 
@@ -128,4 +130,67 @@ describe('Materials of a work item', () => {
       ],
     })
   }, SLOW)
+
+  describe('store prices', () => {
+    const withMarket = () =>
+      server.use(
+        http.get('*/api/v1/admin/catalog/materials', () =>
+          HttpResponse.json([{ ...MATERIALS[0], marketBudget: 160, marketStandard: 240, marketPremium: null, marketStoreCount: 3, isPriceLocked: true }, MATERIALS[1]]),
+        ),
+      )
+
+    it('shows what the stores say and which materials keep staff prices', async () => {
+      withMarket()
+      renderRoute('/catalog/materials')
+
+      const table = (await screen.findByText('Վերջնական շպաքլ')).closest('table')
+      expect(within(table).getByText(/^160 ֏ \/ 240 ֏ \/ —$/)).toBeInTheDocument()
+      expect(within(table).getByText(/3/, { selector: 'span.ant-typography' })).toBeInTheDocument()
+      expect(within(table).getByRole('img', { name: m.locked })).toBeInTheDocument()
+    }, SLOW)
+
+    it('compares a material in the stores that sell it', async () => {
+      const user = userEvent.setup()
+      renderRoute('/catalog/materials')
+
+      await user.click(await screen.findByRole('button', { name: `${m.compare}: Վերջնական շպաքլ` }))
+      const drawer = await screen.findByRole('dialog')
+      expect(await within(drawer).findByRole('link', { name: 'Demo Hardware' })).toHaveAttribute('href', '/stores/store-demo?tab=products')
+      expect(within(drawer).getByText('Putty 25 kg')).toBeInTheDocument()
+      expect(within(drawer).getByText(/^200 ֏$/)).toBeInTheDocument()
+      expect(within(drawer).getByText(/^12[.,]5 ֏$/)).toBeInTheDocument()
+      expect(within(drawer).getAllByText(hy.stores.product.stale)).toHaveLength(1)
+    }, SLOW)
+
+    it('says when no store sells the material', async () => {
+      server.use(http.get('*/api/v1/admin/catalog/materials/mat-putty/store-products', () => HttpResponse.json([])))
+      const user = userEvent.setup()
+      renderRoute('/catalog/materials')
+
+      await user.click(await screen.findByRole('button', { name: `${m.compare}: Վերջնական շպաքլ` }))
+      expect(await screen.findByText(hy.stores.offers.empty)).toBeInTheDocument()
+    }, SLOW)
+
+    it('hides the comparison from staff who can not manage prices', async () => {
+      signedInAs(staffMember(['catalog.manage']))
+      renderRoute('/catalog/materials')
+
+      await screen.findByText('Վերջնական շպաքլ')
+      expect(screen.queryByRole('button', { name: new RegExp(m.compare) })).not.toBeInTheDocument()
+    }, SLOW)
+
+    it('keeps staff prices when asked to', async () => {
+      const requests = capture('put', 'materials/mat-putty')
+      const user = userEvent.setup()
+      renderRoute('/catalog/materials')
+
+      await user.click(await screen.findByRole('button', { name: `${hy.catalog.actions.edit}: Վերջնական շպաքլ` }))
+      const form = await screen.findByRole('dialog')
+      await user.click(within(form).getByRole('checkbox', { name: m.locked }))
+      await user.click(within(form).getByRole('button', { name: hy.catalog.form.save }))
+
+      await waitFor(() => expect(requests).toHaveLength(1))
+      expect(requests[0].body).toMatchObject({ slug: 'finishing-putty', isPriceLocked: true })
+    }, SLOW)
+  })
 })

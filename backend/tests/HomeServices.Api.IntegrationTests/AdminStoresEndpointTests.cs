@@ -54,6 +54,10 @@ public class AdminStoresEndpointTests(ApiFactory factory)
         (await StaffClient(Permissions.CatalogManage).GetAsync(Admin)).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
         (await StaffClient(Permissions.CatalogManage).PostAsJsonAsync(Admin, StoreBody("nope"))).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
         (await StaffClient(Permissions.MaterialsPricing).GetAsync(Admin)).StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var materials = (await StaffClient(Permissions.MaterialsPricing).GetFromJsonAsync<List<AdminMaterialDto>>($"{Admin}/materials", Json))!;
+        materials.ShouldContain(m => m.Slug == "finishing-putty");
+        (await StaffClient(Permissions.CatalogManage).GetAsync($"{Admin}/materials")).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]

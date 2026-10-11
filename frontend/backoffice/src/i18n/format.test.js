@@ -11,3 +11,13 @@ describe('formatDate', () => {
     expect(formatDate(null, 'en')).toBe('')
   })
 })
+
+describe('formatUnitPrice', () => {
+  it('keeps one decimal under 100 ֏ and whole drams from there', async () => {
+    const { formatUnitPrice } = await import('@/i18n/format')
+    expect(formatUnitPrice(12.5, 'en')).toBe('12.5 ֏')
+    expect(formatUnitPrice(12, 'en')).toBe('12 ֏')
+    expect(formatUnitPrice(1250.4, 'en')).toBe('1,250 ֏')
+    expect(formatUnitPrice(null, 'en')).toBe('—')
+  })
+})

@@ -8,6 +8,7 @@ import { ADMIN_LANGUAGES, NAMESPACES, TEXTS, textsPage } from './translations'
 import { userDetail, userRow, usersPage } from './users'
 import { PERMISSIONS, ROLES, staffDetail, staffPage, staffRow } from './staff'
 import { page, partnerDetail, partnerRow, publicCategories, publicCities, publicRegions } from './partners'
+import { LINKABLE_MATERIALS, MATERIAL_OFFERS, STORES, productsPage, storeDetail } from './stores'
 import { commissionRates, orderDetail, orderRow, paymentRow, requestDetail, requestRow, reviewRow, statementDetail, statementRow } from './operations'
 
 export const ACTIVE_LANGUAGES = [
@@ -31,6 +32,11 @@ export const handlers = [
   http.get('*/api/v1/categories', ({ request }) => HttpResponse.json(publicCategories(request.headers.get('Accept-Language') ?? 'hy'))),
   http.get('*/api/v1/cities', ({ request }) => HttpResponse.json(publicCities(request.headers.get('Accept-Language') ?? 'hy'))),
   http.get('*/api/v1/regions', ({ request }) => HttpResponse.json(publicRegions(request.headers.get('Accept-Language') ?? 'hy'))),
+  http.get('*/api/v1/admin/stores', () => HttpResponse.json(STORES)),
+  http.get('*/api/v1/admin/stores/materials', () => HttpResponse.json(LINKABLE_MATERIALS)),
+  http.get('*/api/v1/admin/stores/:id', () => HttpResponse.json(storeDetail())),
+  http.get('*/api/v1/admin/stores/:id/products', () => HttpResponse.json(productsPage())),
+  http.get('*/api/v1/admin/catalog/materials/:id/store-products', () => HttpResponse.json(MATERIAL_OFFERS)),
   http.get('*/api/v1/admin/partners', () => HttpResponse.json(page([partnerRow()]))),
   http.get('*/api/v1/admin/partners/:id', () => HttpResponse.json(partnerDetail())),
   http.get('*/api/v1/admin/audit-log', () => HttpResponse.json(auditPage(AUDIT_ENTRIES))),

@@ -11,6 +11,7 @@ const LINKS = [
   { key: 'search', to: '/search' },
   { key: 'how', to: '/how-it-works' },
   { key: 'prices', to: '/renovation-prices' },
+  { key: 'materialPrices', to: '/material-prices' },
   { key: 'partners', to: '/how-it-works?for=partners' },
 ]
 

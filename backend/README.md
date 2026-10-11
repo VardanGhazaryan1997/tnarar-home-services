@@ -361,6 +361,7 @@ Staff keep stores, their branches and their products in the Back Office; custome
 |---|---|
 | `GET stores?search=&isActive=` | Stores with `branchCount`, `productCount`, `linkedCount` (compared) and `staleCount` (price not checked within `StorePricing:FreshDays`, 90) |
 | `POST stores`, `PUT stores/{id}`, `DELETE stores/{id}` | `slug`, `name` (the brand, the same in every language), `description` per language (optional), `website` (http/https), `phone`, `logoFileId` (an uploaded image), `sortOrder`, `isActive`. 409 `store.slug_taken`; a store with products can't be deleted (422 `store.has_products`, hide it instead) |
+| `GET stores/materials` | The materials products can be linked to (the admin material list), for staff without `catalog.manage` |
 | `GET stores/{id}` | One store with its `branches` |
 | `PUT stores/{id}/branches` | Replaces the branch list (up to 50): `[{ name, cityId, districtId?, address, phone?, openingHours? }]`; the district must be in the town |
 | `GET stores/{id}/products?search=&materialId=&linked=&stale=&page=&pageSize=` | The store's products by name, paged, with the material's name and unit, `currentPrice` (the sale price until `saleEndsOn`, inclusive), `unitPrice` (per unit of the material; null while not linked) and `isStale` |
@@ -377,6 +378,20 @@ Staff keep stores, their branches and their products in the Back Office; custome
 - `Material.PriceFor(grade)` (used by estimates) is that store price unless staff **locked** the material (`isPriceLocked`, `PUT catalog/materials/{id}`), otherwise the staff price. The admin material has `marketBudget`, `marketStandard`, `marketPremium` and `marketStoreCount` (distinct stores behind them) whether or not it is locked, so the Back Office can show both.
 - Recalculated right after a store product is created, changed, confirmed or deleted (its material, and the old one when relinked), after a store is hidden or shown, after a material is updated, and by the background job that also recalculates labour prices (`Pricing:RecalculateHours`): sales end and prices go stale without anyone saving anything.
 - A material that store products link to can't be deleted (422 `material.in_use`).
+
+### Public store prices
+
+Customers see stores and compare prices without signing in (`api/v1`). Names are in the request language (`Accept-Language`).
+
+| Endpoint | What it does |
+|---|---|
+| `GET stores?region=` | Active stores in display order: `slug`, `name`, `description`, `website`, `phone`, `logoUrl` and `branches` (`name`, `city`, `district`, `address`, `phone`, `openingHours`). With a region slug only stores with a branch there, and only those branches; an unknown region gives an empty list |
+| `GET stores/{slug}` | One store with its branches and `materials`: the store's products grouped by material (in catalog order), by grade and then per-unit price. 404 `store.not_found` for a hidden or unknown store |
+| `GET materials?search=&region=` | Active materials: `unit`, `prices` per grade (`price` per unit and its `source`: `Staff` or `Stores`, as used by estimates), `storeCount` (stores with a current offer) and `lowestUnitPrice` (cheapest in-stock offer per unit, null when none). `search` matches the name in the request language and the slug; `region` counts only stores with a branch there |
+| `GET materials/{slug}?region=&grade=&inStock=` | One material with its `offers`, in-stock first and then cheapest per unit: the `store` (slug, name, logo, website, branches in the region) and the `product` (name, brand, `grade`, `packLabel`, `packSize`, `price`, `salePrice` and `saleEndsOn` only while the sale lasts, `currentPrice`, `unitPrice`, `inStock`, `photoUrl`, `priceUpdatedAt`). `grade` is Budget, Standard or Premium (anything else is 400). 404 `material.not_found` |
+
+- Only products that are active, linked to a material, of an active store and whose price was set or confirmed within `StorePricing:FreshDays` (90) are shown; out-of-stock products are shown, marked `inStock: false`. Products without a link and stale prices stay in the Back Office.
+- Prices are those staff entered; nothing is tracked about what customers click.
 
 ## Code coverage
 

@@ -91,7 +91,8 @@
       "search": "Find a specialist",
       "how": "How it works",
       "prices": "Renovation prices",
-      "partners": "For partners"
+      "partners": "For partners",
+      "materialPrices": "Material prices"
     }
   },
   "auth": {
@@ -1594,5 +1595,64 @@
       },
       "listSummary": "Materials ({{count}})"
     }
+  },
+  "materialPrices": {
+    "documentTitle": "Building material prices in Armenia — Tnarar",
+    "description": "Compare building material prices in Armenia: the usual price per kg, litre or m² and the cheapest offer from stores.",
+    "title": "Building material prices",
+    "subtitle": "The usual price per unit and what stores ask today.",
+    "estimate": "Estimate my renovation",
+    "note": "Prices are in drams per unit of the material. The usual price comes from stores once at least two of them sell it, otherwise from our own estimate. Prices can change: check with the store before you buy.",
+    "search": "Find a material",
+    "region": "Region",
+    "allRegions": "All of Armenia",
+    "none": "No materials found",
+    "all": "All material prices",
+    "notFound": "Material not found",
+    "notFoundText": "It may have been removed. Look through all material prices.",
+    "perUnit": "per {{unit}}",
+    "fromStoresShort": "from stores",
+    "fromStores": "From {{n}} stores",
+    "lowest": "lowest {{amount}} per {{unit}}",
+    "noStores": "No store prices yet",
+    "grades": {
+      "Budget": "Budget",
+      "Standard": "Standard",
+      "Premium": "Premium"
+    },
+    "detail": {
+      "documentTitle": "{{name}}: prices in Armenia — Tnarar",
+      "description": "Where to buy {{name}} in Armenia and how much it costs per {{unit}} in different stores.",
+      "subtitle": "Offers from stores, compared per {{unit}}.",
+      "usual": "Usual price per {{unit}}",
+      "usualNote": "This is the price our estimates use for budget, standard and premium products.",
+      "grade": "Quality",
+      "allGrades": "All",
+      "inStockOnly": "In stock only",
+      "offers": "Where to buy ({{n}})",
+      "noOffers": "No offers match",
+      "noOffersText": "Try another quality or region, or turn off “in stock only”.",
+      "disclaimer": "Prices are entered by our team from the stores and can change. Check the price and stock with the store before you buy."
+    },
+    "offer": {
+      "perUnit": "{{amount}} per {{unit}}",
+      "lowest": "Lowest price",
+      "inStock": "In stock",
+      "outOfStock": "Out of stock",
+      "saleUntil": "Sale until {{date}}",
+      "checked": "Price checked {{date}}",
+      "branches": "branches: {{places}}"
+    }
+  },
+  "storePage": {
+    "documentTitle": "{{name}}: building material prices — Tnarar",
+    "description": "Branches of {{name}} and its prices for building materials.",
+    "website": "Website",
+    "branches": "Branches",
+    "noBranches": "No branches listed yet.",
+    "products": "Prices by material",
+    "noProducts": "No current prices from this store",
+    "notFound": "Store not found",
+    "notFoundText": "It may have been removed. Look through all material prices."
   }
 }

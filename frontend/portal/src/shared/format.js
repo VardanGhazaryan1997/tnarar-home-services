@@ -16,6 +16,11 @@ export function formatMoney(amount, lng) {
   return `${new Intl.NumberFormat(intlLocale(lng), { maximumFractionDigits: 0 }).format(amount)} ֏`
 }
 
+/** A price per unit, which can be small: up to one decimal under 100 ֏ ("12.5 ֏"), whole drams from 100 ("1 250 ֏"). */
+export function formatUnitPrice(amount, lng) {
+  return `${new Intl.NumberFormat(intlLocale(lng), { maximumFractionDigits: amount < 100 ? 1 : 0 }).format(amount)} ֏`
+}
+
 /** "10 000 – 30 000 ֏", "from 10 000 ֏", "up to 30 000 ֏", or null when there's no budget. */
 export function formatBudget(min, max, lng, t) {
   if (min != null && max != null) return `${formatMoney(min, lng)} – ${formatMoney(max, lng)}`

@@ -22,3 +22,12 @@ describe('format', () => {
     expect(todayIso(new Date(2026, 9, 5, 23, 30))).toBe('2026-10-05')
   })
 })
+
+describe('formatUnitPrice', () => {
+  it('keeps one decimal under 100 ֏ and whole drams from there', async () => {
+    const { formatUnitPrice } = await import('@/shared/format')
+    expect(formatUnitPrice(12.5, 'en')).toBe('12.5 ֏')
+    expect(formatUnitPrice(12, 'en')).toBe('12 ֏')
+    expect(formatUnitPrice(1250.4, 'en')).toBe('1,250 ֏')
+  })
+})

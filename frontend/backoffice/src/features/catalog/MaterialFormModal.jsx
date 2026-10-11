@@ -33,6 +33,7 @@ export default function MaterialFormModal({ open, material, onSave, onClose }) {
         pricePremium: material.pricePremium,
         sortOrder: material.sortOrder,
         isActive: material.isActive,
+        isPriceLocked: material.isPriceLocked,
       }
     : { slug: '', name: {}, unit: 'Kilogram', sortOrder: 0, isActive: true }
 
@@ -56,6 +57,8 @@ export default function MaterialFormModal({ open, material, onSave, onClose }) {
         pricePremium: values.pricePremium,
         sortOrder: values.sortOrder ?? 0,
         isActive: Boolean(values.isActive),
+        // Only an existing material can be locked: the lock keeps staff prices over what the stores say.
+        ...(material ? { isPriceLocked: Boolean(values.isPriceLocked) } : {}),
       })
       message.success(t(material ? 'catalog.saved' : 'catalog.created'))
       onClose()
@@ -116,6 +119,11 @@ export default function MaterialFormModal({ open, material, onSave, onClose }) {
             </Form.Item>
           ))}
         </Flex>
+        {material && (
+          <Form.Item name="isPriceLocked" valuePropName="checked" extra={t('catalog.materials.lockedHelp')}>
+            <Checkbox>{t('catalog.materials.locked')}</Checkbox>
+          </Form.Item>
+        )}
         <Form.Item name="sortOrder" label={t('catalog.form.sortOrder')} extra={t('catalog.form.sortOrderHelp')}>
           <InputNumber min={0} precision={0} style={{ width: '100%' }} />
         </Form.Item>

@@ -1,0 +1,211 @@
+@use 'styles/mixins' as *;
+
+// Building material prices: the list of materials, one material's offers and a store page share these blocks.
+.material-prices {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__note {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__muted {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__filters {
+    display: grid;
+    gap: space(3);
+    align-items: end;
+
+    @include up(md) {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__head {
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: space(3);
+  }
+
+  &__name {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__section {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-night;
+  }
+
+  &__grades {
+    display: grid;
+    gap: space(3);
+    padding: 0;
+    margin: 0 0 space(3);
+
+    @include up(sm) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__grade {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+
+    dt {
+      @include text-small;
+      @include text-muted;
+    }
+
+    dd {
+      display: flex;
+      flex-direction: column;
+      gap: space(1);
+      margin: 0;
+    }
+  }
+
+  &__link {
+    align-self: flex-start;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// One store's offer: a photo, the product and store, then the price. Stacks on a phone.
+.offer {
+  @include surface;
+
+  display: grid;
+  gap: space(3);
+  padding: space(3);
+
+  @include up(md) {
+    grid-template-columns: 72px 1fr auto;
+    align-items: start;
+  }
+
+  &__photo {
+    display: flex;
+    flex: none;
+    place-content: center;
+    width: 72px;
+    height: 72px;
+    color: $color-text-faint;
+    object-fit: cover;
+    background: $color-surface-sunken;
+    border-radius: $radius;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__name {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__prices {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+
+    @include up(md) {
+      align-items: flex-end;
+      text-align: end;
+    }
+  }
+
+  &__price {
+    display: flex;
+    gap: space(2);
+    align-items: baseline;
+    font-size: $font-size-lg;
+  }
+
+  &__was {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__unit {
+    font-weight: $font-weight-medium;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1);
+  }
+}
+
+.store {
+  &__header {
+    display: flex;
+    gap: space(4);
+    align-items: center;
+  }
+
+  &__logo {
+    display: flex;
+    flex: none;
+    place-content: center;
+    width: 72px;
+    height: 72px;
+    color: $color-text-faint;
+    object-fit: contain;
+    background: $color-surface-sunken;
+    border-radius: $radius;
+  }
+
+  &__name {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-night;
+  }
+
+  &__contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1) space(4);
+    margin-block-start: space(2);
+  }
+
+  &__branches {
+    display: grid;
+    gap: space(3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    @include up(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    li {
+      display: flex;
+      flex-direction: column;
+      gap: space(1);
+    }
+  }
+}

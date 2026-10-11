@@ -17,6 +17,7 @@ export const publicCities = (language = 'hy') =>
     id: city.id,
     slug: city.slug,
     name: pick(city.name, language),
+    regionId: city.regionId,
     districts: city.districts.map((district) => ({ id: district.id, slug: district.slug, name: pick(district.name, language) })),
   }))
 

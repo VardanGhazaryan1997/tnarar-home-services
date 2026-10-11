@@ -1,8 +1,12 @@
-import { CheckCircleOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, DeleteOutlined, EditOutlined, LockOutlined, PlusOutlined, ShopOutlined } from '@ant-design/icons'
 import { Alert, App, Button, Flex, Input, Popconfirm, Select, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { errorMessage } from '@/api/errors'
+import { hasPermission } from '@/features/auth/permissions'
+import { selectStaff } from '@/features/auth/authSlice'
+import MaterialOffersDrawer from '@/features/stores/MaterialOffersDrawer'
 import { formatDate, formatMoney } from '@/i18n/format'
 import {
   useConfirmMaterialPricesMutation,
@@ -28,6 +32,7 @@ export default function MaterialsTab() {
   const { message } = App.useApp()
   const lng = i18n.resolvedLanguage
   const { defaultCode } = useCatalogLanguages()
+  const canCompare = hasPermission(useSelector(selectStaff), 'materials.pricing')
   const { data = [], isLoading, error } = useGetMaterialsQuery()
   const [createMaterial] = useCreateMaterialMutation()
   const [updateMaterial] = useUpdateMaterialMutation()
@@ -37,6 +42,7 @@ export default function MaterialsTab() {
   const [search, setSearch] = useState('')
   // { material } while the dialog is open; material is null when adding.
   const [dialog, setDialog] = useState(null)
+  const [offers, setOffers] = useState(null)
 
   const rows = useMemo(() => filterMaterials(data, { search, status }), [data, search, status])
   const nameOf = (material) => localizedName(material.name, lng, defaultCode)
@@ -86,6 +92,22 @@ export default function MaterialsTab() {
       render: (_, material) => formatMoney(material[field], lng),
     })),
     {
+      title: t('catalog.materials.fromStores'),
+      key: 'stores',
+      responsive: ['lg'],
+      render: (_, material) =>
+        material.marketStoreCount > 0 ? (
+          <Flex vertical>
+            <span>{[material.marketBudget, material.marketStandard, material.marketPremium].map((price) => (price == null ? '—' : formatMoney(price, lng))).join(' / ')}</span>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {t('catalog.materials.storeCount', { count: material.marketStoreCount })}
+            </Typography.Text>
+          </Flex>
+        ) : (
+          '—'
+        ),
+    },
+    {
       title: t('catalog.materials.checked'),
       key: 'checked',
       width: 140,
@@ -126,6 +148,16 @@ export default function MaterialsTab() {
         const name = nameOf(material)
         return (
           <Space size={0}>
+            {material.isPriceLocked && (
+              <Tooltip title={t('catalog.materials.locked')}>
+                <LockOutlined aria-label={t('catalog.materials.locked')} />
+              </Tooltip>
+            )}
+            {canCompare && (
+              <Tooltip title={t('catalog.materials.compare')}>
+                <Button type="text" icon={<ShopOutlined />} aria-label={`${t('catalog.materials.compare')}: ${name}`} onClick={() => setOffers(material)} />
+              </Tooltip>
+            )}
             <Tooltip title={t('catalog.actions.edit')}>
               <Button type="text" icon={<EditOutlined />} aria-label={`${t('catalog.actions.edit')}: ${name}`} onClick={() => setDialog({ material })} />
             </Tooltip>
@@ -191,6 +223,7 @@ export default function MaterialsTab() {
         scroll={{ x: 'max-content' }}
         locale={{ emptyText: t('catalog.materials.empty') }}
       />
+      <MaterialOffersDrawer material={offers} materialName={offers ? nameOf(offers) : ''} onClose={() => setOffers(null)} />
       <MaterialFormModal open={Boolean(dialog)} material={dialog?.material ?? null} onSave={save} onClose={() => setDialog(null)} />
     </>
   )

@@ -259,7 +259,7 @@ describe('signing in to the Back Office', () => {
     it('shows Super Admins every menu section', async () => {
       renderRoute('/')
       const nav = await screen.findByRole('navigation', { name: hy.nav.label })
-      expect(within(nav).getAllByRole('menuitem')).toHaveLength(14)
+      expect(within(nav).getAllByRole('menuitem')).toHaveLength(15)
     })
 
     it('shows other staff only the sections their roles allow', async () => {

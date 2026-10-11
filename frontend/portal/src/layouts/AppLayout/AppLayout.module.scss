@@ -24,6 +24,8 @@
     }
   }
 
+  // The header menu needs room for long translations (Armenian is ~50% longer than English):
+  // phones and tablets use the bottom tab bar, the header menu starts at lg.
   &__header {
     position: sticky;
     top: 0;
@@ -41,7 +43,7 @@
     padding: 0 space(4);
     margin: 0 auto;
 
-    @include up(md) {
+    @include up(lg) {
       gap: space(4);
     }
   }
@@ -59,9 +61,14 @@
     display: none;
     gap: space(1);
 
-    @include up(md) {
+    @include up(lg) {
       display: flex;
     }
+  }
+
+  // Icons only while the full menu does not fit (see useCompactHeader); the labels stay for screen readers.
+  &__nav-label--hidden {
+    @include visually-hidden;
   }
 
   &__nav-link {
@@ -91,10 +98,9 @@
     display: flex;
     gap: space(2);
     align-items: center;
-    min-width: 0;
     margin-inline-start: auto;
 
-    @include up(md) {
+    @include up(lg) {
       gap: space(3);
     }
   }
@@ -116,7 +122,7 @@
       background: $color-surface-sunken;
     }
 
-    @include up(md) {
+    @include up(lg) {
       display: inline-flex;
     }
   }
@@ -128,6 +134,10 @@
 
     // Partners' Armenian menu fills the bar: below wide screens only the icon shows (the name stays for screen readers).
     @media (width < 1400px) {
+      @include visually-hidden;
+    }
+
+    &--hidden {
       @include visually-hidden;
     }
   }
@@ -146,7 +156,7 @@
     &--with-tabs {
       padding-bottom: calc(#{$tab-bar-height} + #{space(5)});
 
-      @include up(md) {
+      @include up(lg) {
         padding-bottom: space(6);
       }
     }
@@ -164,7 +174,7 @@
     background: $color-white;
     border-top: 1px solid $color-border;
 
-    @include up(md) {
+    @include up(lg) {
       display: none;
     }
   }
@@ -210,6 +220,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    // Five tabs on the narrowest phones leave 64px each: room for Persian and Armenian labels.
+    @media (width < 360px) {
+      padding: 0;
+      font-size: 0.6875rem;
+    }
   }
 
   &__tab-icon {

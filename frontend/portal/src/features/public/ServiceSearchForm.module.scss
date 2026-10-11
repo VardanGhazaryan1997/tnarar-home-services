@@ -11,7 +11,7 @@
   box-shadow: $shadow-lg;
 
   @include up(md) {
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
     align-items: end;
   }
 

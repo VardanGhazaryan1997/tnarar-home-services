@@ -9,6 +9,10 @@
   list-style: none;
 
   @include up(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include up(lg) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
@@ -32,7 +36,7 @@
       box-shadow: $shadow;
     }
 
-    @include up(md) {
+    @include up(lg) {
       flex-direction: row;
       align-items: center;
     }
@@ -51,6 +55,7 @@
 
   &__name {
     font-weight: $font-weight-semibold;
+    min-width: 0;
     line-height: $line-height-tight;
     overflow-wrap: break-word;
     hyphens: auto;

@@ -33,6 +33,31 @@ describe('AppLayout', () => {
     expect(within(tabs).getAllByRole('link').map((l) => l.textContent)).toEqual([en.nav.tab.home, en.nav.tab.requests, en.nav.tab.orders, en.nav.tab.messages, en.nav.tab.account])
   })
 
+  it('shows only icons in the header menu while the full menu does not fit', async () => {
+    // jsdom has no layout: the bar reports content wider than itself (a long translation).
+    const barWidth = (full, other) =>
+      function () {
+        return this.classList.contains('app-layout__bar') ? full : other
+      }
+    const scrollWidth = vi.spyOn(Element.prototype, 'scrollWidth', 'get').mockImplementation(barWidth(1400, 0))
+    const clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockImplementation(barWidth(1000, 0))
+    vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} })
+    try {
+      signedInAs(PARTNER_USER)
+      renderRoute('/en')
+
+      const header = screen.getByRole('banner')
+      const messages = await within(header).findByRole('link', { name: en.nav.messages })
+      expect(messages).toHaveAttribute('title', en.nav.messages)
+      expect(messages.querySelector('svg')).toBeInTheDocument()
+      expect(within(messages).getByText(en.nav.messages)).toHaveClass('app-layout__nav-label--hidden')
+    } finally {
+      scrollWidth.mockRestore()
+      clientWidth.mockRestore()
+      vi.unstubAllGlobals()
+    }
+  })
+
   it('adds the inbox for partners and keeps five tabs for signed-in users', () => {
     expect(desktopItems(PARTNER_USER).map((i) => i.key)).toEqual(['services', 'estimates', 'requests', 'inbox', 'orders', 'messages'])
     expect(mobileItems(PARTNER_USER).map((i) => i.key)).toEqual(['home', 'requests', 'orders', 'messages', 'account'])

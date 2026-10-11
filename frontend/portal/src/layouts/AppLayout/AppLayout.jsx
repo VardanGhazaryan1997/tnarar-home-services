@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, Outlet } from 'react-router'
@@ -15,13 +15,14 @@ import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
 import { desktopItems, mobileItems } from './navigation'
 import SiteFooter from './SiteFooter'
+import { useCompactHeader } from './useCompactHeader'
 import styles from './AppLayout.module.scss'
 
 const b = bem(styles)
 
 /** The page frame: header (desktop navigation), bottom tab bar (phones) and footer. Restores the session on start. */
 export default function AppLayout() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const dispatch = useDispatch()
   const status = useSelector(selectAuthStatus)
   const user = useSelector(selectUser)
@@ -29,6 +30,8 @@ export default function AppLayout() {
   const signedIn = status === 'authenticated'
   const unread = useGetUnreadQuery(undefined, { skip: !signedIn }).data?.messages ?? 0
   useChatConnection(signedIn)
+  const barRef = useRef(null)
+  const compact = useCompactHeader(barRef, [i18n.language, status, user?.roles?.join()].join('|'))
 
   const badge = (item) =>
     item.badge && unread > 0 ? (
@@ -49,14 +52,21 @@ export default function AppLayout() {
         {t('layout.skipToContent')}
       </a>
       <header className={styles['app-layout__header']}>
-        <div className={styles['app-layout__bar']}>
+        <div ref={barRef} className={b('app-layout__bar', { compact })}>
           <NavLink to={path('/')} className={styles['app-layout__logo']} aria-label={t('layout.home')}>
-            <BrandLogo size={30} />
+            <BrandLogo size={30} compact />
           </NavLink>
           <nav className={styles['app-layout__nav']} aria-label={t('layout.mainNavigation')}>
             {desktopItems(user).map((item) => (
-              <NavLink key={item.key} to={path(item.path)} end={item.end} className={linkClass('app-layout__nav-link')}>
-                {t(`nav.${item.key}`)}
+              <NavLink
+                key={item.key}
+                to={path(item.path)}
+                end={item.end}
+                className={linkClass('app-layout__nav-link')}
+                title={compact ? t(`nav.${item.key}`) : undefined}
+              >
+                {compact && <Icon name={item.icon} />}
+                <span className={b('app-layout__nav-label', { hidden: compact })}>{t(`nav.${item.key}`)}</span>
                 {badge(item)}
               </NavLink>
             ))}
@@ -67,7 +77,7 @@ export default function AppLayout() {
             {status === 'authenticated' && (
               <NavLink to={path('/account')} className={linkClass('app-layout__account')}>
                 <Icon name="account" />
-                <span className={styles['app-layout__account-name']}>{user.fullName ?? t('nav.account')}</span>
+                <span className={b('app-layout__account-name', { hidden: compact })}>{user.fullName ?? t('nav.account')}</span>
               </NavLink>
             )}
             {status === 'anonymous' && (

@@ -16,7 +16,7 @@
     gap: space(3);
 
     @include up(md) {
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
     }
   }
 
@@ -67,7 +67,12 @@
     flex-direction: column;
     gap: space(1);
     align-items: flex-end;
-    white-space: nowrap;
+    max-width: 100%;
+    text-align: end;
+
+    strong {
+      white-space: nowrap;
+    }
   }
 
   &__source {

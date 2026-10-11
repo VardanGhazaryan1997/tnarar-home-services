@@ -189,7 +189,7 @@
     gap: space(3);
 
     @include up(sm) {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
 
@@ -204,7 +204,7 @@
 
   &__editor-row {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: space(2);
     align-items: end;
     padding: space(3);
@@ -212,13 +212,13 @@
     border-radius: $radius;
 
     @include up(sm) {
-      grid-template-columns: 2fr 1fr 1fr auto;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
     }
   }
 
   &__editor-row--line {
     @include up(sm) {
-      grid-template-columns: 1fr 160px auto;
+      grid-template-columns: minmax(0, 1fr) 160px auto;
     }
   }
 

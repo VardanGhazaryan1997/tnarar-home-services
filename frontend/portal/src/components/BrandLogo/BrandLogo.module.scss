@@ -21,4 +21,10 @@
   &__accent {
     color: $color-tuff;
   }
+
+  &--compact &__word {
+    @media (width < 360px) {
+      display: none;
+    }
+  }
 }

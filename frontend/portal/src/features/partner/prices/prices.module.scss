@@ -71,6 +71,7 @@
 
   &__rows {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: space(2);
     padding: 0;
     margin: 0;
@@ -105,13 +106,16 @@
 
   &__head {
     display: flex;
-    gap: space(2);
+    flex-wrap: wrap;
+    gap: 0 space(2);
     align-items: baseline;
     justify-content: space-between;
   }
 
   &__name {
+    min-width: 0;
     font-weight: $font-weight-medium;
+    overflow-wrap: break-word;
   }
 
   &__unit {
@@ -138,7 +142,7 @@
 
   &__inputs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: space(2);
   }
 

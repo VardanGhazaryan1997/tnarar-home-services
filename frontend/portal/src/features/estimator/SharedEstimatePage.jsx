@@ -9,6 +9,8 @@ import { intlLocale } from '@/i18n/languages'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate, formatMoney } from '@/shared/format'
 import { useSharedEstimate } from './estimatorApi'
+import { grandTotal, hasMaterials } from './materials'
+import MaterialsList from './MaterialsList'
 import styles from './estimator.module.scss'
 
 /** An estimate someone shared: rooms, work and prices, read-only, with a way to make one's own. */
@@ -35,6 +37,7 @@ export default function SharedEstimatePage() {
       >
         {(estimate) => {
           const { measurement } = estimate
+          const grand = grandTotal(measurement)
           return (
             <>
               <PageHeader
@@ -44,9 +47,16 @@ export default function SharedEstimatePage() {
               />
               <Card>
                 <div className={styles['estimate-summary']}>
-                  <p className={styles['quick-estimate__label']}>{t('estimator.quick.resultLabel')}</p>
-                  <p className={styles['quick-estimate__range']}>{range(measurement.totalMin, measurement.totalMax)}</p>
-                  <p className={styles['quick-estimate__typical']}>{t('estimator.quick.usually', { amount: formatMoney(measurement.totalTypical, lng) })}</p>
+                  <p className={styles['quick-estimate__label']}>
+                    {t(hasMaterials(measurement) ? 'estimator.materials.resultLabel' : 'estimator.quick.resultLabel')}
+                  </p>
+                  <p className={styles['quick-estimate__range']}>{range(grand.min, grand.max)}</p>
+                  <p className={styles['quick-estimate__typical']}>{t('estimator.quick.usually', { amount: formatMoney(grand.typical, lng) })}</p>
+                  {hasMaterials(measurement) && (
+                    <p className={styles['estimate-summary__note']}>
+                      {t('estimator.materials.labour', { range: range(measurement.totalMin, measurement.totalMax) })}
+                    </p>
+                  )}
                   {estimate.oldBuilding && <p className={styles['estimate-summary__note']}>{t('estimator.shared.oldBuilding')}</p>}
                   <p className={styles['quick-estimate__note']}>{t('estimator.quick.note')}</p>
                 </div>
@@ -83,6 +93,7 @@ export default function SharedEstimatePage() {
                   </Card>
                 )
               })}
+              {hasMaterials(measurement) && <MaterialsList measurement={measurement} />}
             </>
           )
         }}

@@ -157,6 +157,45 @@ describe('Room-by-room estimator', () => {
     expect(JSON.parse(localStorage.getItem('hs_estimate_draft')).rooms).toHaveLength(1)
   }, SLOW)
 
+  it('adds the materials the work needs at the chosen grade', async () => {
+    const measured = estimatorServer()
+    server.use(
+      http.post('*/api/v1/estimates/measure', async ({ request }) => {
+        const body = await request.json()
+        measured.push(body)
+        const materials = body.materials
+          ? {
+              materialGrade: body.materials,
+              materials: [
+                { materialId: 'm-tiles', name: 'Floor tiles', unit: 'SquareMeter', quantity: 4.4, unitPrice: 9000, cost: 39600 },
+                { materialId: 'm-toilet', name: 'Toilet', unit: 'Piece', quantity: 1, unitPrice: 90000, cost: 90000 },
+              ],
+              materialsTotal: 129600,
+            }
+          : { materials: [], materialsTotal: 0 }
+        return HttpResponse.json({ ...MEASUREMENT, ...materials, rooms: body.rooms.map(() => ({ ...BATHROOM_MEASURED, materialsCost: materials.materialsTotal })) })
+      }),
+    )
+    const user = userEvent.setup()
+    renderRoute('/en/estimates/new')
+    const card = await addBathroom(user)
+    const summary = screen.getByRole('complementary', { name: ed.summary })
+    await waitFor(() => expect(summary).toHaveTextContent(/30[\s,.]?000/))
+    expect(screen.queryByRole('region', { name: /^Materials:/ })).not.toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText(en.estimator.materials.label), 'Standard')
+
+    await waitFor(() => expect(measured.at(-1).materials).toBe('Standard'))
+    const list = await screen.findByRole('region', { name: en.estimator.materials.title.replace('{{grade}}', en.estimator.materials.grades.Standard) })
+    expect(within(list).getByText('Floor tiles')).toBeInTheDocument()
+    expect(within(list).getByText(/4\.4 m²/)).toBeInTheDocument()
+    expect(within(list).getByText(/129[\s,.]?600/)).toBeInTheDocument()
+    expect(within(summary).getByText(en.estimator.materials.resultLabel)).toBeInTheDocument()
+    expect(summary).toHaveTextContent(/159[\s,.]?600/) // 30,000 labour + 129,600 materials
+    expect(within(card).getByText(/Materials for this room/)).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('hs_estimate_draft')).materials).toBe('Standard')
+  }, SLOW)
+
   it('adds doors, windows and more work, and checks sizes', async () => {
     const measured = estimatorServer()
     const user = userEvent.setup()

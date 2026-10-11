@@ -1,5 +1,6 @@
 using HomeServices.Application.Estimates;
 using HomeServices.Application.Messaging;
+using HomeServices.Domain.Catalog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +15,7 @@ namespace HomeServices.Api.Controllers;
 [Route("api/v1/me/estimates")]
 public sealed class MyEstimatesController : ControllerBase
 {
-    public sealed record SaveRequest(string Title, Guid? CityId, bool OldBuilding, IReadOnlyList<EstimateRoomInput> Rooms);
+    public sealed record SaveRequest(string Title, Guid? CityId, bool OldBuilding, IReadOnlyList<EstimateRoomInput> Rooms, MaterialGrade? Materials = null);
 
     /// <summary>The estimates, last changed first, with their totals.</summary>
     [HttpGet]
@@ -39,7 +40,7 @@ public sealed class MyEstimatesController : ControllerBase
         CancellationToken cancellationToken) =>
         StatusCode(
             StatusCodes.Status201Created,
-            await handler.HandleAsync(new SaveMyEstimate(null, request.Title, request.CityId, request.OldBuilding, request.Rooms), cancellationToken));
+            await handler.HandleAsync(new SaveMyEstimate(null, request.Title, request.CityId, request.OldBuilding, request.Rooms, request.Materials), cancellationToken));
 
     /// <summary>Replaces the estimate's title, place, building age and rooms.</summary>
     [HttpPut("{id:guid}")]
@@ -48,7 +49,7 @@ public sealed class MyEstimatesController : ControllerBase
         SaveRequest request,
         [FromServices] ICommandHandler<SaveMyEstimate, EstimateDto> handler,
         CancellationToken cancellationToken) =>
-        handler.HandleAsync(new SaveMyEstimate(id, request.Title, request.CityId, request.OldBuilding, request.Rooms), cancellationToken);
+        handler.HandleAsync(new SaveMyEstimate(id, request.Title, request.CityId, request.OldBuilding, request.Rooms, request.Materials), cancellationToken);
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(

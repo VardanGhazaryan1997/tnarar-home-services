@@ -1,3 +1,4 @@
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Common;
 
 namespace HomeServices.Domain.Estimates;
@@ -30,6 +31,9 @@ public sealed class Estimate : AuditableEntity
     /// <summary>An old building: all work costs more (uneven walls, old pipes and wiring).</summary>
     public bool OldBuilding { get; private set; }
 
+    /// <summary>The quality of materials the estimate counts, or null for labour only.</summary>
+    public MaterialGrade? Materials { get; private set; }
+
     /// <summary>The secret part of the estimate's share link, or null when it isn't shared.</summary>
     public string? ShareToken { get; private set; }
 
@@ -43,6 +47,17 @@ public sealed class Estimate : AuditableEntity
     }
 
     public void SetOldBuilding(bool oldBuilding) => OldBuilding = oldBuilding;
+
+    /// <summary>Counts materials of <paramref name="grade"/> too, or labour only with null.</summary>
+    public void SetMaterials(MaterialGrade? grade)
+    {
+        if (grade is { } value && !Enum.IsDefined(value))
+        {
+            throw new DomainException("estimate.materials_invalid", "Unknown material grade.");
+        }
+
+        Materials = grade;
+    }
 
     /// <summary>
     /// Turns on the share link with <paramref name="token"/> (16+ URL-safe characters); an estimate already shared keeps

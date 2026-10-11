@@ -10,6 +10,7 @@ import { SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
 import { categoryOptions, cityOptionGroups, useCategories, useCities, useRegions } from '@/features/catalog/catalogApi'
 import { useMyEstimate, useWorkItems } from '@/features/estimator/estimatorApi'
+import { grandTotal } from '@/features/estimator/materials'
 import PhotoPicker from '@/features/files/PhotoPicker'
 import { useFileUploads } from '@/features/files/useFileUploads'
 import { useLocalizedPath } from '@/i18n/hooks'
@@ -87,8 +88,8 @@ export default function NewRequestPage() {
       description:
         current.description ||
         t('requests.fromEstimate.description', { title: data.title, rooms: data.rooms.map((room) => room.name).join(', ') }),
-      budgetMin: current.budgetMin || (data.measurement.totalMin > 0 ? String(data.measurement.totalMin) : ''),
-      budgetMax: current.budgetMax || (data.measurement.totalMax > 0 ? String(data.measurement.totalMax) : ''),
+      budgetMin: current.budgetMin || (grandTotal(data.measurement).min > 0 ? String(grandTotal(data.measurement).min) : ''),
+      budgetMax: current.budgetMax || (grandTotal(data.measurement).max > 0 ? String(grandTotal(data.measurement).max) : ''),
     }))
   }
   if (estimate.data && workItems.data && categories.data && !prefilled.category) {
@@ -181,9 +182,9 @@ export default function NewRequestPage() {
                 rooms: estimate.data.rooms.length,
                 lines: estimate.data.rooms.reduce((sum, room) => sum + room.lines.length, 0),
               })}
-              {estimate.data.measurement.totalTypical > 0 &&
+              {grandTotal(estimate.data.measurement).typical > 0 &&
                 ` ${t('requests.fromEstimate.range', {
-                  range: `${formatMoney(estimate.data.measurement.totalMin, i18n.language)} – ${formatMoney(estimate.data.measurement.totalMax, i18n.language)}`,
+                  range: `${formatMoney(grandTotal(estimate.data.measurement).min, i18n.language)} – ${formatMoney(grandTotal(estimate.data.measurement).max, i18n.language)}`,
                 })}`}
             </p>
             <p>{t('requests.fromEstimate.private')}</p>

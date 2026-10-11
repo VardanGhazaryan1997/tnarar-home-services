@@ -33,6 +33,10 @@ public interface IAppDbContext
 
     DbSet<WorkItem> WorkItems { get; }
 
+    DbSet<Material> Materials { get; }
+
+    DbSet<WorkItemMaterial> WorkItemMaterials { get; }
+
     DbSet<PartnerPrice> PartnerPrices { get; }
 
     DbSet<RegionalMarketPrice> RegionalMarketPrices { get; }

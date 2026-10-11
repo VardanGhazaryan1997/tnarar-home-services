@@ -33,7 +33,7 @@ public sealed record RoomTemplateItemDto(
 /// A quick estimate: one room of <paramref name="Area"/> m² with the usual work for its type (see room templates),
 /// measured and priced. For the "how much will it cost?" widget.
 /// </summary>
-public sealed record QuickEstimate(RoomType RoomType, decimal Area, decimal? Height = null, bool OldBuilding = false)
+public sealed record QuickEstimate(RoomType RoomType, decimal Area, decimal? Height = null, bool OldBuilding = false, MaterialGrade? Materials = null)
     : IQuery<EstimateMeasurementDto>;
 
 /// <summary>Every room type's template with all translations and hidden work too, for the Back Office.</summary>
@@ -52,6 +52,7 @@ public sealed class QuickEstimateValidator : AbstractValidator<QuickEstimate>
     public QuickEstimateValidator()
     {
         RuleFor(x => x.RoomType).IsInEnum().WithErrorCode("room.type_invalid");
+        RuleFor(x => x.Materials).IsInEnum().WithErrorCode("materials.invalid");
         RuleFor(x => x.Area).Must(area => area is > 0 and <= RoomSize.MaxArea).WithErrorCode("area.invalid");
         RuleFor(x => x.Height).InclusiveBetween(RoomSize.MinHeight, RoomSize.MaxHeight).When(x => x.Height is not null).WithErrorCode("height.invalid");
     }
@@ -100,7 +101,7 @@ public sealed class QuickEstimateHandler(IAppDbContext db, ICurrentLanguage lang
         var templates = await RoomTemplateData.ActiveAsync(db, query.RoomType, cancellationToken);
         var lines = templates.Select(t => new LineInput(t.Item.Id, t.Template.DefaultQuantity(query.Area))).ToList();
         var room = new RoomInput(query.RoomType, null, null, query.Area, query.Height, Lines: lines);
-        return await EstimateCalculator.CalculateAsync(db, language, [room], query.OldBuilding, cityId: null, skipUnavailable: false, cancellationToken);
+        return await EstimateCalculator.CalculateAsync(db, language, [room], query.OldBuilding, cityId: null, query.Materials, skipUnavailable: false, cancellationToken);
     }
 }
 

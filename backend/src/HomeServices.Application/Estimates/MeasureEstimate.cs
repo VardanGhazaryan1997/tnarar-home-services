@@ -11,8 +11,10 @@ namespace HomeServices.Application.Estimates;
 /// each room; the quantity of each work item (measured from the room unless the customer gave one); and its labour price
 /// range from the market range, with the adjustments (see <see cref="EstimatePricing"/>). Anyone can call it.
 /// <paramref name="CityId"/>: the town the work is in; its region's ranges are used where there are enough partners.
+/// <paramref name="Materials"/>: also count the materials the work needs, priced for that grade (null = labour only).
 /// </summary>
-public sealed record MeasureEstimate(IReadOnlyList<RoomInput> Rooms, bool OldBuilding = false, Guid? CityId = null) : IQuery<EstimateMeasurementDto>;
+public sealed record MeasureEstimate(IReadOnlyList<RoomInput> Rooms, bool OldBuilding = false, Guid? CityId = null, MaterialGrade? Materials = null)
+    : IQuery<EstimateMeasurementDto>;
 
 /// <summary>A room: length × width, or only the floor area; height defaults to 2.7 m.</summary>
 public sealed record RoomInput(
@@ -31,14 +33,24 @@ public sealed record LineInput(Guid WorkItemId, decimal? Quantity = null);
 
 /// <summary>
 /// The whole estimate. Totals add up the priced lines (labour, AMD); <see cref="UnpricedLines"/> counts lines left out
-/// because they need a quantity or the work has no price yet.
+/// because they need a quantity or the work has no price yet. With a <see cref="MaterialGrade"/>, <see cref="Materials"/>
+/// lists what the work needs (all rooms together) and <see cref="MaterialsTotal"/> what it costs; otherwise it's empty.
 /// </summary>
 public sealed record EstimateMeasurementDto(
     IReadOnlyList<RoomMeasurementDto> Rooms,
     int TotalMin = 0,
     int TotalTypical = 0,
     int TotalMax = 0,
-    int UnpricedLines = 0);
+    int UnpricedLines = 0,
+    MaterialGrade? MaterialGrade = null,
+    IReadOnlyList<MaterialNeedDto>? Materials = null,
+    int MaterialsTotal = 0);
+
+/// <summary>
+/// A material the estimate needs: <see cref="Quantity"/> in its unit (waste included, rounded up), the price per unit
+/// for the chosen grade and the cost (AMD).
+/// </summary>
+public sealed record MaterialNeedDto(Guid MaterialId, string Name, MaterialUnit Unit, decimal Quantity, int UnitPrice, int Cost);
 
 public sealed record RoomMeasurementDto(
     RoomType Type,
@@ -50,7 +62,8 @@ public sealed record RoomMeasurementDto(
     IReadOnlyList<LineMeasurementDto> Lines,
     int TotalMin = 0,
     int TotalTypical = 0,
-    int TotalMax = 0);
+    int TotalMax = 0,
+    int MaterialsCost = 0);
 
 /// <summary>
 /// A line: <see cref="MeasuredQuantity"/> from the room (null when the work can't be measured, e.g. pieces),
@@ -75,6 +88,7 @@ public sealed class MeasureEstimateValidator : AbstractValidator<MeasureEstimate
 {
     public MeasureEstimateValidator()
     {
+        RuleFor(x => x.Materials).IsInEnum().WithErrorCode("materials.invalid");
         RuleFor(x => x.Rooms).NotNull().WithErrorCode("rooms.required")
             .Must(rooms => rooms is null || rooms.Count is >= 1 and <= Estimate.MaxRooms).WithErrorCode("rooms.count_invalid");
         RuleForEach(x => x.Rooms).ChildRules(room =>
@@ -99,5 +113,5 @@ public sealed class MeasureEstimateValidator : AbstractValidator<MeasureEstimate
 public sealed class MeasureEstimateHandler(IAppDbContext db, ICurrentLanguage language) : IQueryHandler<MeasureEstimate, EstimateMeasurementDto>
 {
     public Task<EstimateMeasurementDto> HandleAsync(MeasureEstimate query, CancellationToken cancellationToken) =>
-        EstimateCalculator.CalculateAsync(db, language, query.Rooms, query.OldBuilding, query.CityId, skipUnavailable: false, cancellationToken);
+        EstimateCalculator.CalculateAsync(db, language, query.Rooms, query.OldBuilding, query.CityId, query.Materials, skipUnavailable: false, cancellationToken);
 }

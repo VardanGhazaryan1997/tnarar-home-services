@@ -3,7 +3,7 @@ import { baseApi } from '@/api/baseApi'
 const BASE = '/admin/catalog'
 
 /** Back Office catalog management (needs catalog.manage). See backend/README "Managing the catalog". */
-export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories', 'Cities', 'WorkItems', 'RoomTemplates'] }).injectEndpoints({
+export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories', 'Cities', 'WorkItems', 'RoomTemplates', 'Materials', 'WorkItemMaterials'] }).injectEndpoints({
   endpoints: (build) => ({
     getCategories: build.query({
       query: () => `${BASE}/categories`,
@@ -48,6 +48,32 @@ export const catalogApi = baseApi.enhanceEndpoints({ addTagTypes: ['Categories',
     deleteWorkItem: build.mutation({
       query: (id) => ({ url: `${BASE}/work-items/${id}`, method: 'DELETE' }),
       invalidatesTags: ['WorkItems'],
+    }),
+
+    getMaterials: build.query({
+      query: () => `${BASE}/materials`,
+      providesTags: ['Materials'],
+    }),
+    createMaterial: build.mutation({
+      query: (body) => ({ url: `${BASE}/materials`, method: 'POST', body }),
+      invalidatesTags: ['Materials'],
+    }),
+    updateMaterial: build.mutation({
+      query: ({ id, ...body }) => ({ url: `${BASE}/materials/${id}`, method: 'PUT', body }),
+      invalidatesTags: ['Materials'],
+    }),
+    deleteMaterial: build.mutation({
+      query: (id) => ({ url: `${BASE}/materials/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Materials'],
+    }),
+    /** `[{ materialId, quantityPerUnit, wastePercent }]` for one work item. */
+    getWorkItemMaterials: build.query({
+      query: (id) => `${BASE}/work-items/${id}/materials`,
+      providesTags: (_result, _error, id) => [{ type: 'WorkItemMaterials', id }],
+    }),
+    setWorkItemMaterials: build.mutation({
+      query: ({ id, items }) => ({ url: `${BASE}/work-items/${id}/materials`, method: 'PUT', body: { items } }),
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'WorkItemMaterials', id }, 'Materials'],
     }),
 
     getRoomTemplates: build.query({
@@ -107,6 +133,12 @@ export const {
   useUpdateWorkItemMutation,
   useSetWorkItemActiveMutation,
   useDeleteWorkItemMutation,
+  useGetMaterialsQuery,
+  useCreateMaterialMutation,
+  useUpdateMaterialMutation,
+  useDeleteMaterialMutation,
+  useGetWorkItemMaterialsQuery,
+  useSetWorkItemMaterialsMutation,
   useGetRoomTemplatesQuery,
   useSetRoomTemplateMutation,
   useGetRegionsQuery,

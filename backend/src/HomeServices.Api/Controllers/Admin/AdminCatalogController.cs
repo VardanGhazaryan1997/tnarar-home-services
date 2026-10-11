@@ -162,6 +162,80 @@ public sealed class AdminCatalogController : ControllerBase
         return NoContent();
     }
 
+    // ---------- Materials (E1: what work uses, for materials in estimates) ----------
+
+    /// <summary>A material's fields. Prices are AMD per unit: 1 ≤ budget ≤ standard ≤ premium.</summary>
+    public sealed record MaterialRequest(
+        string Slug,
+        Dictionary<string, string> Name,
+        MaterialUnit Unit,
+        int PriceBudget,
+        int PriceStandard,
+        int PricePremium,
+        int SortOrder,
+        bool IsActive = true);
+
+    public sealed record WorkItemMaterialsRequest(IReadOnlyList<WorkItemMaterialInput> Items);
+
+    /// <summary>Every material in display order, hidden ones included, with how many work items use each.</summary>
+    [HttpGet("materials")]
+    public Task<IReadOnlyList<AdminMaterialDto>> GetMaterials(
+        [FromServices] IQueryHandler<GetAdminMaterials, IReadOnlyList<AdminMaterialDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetAdminMaterials(), cancellationToken);
+
+    /// <summary>Adds a material; 409 "material.slug_taken".</summary>
+    [HttpPost("materials")]
+    public async Task<ActionResult<AdminMaterialDto>> CreateMaterialAsync(
+        MaterialRequest request,
+        [FromServices] ICommandHandler<CreateMaterial, AdminMaterialDto> handler,
+        CancellationToken cancellationToken) =>
+        StatusCode(
+            StatusCodes.Status201Created,
+            await handler.HandleAsync(
+                new CreateMaterial(
+                    request.Slug, request.Name, request.Unit, request.PriceBudget, request.PriceStandard, request.PricePremium, request.SortOrder, request.IsActive),
+                cancellationToken));
+
+    [HttpPut("materials/{id:guid}")]
+    public Task<AdminMaterialDto> UpdateMaterial(
+        Guid id,
+        MaterialRequest request,
+        [FromServices] ICommandHandler<UpdateMaterial, AdminMaterialDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(
+            new UpdateMaterial(
+                id, request.Slug, request.Name, request.Unit, request.PriceBudget, request.PriceStandard, request.PricePremium, request.SortOrder, request.IsActive),
+            cancellationToken);
+
+    /// <summary>Deletes a material; 422 "material.in_use" while work items use it.</summary>
+    [HttpDelete("materials/{id:guid}")]
+    public async Task<IActionResult> DeleteMaterialAsync(
+        Guid id,
+        [FromServices] ICommandHandler<DeleteMaterial, bool> handler,
+        CancellationToken cancellationToken)
+    {
+        await handler.HandleAsync(new DeleteMaterial(id), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>The materials a work item uses: amount per unit of work and waste %.</summary>
+    [HttpGet("work-items/{id:guid}/materials")]
+    public Task<IReadOnlyList<WorkItemMaterialInput>> GetWorkItemMaterials(
+        Guid id,
+        [FromServices] IQueryHandler<GetWorkItemMaterials, IReadOnlyList<WorkItemMaterialInput>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetWorkItemMaterials(id), cancellationToken);
+
+    /// <summary>Replaces the materials a work item uses with the list sent (in that order).</summary>
+    [HttpPut("work-items/{id:guid}/materials")]
+    public Task<IReadOnlyList<WorkItemMaterialInput>> SetWorkItemMaterials(
+        Guid id,
+        WorkItemMaterialsRequest request,
+        [FromServices] ICommandHandler<SetWorkItemMaterials, IReadOnlyList<WorkItemMaterialInput>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SetWorkItemMaterials(id, request.Items), cancellationToken);
+
     // ---------- Room templates (the estimator's usual work per kind of room) ----------
 
     public sealed record RoomTemplateRequest(IReadOnlyList<RoomTemplateInput> Items);

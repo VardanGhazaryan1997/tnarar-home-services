@@ -4605,6 +4605,628 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Catalog.Material", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("name");
+
+                    b.Property<int>("PriceBudget")
+                        .HasColumnType("integer")
+                        .HasColumnName("price_budget");
+
+                    b.Property<int>("PricePremium")
+                        .HasColumnType("integer")
+                        .HasColumnName("price_premium");
+
+                    b.Property<int>("PriceStandard")
+                        .HasColumnType("integer")
+                        .HasColumnName("price_standard");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("slug");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("unit");
+
+                    b.HasKey("Id")
+                        .HasName("pk_materials");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_materials_slug");
+
+                    b.ToTable("materials", t =>
+                        {
+                            t.HasCheckConstraint("ck_materials_prices", "price_budget >= 1 AND price_budget <= price_standard AND price_standard <= price_premium");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("9f8a85e2-b4a3-563e-b05d-c70542f7938e"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0533\\u056B\\u057A\\u057D\\u0561\\u0575\\u056B\\u0576 \\u057D\\u057E\\u0561\\u0572\",\"ru\":\"\\u0413\\u0438\\u043F\\u0441\\u043E\\u0432\\u0430\\u044F \\u0448\\u0442\\u0443\\u043A\\u0430\\u0442\\u0443\\u0440\\u043A\\u0430\",\"en\":\"Gypsum plaster\",\"ar\":\"\\u062C\\u0635 (\\u0644\\u064A\\u0627\\u0633\\u0629 \\u062C\\u0628\\u0633\\u064A\\u0629)\",\"fa\":\"\\u06AF\\u0686 \\u0627\\u0646\\u062F\\u0648\\u062F\",\"hi\":\"\\u091C\\u093F\\u092A\\u094D\\u0938\\u092E \\u092A\\u094D\\u0932\\u093E\\u0938\\u094D\\u091F\\u0930\"}",
+                            PriceBudget = 90,
+                            PricePremium = 170,
+                            PriceStandard = 120,
+                            Slug = "gypsum-plaster",
+                            SortOrder = 1,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("6b3f09c6-d8ff-5359-a620-c50520a20fde"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0544\\u0565\\u056F\\u0576\\u0561\\u0580\\u056F\\u0561\\u0575\\u056B\\u0576 \\u0577\\u057A\\u0561\\u0584\\u056C\",\"ru\":\"\\u0421\\u0442\\u0430\\u0440\\u0442\\u043E\\u0432\\u0430\\u044F \\u0448\\u043F\\u0430\\u043A\\u043B\\u0451\\u0432\\u043A\\u0430\",\"en\":\"Base putty\",\"ar\":\"\\u0645\\u0639\\u062C\\u0648\\u0646 \\u0623\\u0633\\u0627\\u0633\",\"fa\":\"\\u0628\\u062A\\u0648\\u0646\\u0647 \\u0632\\u06CC\\u0631\\u06A9\\u0627\\u0631\",\"hi\":\"\\u092C\\u0947\\u0938 \\u092A\\u0941\\u091F\\u094D\\u091F\\u0940\"}",
+                            PriceBudget = 100,
+                            PricePremium = 200,
+                            PriceStandard = 140,
+                            Slug = "base-putty",
+                            SortOrder = 2,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("9df0d7ff-35b8-5b46-b535-ae8355975de1"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u057B\\u0576\\u0561\\u056F\\u0561\\u0576 \\u0577\\u057A\\u0561\\u0584\\u056C\",\"ru\":\"\\u0424\\u0438\\u043D\\u0438\\u0448\\u043D\\u0430\\u044F \\u0448\\u043F\\u0430\\u043A\\u043B\\u0451\\u0432\\u043A\\u0430\",\"en\":\"Finishing putty\",\"ar\":\"\\u0645\\u0639\\u062C\\u0648\\u0646 \\u062A\\u0634\\u0637\\u064A\\u0628\",\"fa\":\"\\u0628\\u062A\\u0648\\u0646\\u0647 \\u0631\\u0648\\u06CC\\u0647\",\"hi\":\"\\u092B\\u093C\\u093F\\u0928\\u093F\\u0936\\u093F\\u0902\\u0917 \\u092A\\u0941\\u091F\\u094D\\u091F\\u0940\"}",
+                            PriceBudget = 150,
+                            PricePremium = 380,
+                            PriceStandard = 230,
+                            Slug = "finishing-putty",
+                            SortOrder = 3,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0533\\u0580\\u0578\\u0582\\u0576\\u057F\",\"ru\":\"\\u0413\\u0440\\u0443\\u043D\\u0442\\u043E\\u0432\\u043A\\u0430\",\"en\":\"Primer\",\"ar\":\"\\u0637\\u0644\\u0627\\u0621 \\u0623\\u0633\\u0627\\u0633 (\\u0628\\u0631\\u0627\\u064A\\u0645\\u0631)\",\"fa\":\"\\u0622\\u0633\\u062A\\u0631\",\"hi\":\"\\u092A\\u094D\\u0930\\u093E\\u0907\\u092E\\u0930\"}",
+                            PriceBudget = 500,
+                            PricePremium = 1400,
+                            PriceStandard = 850,
+                            Slug = "primer",
+                            SortOrder = 4,
+                            Unit = "Liter"
+                        },
+                        new
+                        {
+                            Id = new Guid("81a158f9-9e88-549c-b7b6-1a773e515d04"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0546\\u0565\\u0580\\u0584\\u056B\\u0576 \\u0576\\u0565\\u0580\\u056F\",\"ru\":\"\\u0418\\u043D\\u0442\\u0435\\u0440\\u044C\\u0435\\u0440\\u043D\\u0430\\u044F \\u043A\\u0440\\u0430\\u0441\\u043A\\u0430\",\"en\":\"Interior paint\",\"ar\":\"\\u062F\\u0647\\u0627\\u0646 \\u062F\\u0627\\u062E\\u0644\\u064A\",\"fa\":\"\\u0631\\u0646\\u06AF \\u062F\\u0627\\u062E\\u0644\\u06CC\",\"hi\":\"\\u0907\\u0902\\u091F\\u0940\\u0930\\u093F\\u092F\\u0930 \\u092A\\u0947\\u0902\\u091F\"}",
+                            PriceBudget = 1200,
+                            PricePremium = 5000,
+                            PriceStandard = 2500,
+                            Slug = "interior-paint",
+                            SortOrder = 5,
+                            Unit = "Liter"
+                        },
+                        new
+                        {
+                            Id = new Guid("4998f2c5-d264-572d-863c-bf8e79a43fba"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0537\\u0574\\u0561\\u056C \\u0576\\u0565\\u0580\\u056F\",\"ru\":\"\\u042D\\u043C\\u0430\\u043B\\u044C\",\"en\":\"Enamel paint\",\"ar\":\"\\u062F\\u0647\\u0627\\u0646 \\u0645\\u064A\\u0646\\u0627\",\"fa\":\"\\u0631\\u0646\\u06AF \\u0631\\u0648\\u063A\\u0646\\u06CC (\\u0644\\u0639\\u0627\\u0628\\u06CC)\",\"hi\":\"\\u0907\\u0928\\u0947\\u092E\\u0932 \\u092A\\u0947\\u0902\\u091F\"}",
+                            PriceBudget = 2500,
+                            PricePremium = 7000,
+                            PriceStandard = 4000,
+                            Slug = "enamel-paint",
+                            SortOrder = 6,
+                            Unit = "Liter"
+                        },
+                        new
+                        {
+                            Id = new Guid("50286ae2-f5c5-51fa-a55e-e6deeecd6bb3"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054A\\u0561\\u057D\\u057F\\u0561\\u057C\",\"ru\":\"\\u041E\\u0431\\u043E\\u0438\",\"en\":\"Wallpaper\",\"ar\":\"\\u0648\\u0631\\u0642 \\u062C\\u062F\\u0631\\u0627\\u0646\",\"fa\":\"\\u06A9\\u0627\\u063A\\u0630 \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0935\\u0949\\u0932\\u092A\\u0947\\u092A\\u0930\"}",
+                            PriceBudget = 800,
+                            PricePremium = 5000,
+                            PriceStandard = 2000,
+                            Slug = "wallpaper",
+                            SortOrder = 7,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("92ae4fcc-d7ae-5707-9e52-59e9884233ff"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054A\\u0561\\u057D\\u057F\\u0561\\u057C\\u056B \\u057D\\u0578\\u057D\\u056B\\u0576\\u0571\",\"ru\":\"\\u041A\\u043B\\u0435\\u0439 \\u0434\\u043B\\u044F \\u043E\\u0431\\u043E\\u0435\\u0432\",\"en\":\"Wallpaper paste\",\"ar\":\"\\u063A\\u0631\\u0627\\u0621 \\u0648\\u0631\\u0642 \\u0627\\u0644\\u062C\\u062F\\u0631\\u0627\\u0646\",\"fa\":\"\\u0686\\u0633\\u0628 \\u06A9\\u0627\\u063A\\u0630 \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0935\\u0949\\u0932\\u092A\\u0947\\u092A\\u0930 \\u092A\\u0947\\u0938\\u094D\\u091F\"}",
+                            PriceBudget = 2000,
+                            PricePremium = 4500,
+                            PriceStandard = 3000,
+                            Slug = "wallpaper-paste",
+                            SortOrder = 8,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("34aac121-8a63-5457-9d9a-b2c12f4843dc"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0531\\u057A\\u0561\\u056F\\u0565\\u0569\\u0565\\u056C\\u0561\\u0575\\u056B\\u0576 \\u057A\\u0561\\u057D\\u057F\\u0561\\u057C\",\"ru\":\"\\u0421\\u0442\\u0435\\u043A\\u043B\\u043E\\u043E\\u0431\\u043E\\u0438\",\"en\":\"Glass fibre wallpaper\",\"ar\":\"\\u0648\\u0631\\u0642 \\u062C\\u062F\\u0631\\u0627\\u0646 \\u0645\\u0646 \\u0627\\u0644\\u0623\\u0644\\u064A\\u0627\\u0641 \\u0627\\u0644\\u0632\\u062C\\u0627\\u062C\\u064A\\u0629\",\"fa\":\"\\u06A9\\u0627\\u063A\\u0630 \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC \\u0641\\u0627\\u06CC\\u0628\\u0631\\u06AF\\u0644\\u0627\\u0633\",\"hi\":\"\\u0917\\u094D\\u0932\\u093E\\u0938 \\u092B\\u093C\\u093E\\u0907\\u092C\\u0930 \\u0935\\u0949\\u0932\\u092A\\u0947\\u092A\\u0930\"}",
+                            PriceBudget = 900,
+                            PricePremium = 2500,
+                            PriceStandard = 1500,
+                            Slug = "glass-fibre-wallpaper",
+                            SortOrder = 9,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f590444-0e90-52c8-876f-762c0a59ec62"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054A\\u0561\\u057F\\u056B \\u057D\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041D\\u0430\\u0441\\u0442\\u0435\\u043D\\u043D\\u0430\\u044F \\u043F\\u043B\\u0438\\u0442\\u043A\\u0430\",\"en\":\"Wall tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u062C\\u062F\\u0631\\u0627\\u0646\",\"fa\":\"\\u06A9\\u0627\\u0634\\u06CC \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0926\\u0940\\u0935\\u093E\\u0930 \\u0915\\u0940 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
+                            PriceBudget = 5000,
+                            PricePremium = 18000,
+                            PriceStandard = 9000,
+                            Slug = "wall-tiles",
+                            SortOrder = 10,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("8031a834-0e95-58bb-a13c-36d1dc1ff919"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u057F\\u0561\\u056F\\u056B \\u057D\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041D\\u0430\\u043F\\u043E\\u043B\\u044C\\u043D\\u0430\\u044F \\u043F\\u043B\\u0438\\u0442\\u043A\\u0430\",\"en\":\"Floor tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u0623\\u0631\\u0636\\u064A\\u0627\\u062A\",\"fa\":\"\\u06A9\\u0627\\u0634\\u06CC \\u06A9\\u0641\",\"hi\":\"\\u092B\\u093C\\u0930\\u094D\\u0936 \\u0915\\u0940 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
+                            PriceBudget = 6000,
+                            PricePremium = 20000,
+                            PriceStandard = 10000,
+                            Slug = "floor-tiles",
+                            SortOrder = 11,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("13bc3b02-b92a-55be-b637-e0ea5c42ae30"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053D\\u0578\\u0577\\u0578\\u0580 \\u0579\\u0561\\u0583\\u056B \\u056F\\u0565\\u0580\\u0561\\u0574\\u0578\\u0563\\u0580\\u0561\\u0576\\u056B\\u057F\",\"ru\":\"\\u041A\\u0440\\u0443\\u043F\\u043D\\u043E\\u0444\\u043E\\u0440\\u043C\\u0430\\u0442\\u043D\\u044B\\u0439 \\u043A\\u0435\\u0440\\u0430\\u043C\\u043E\\u0433\\u0440\\u0430\\u043D\\u0438\\u0442\",\"en\":\"Large-format porcelain tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u0628\\u0648\\u0631\\u0633\\u0644\\u064A\\u0646 \\u0643\\u0628\\u064A\\u0631 \\u0627\\u0644\\u062D\\u062C\\u0645\",\"fa\":\"\\u0633\\u0631\\u0627\\u0645\\u06CC\\u06A9 \\u067E\\u0631\\u0633\\u0644\\u0627\\u0646\\u06CC \\u0628\\u0632\\u0631\\u06AF\",\"hi\":\"\\u092C\\u0921\\u093C\\u0947 \\u0906\\u0915\\u093E\\u0930 \\u0915\\u0940 \\u092A\\u094B\\u0930\\u094D\\u0938\\u093F\\u0932\\u0947\\u0928 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
+                            PriceBudget = 12000,
+                            PricePremium = 40000,
+                            PriceStandard = 20000,
+                            Slug = "large-porcelain-tiles",
+                            SortOrder = 12,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("b71ba2d4-d5b6-5a4b-855b-528982d342ea"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053D\\u0573\\u0561\\u0576\\u056F\\u0561\\u0580\\u0561\\u0575\\u056B\\u0576 \\u057D\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041C\\u043E\\u0437\\u0430\\u0438\\u043A\\u0430\",\"en\":\"Mosaic tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u0641\\u0633\\u064A\\u0641\\u0633\\u0627\\u0621\",\"fa\":\"\\u06A9\\u0627\\u0634\\u06CC \\u0645\\u0648\\u0632\\u0627\\u06CC\\u06CC\\u06A9\\u06CC\",\"hi\":\"\\u092E\\u094B\\u091C\\u093C\\u0947\\u0915 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
+                            PriceBudget = 15000,
+                            PricePremium = 45000,
+                            PriceStandard = 25000,
+                            Slug = "mosaic-tiles",
+                            SortOrder = 13,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u056C\\u056B\\u056F\\u056B \\u057D\\u0578\\u057D\\u056B\\u0576\\u0571\",\"ru\":\"\\u041F\\u043B\\u0438\\u0442\\u043E\\u0447\\u043D\\u044B\\u0439 \\u043A\\u043B\\u0435\\u0439\",\"en\":\"Tile adhesive\",\"ar\":\"\\u0644\\u0627\\u0635\\u0642 \\u0628\\u0644\\u0627\\u0637\",\"fa\":\"\\u0686\\u0633\\u0628 \\u06A9\\u0627\\u0634\\u06CC\",\"hi\":\"\\u091F\\u093E\\u0907\\u0932 \\u090F\\u0921\\u0939\\u0947\\u0938\\u093F\\u0935\"}",
+                            PriceBudget = 100,
+                            PricePremium = 260,
+                            PriceStandard = 160,
+                            Slug = "tile-adhesive",
+                            SortOrder = 14,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054D\\u0561\\u056C\\u056B\\u056F\\u056B \\u0561\\u0580\\u0561\\u0576\\u0584\\u0561\\u056C\\u0581\\u056B\\u0579\",\"ru\":\"\\u0417\\u0430\\u0442\\u0438\\u0440\\u043A\\u0430 \\u0434\\u043B\\u044F \\u0448\\u0432\\u043E\\u0432\",\"en\":\"Tile grout\",\"ar\":\"\\u0631\\u0648\\u0628\\u0629 \\u0627\\u0644\\u0628\\u0644\\u0627\\u0637\",\"fa\":\"\\u067E\\u0648\\u062F\\u0631 \\u0628\\u0646\\u062F\\u06A9\\u0634\\u06CC\",\"hi\":\"\\u091F\\u093E\\u0907\\u0932 \\u0917\\u094D\\u0930\\u093E\\u0909\\u091F\"}",
+                            PriceBudget = 600,
+                            PricePremium = 3000,
+                            PriceStandard = 1200,
+                            Slug = "tile-grout",
+                            SortOrder = 15,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("e0509cca-a68a-5af0-97e8-245988a814ab"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053C\\u0561\\u0574\\u056B\\u0576\\u0561\\u057F\",\"ru\":\"\\u041B\\u0430\\u043C\\u0438\\u043D\\u0430\\u0442\",\"en\":\"Laminate flooring\",\"ar\":\"\\u0623\\u0631\\u0636\\u064A\\u0627\\u062A \\u0644\\u0627\\u0645\\u064A\\u0646\\u064A\\u062A\",\"fa\":\"\\u0644\\u0645\\u06CC\\u0646\\u062A\",\"hi\":\"\\u0932\\u0948\\u092E\\u093F\\u0928\\u0947\\u091F \\u092B\\u093C\\u094D\\u0932\\u094B\\u0930\\u093F\\u0902\\u0917\"}",
+                            PriceBudget = 3500,
+                            PricePremium = 10000,
+                            PriceStandard = 6000,
+                            Slug = "laminate",
+                            SortOrder = 16,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("0aeacc79-15b8-5762-86ce-c2e7b77e52b3"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u057F\\u0561\\u056F\\u056B \\u057F\\u0561\\u056F\\u0564\\u056B\\u0580\",\"ru\":\"\\u041F\\u043E\\u0434\\u043B\\u043E\\u0436\\u043A\\u0430\",\"en\":\"Floor underlay\",\"ar\":\"\\u0637\\u0628\\u0642\\u0629 \\u0639\\u0627\\u0632\\u0644\\u0629 \\u062A\\u062D\\u062A \\u0627\\u0644\\u0623\\u0631\\u0636\\u064A\\u0629\",\"fa\":\"\\u0632\\u06CC\\u0631\\u0627\\u0646\\u062F\\u0627\\u0632 \\u06A9\\u0641\",\"hi\":\"\\u092B\\u093C\\u094D\\u0932\\u094B\\u0930 \\u0905\\u0902\\u0921\\u0930\\u0932\\u0947\"}",
+                            PriceBudget = 300,
+                            PricePremium = 1200,
+                            PriceStandard = 600,
+                            Slug = "floor-underlay",
+                            SortOrder = 17,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("b4a5823c-2b6d-5cac-b371-31248ab4bcaa"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0544\\u0561\\u0576\\u0580\\u0561\\u0570\\u0561\\u057F\\u0561\\u056F\",\"ru\":\"\\u041F\\u0430\\u0440\\u043A\\u0435\\u0442\",\"en\":\"Parquet\",\"ar\":\"\\u0628\\u0627\\u0631\\u0643\\u064A\\u0647\",\"fa\":\"\\u067E\\u0627\\u0631\\u06A9\\u062A\",\"hi\":\"\\u092A\\u093E\\u0930\\u094D\\u0915\\u0947\\u091F\"}",
+                            PriceBudget = 12000,
+                            PricePremium = 35000,
+                            PriceStandard = 20000,
+                            Slug = "parquet",
+                            SortOrder = 18,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("3104e53e-e8b0-5f76-aa6b-d9dc838bc460"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0544\\u0561\\u0576\\u0580\\u0561\\u0570\\u0561\\u057F\\u0561\\u056F\\u056B \\u057D\\u0578\\u057D\\u056B\\u0576\\u0571\",\"ru\":\"\\u041F\\u0430\\u0440\\u043A\\u0435\\u0442\\u043D\\u044B\\u0439 \\u043A\\u043B\\u0435\\u0439\",\"en\":\"Parquet adhesive\",\"ar\":\"\\u0644\\u0627\\u0635\\u0642 \\u0628\\u0627\\u0631\\u0643\\u064A\\u0647\",\"fa\":\"\\u0686\\u0633\\u0628 \\u067E\\u0627\\u0631\\u06A9\\u062A\",\"hi\":\"\\u092A\\u093E\\u0930\\u094D\\u0915\\u0947\\u091F \\u090F\\u0921\\u0939\\u0947\\u0938\\u093F\\u0935\"}",
+                            PriceBudget = 1500,
+                            PricePremium = 4000,
+                            PriceStandard = 2500,
+                            Slug = "parquet-adhesive",
+                            SortOrder = 19,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("1d10ccf9-9dd3-5958-9030-01c8f0d34bb1"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054E\\u056B\\u0576\\u056B\\u056C\\u0561\\u0575\\u056B\\u0576 \\u056E\\u0561\\u056E\\u056F\",\"ru\":\"\\u0412\\u0438\\u043D\\u0438\\u043B\\u043E\\u0432\\u043E\\u0435 \\u043F\\u043E\\u043A\\u0440\\u044B\\u0442\\u0438\\u0435\",\"en\":\"Vinyl flooring\",\"ar\":\"\\u0623\\u0631\\u0636\\u064A\\u0627\\u062A \\u0641\\u064A\\u0646\\u064A\\u0644\",\"fa\":\"\\u06A9\\u0641\\u067E\\u0648\\u0634 \\u0648\\u06CC\\u0646\\u06CC\\u0644\",\"hi\":\"\\u0935\\u093F\\u0928\\u093E\\u0907\\u0932 \\u092B\\u093C\\u094D\\u0932\\u094B\\u0930\\u093F\\u0902\\u0917\"}",
+                            PriceBudget = 4000,
+                            PricePremium = 12000,
+                            PriceStandard = 7000,
+                            Slug = "vinyl-flooring",
+                            SortOrder = 20,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("e45888d9-64df-57b8-98c2-c376b94bacf9"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0547\\u0580\\u056B\\u0577\\u0561\\u056F\",\"ru\":\"\\u041F\\u043B\\u0438\\u043D\\u0442\\u0443\\u0441\",\"en\":\"Skirting board\",\"ar\":\"\\u0648\\u0632\\u0631\\u0629 (\\u0646\\u0639\\u0644\\u0629)\",\"fa\":\"\\u0642\\u0631\\u0646\\u06CC\\u0632 \\u06A9\\u0641\",\"hi\":\"\\u0938\\u094D\\u0915\\u0930\\u094D\\u091F\\u093F\\u0902\\u0917 \\u092C\\u094B\\u0930\\u094D\\u0921\"}",
+                            PriceBudget = 600,
+                            PricePremium = 2500,
+                            PriceStandard = 1200,
+                            Slug = "skirting-board",
+                            SortOrder = 21,
+                            Unit = "RunningMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("d7cd4f47-0a39-5e40-ae71-f0466d977788"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u057F\\u0561\\u056F\\u056B \\u056C\\u0581\\u0561\\u0576\\u0575\\u0578\\u0582\\u0569\",\"ru\":\"\\u0421\\u043C\\u0435\\u0441\\u044C \\u0434\\u043B\\u044F \\u0441\\u0442\\u044F\\u0436\\u043A\\u0438\",\"en\":\"Screed mix\",\"ar\":\"\\u062E\\u0644\\u0637\\u0629 \\u062A\\u0633\\u0648\\u064A\\u0629 \\u0627\\u0644\\u0623\\u0631\\u0636\\u064A\\u0629\",\"fa\":\"\\u0645\\u0644\\u0627\\u062A \\u06A9\\u0641\\u0633\\u0627\\u0632\\u06CC\",\"hi\":\"\\u0938\\u094D\\u0915\\u094D\\u0930\\u0940\\u0921 \\u092E\\u093F\\u0915\\u094D\\u0938\"}",
+                            PriceBudget = 40,
+                            PricePremium = 75,
+                            PriceStandard = 55,
+                            Slug = "screed-mix",
+                            SortOrder = 22,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("a892ed8e-e82a-56db-87c7-3ab2f40e9d37"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053B\\u0576\\u0584\\u0576\\u0561\\u0570\\u0561\\u0580\\u0569\\u0565\\u0581\\u057E\\u0578\\u0572 \\u056D\\u0561\\u057C\\u0576\\u0578\\u0582\\u0580\\u0564\",\"ru\":\"\\u041D\\u0430\\u043B\\u0438\\u0432\\u043D\\u043E\\u0439 \\u043F\\u043E\\u043B (\\u0441\\u043C\\u0435\\u0441\\u044C)\",\"en\":\"Self-levelling compound\",\"ar\":\"\\u062E\\u0644\\u0637\\u0629 \\u062A\\u0633\\u0648\\u064A\\u0629 \\u0630\\u0627\\u062A\\u064A\\u0629\",\"fa\":\"\\u0645\\u0644\\u0627\\u062A \\u062E\\u0648\\u062F\\u062A\\u0631\\u0627\\u0632\",\"hi\":\"\\u0938\\u0947\\u0932\\u094D\\u092B\\u093C-\\u0932\\u0947\\u0935\\u0932\\u093F\\u0902\\u0917 \\u0915\\u0902\\u092A\\u093E\\u0909\\u0902\\u0921\"}",
+                            PriceBudget = 200,
+                            PricePremium = 450,
+                            PriceStandard = 300,
+                            Slug = "self-levelling-mix",
+                            SortOrder = 23,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0533\\u056B\\u057A\\u057D\\u0561\\u057D\\u057F\\u057E\\u0561\\u0580\\u0561\\u0569\\u0578\\u0582\\u0572\\u0569\",\"ru\":\"\\u0413\\u0438\\u043F\\u0441\\u043E\\u043A\\u0430\\u0440\\u0442\\u043E\\u043D\",\"en\":\"Drywall sheet\",\"ar\":\"\\u0644\\u0648\\u062D \\u062C\\u0628\\u0633\",\"fa\":\"\\u0635\\u0641\\u062D\\u0647 \\u06A9\\u0646\\u0627\\u0641 (\\u06AF\\u0686\\u200C\\u0628\\u0631\\u06AF)\",\"hi\":\"\\u0921\\u094D\\u0930\\u093E\\u0908\\u0935\\u0949\\u0932 \\u0936\\u0940\\u091F\"}",
+                            PriceBudget = 2000,
+                            PricePremium = 4000,
+                            PriceStandard = 2800,
+                            Slug = "drywall-sheet",
+                            SortOrder = 24,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0544\\u0565\\u057F\\u0561\\u0572\\u0561\\u056F\\u0561\\u0576 \\u057A\\u0580\\u0578\\u0586\\u056B\\u056C\",\"ru\":\"\\u041C\\u0435\\u0442\\u0430\\u043B\\u043B\\u0438\\u0447\\u0435\\u0441\\u043A\\u0438\\u0439 \\u043F\\u0440\\u043E\\u0444\\u0438\\u043B\\u044C\",\"en\":\"Metal profile\",\"ar\":\"\\u0645\\u0642\\u0637\\u0639 \\u0645\\u0639\\u062F\\u0646\\u064A\",\"fa\":\"\\u067E\\u0631\\u0648\\u0641\\u06CC\\u0644 \\u0641\\u0644\\u0632\\u06CC\",\"hi\":\"\\u092E\\u0947\\u091F\\u0932 \\u092A\\u094D\\u0930\\u094B\\u092B\\u093C\\u093E\\u0907\\u0932\"}",
+                            PriceBudget = 400,
+                            PricePremium = 900,
+                            PriceStandard = 600,
+                            Slug = "metal-profile",
+                            SortOrder = 25,
+                            Unit = "RunningMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("73507bbd-db34-5567-984f-aeb418897fd6"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0540\\u0561\\u0576\\u0584\\u0561\\u0575\\u056B\\u0576 \\u0562\\u0561\\u0574\\u0562\\u0561\\u056F\",\"ru\":\"\\u041C\\u0438\\u043D\\u0435\\u0440\\u0430\\u043B\\u044C\\u043D\\u0430\\u044F \\u0432\\u0430\\u0442\\u0430\",\"en\":\"Mineral wool\",\"ar\":\"\\u0635\\u0648\\u0641 \\u0645\\u0639\\u062F\\u0646\\u064A\",\"fa\":\"\\u067E\\u0634\\u0645 \\u0633\\u0646\\u06AF\",\"hi\":\"\\u092E\\u093F\\u0928\\u0930\\u0932 \\u0935\\u0942\\u0932\"}",
+                            PriceBudget = 1200,
+                            PricePremium = 3000,
+                            PriceStandard = 2000,
+                            Slug = "mineral-wool",
+                            SortOrder = 26,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("239124a2-fd0c-512e-8409-3b9203fc6c77"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054A\\u0565\\u0576\\u0578\\u057A\\u056C\\u0561\\u057D\\u057F\",\"ru\":\"\\u041F\\u0435\\u043D\\u043E\\u043F\\u043E\\u043B\\u0438\\u0441\\u0442\\u0438\\u0440\\u043E\\u043B\",\"en\":\"Polystyrene board\",\"ar\":\"\\u0623\\u0644\\u0648\\u0627\\u062D \\u0627\\u0644\\u0628\\u0648\\u0644\\u064A\\u0633\\u062A\\u0631\\u064A\\u0646\",\"fa\":\"\\u06CC\\u0648\\u0646\\u0648\\u0644\\u06CC\\u062A (\\u067E\\u0644\\u06CC\\u200C\\u0627\\u0633\\u062A\\u0627\\u06CC\\u0631\\u0646)\",\"hi\":\"\\u092A\\u0949\\u0932\\u0940\\u0938\\u094D\\u091F\\u093E\\u0907\\u0930\\u0940\\u0928 \\u092C\\u094B\\u0930\\u094D\\u0921\"}",
+                            PriceBudget = 1500,
+                            PricePremium = 4000,
+                            PriceStandard = 2500,
+                            Slug = "polystyrene-board",
+                            SortOrder = 27,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("c0b00171-923b-5c56-a251-a11c54dfd110"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0541\\u0563\\u057E\\u0578\\u0572 \\u0561\\u057C\\u0561\\u057D\\u057F\\u0561\\u0572\\u056B \\u0569\\u0561\\u0572\\u0561\\u0576\\u0569\",\"ru\":\"\\u041F\\u043B\\u0451\\u043D\\u043A\\u0430 \\u043D\\u0430\\u0442\\u044F\\u0436\\u043D\\u043E\\u0433\\u043E \\u043F\\u043E\\u0442\\u043E\\u043B\\u043A\\u0430\",\"en\":\"Stretch ceiling film\",\"ar\":\"\\u063A\\u0634\\u0627\\u0621 \\u0633\\u0642\\u0641 \\u0645\\u0634\\u062F\\u0648\\u062F\",\"fa\":\"\\u067E\\u0627\\u0631\\u0686\\u0647 \\u0633\\u0642\\u0641 \\u06A9\\u0634\\u0633\\u0627\\u0646\",\"hi\":\"\\u0938\\u094D\\u091F\\u094D\\u0930\\u0947\\u091A \\u0938\\u0940\\u0932\\u093F\\u0902\\u0917 \\u092B\\u093C\\u093F\\u0932\\u094D\\u092E\"}",
+                            PriceBudget = 2500,
+                            PricePremium = 8000,
+                            PriceStandard = 4500,
+                            Slug = "stretch-ceiling-film",
+                            SortOrder = 28,
+                            Unit = "SquareMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("81b298a3-1e66-59e3-a8d3-195862de0e5e"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0531\\u057C\\u0561\\u057D\\u057F\\u0561\\u0572\\u056B \\u0565\\u0566\\u0580\\u0561\\u0577\\u0565\\u0580\\u057F\",\"ru\":\"\\u041F\\u043E\\u0442\\u043E\\u043B\\u043E\\u0447\\u043D\\u044B\\u0439 \\u043A\\u0430\\u0440\\u043D\\u0438\\u0437\",\"en\":\"Ceiling cornice\",\"ar\":\"\\u0643\\u0648\\u0631\\u0646\\u064A\\u0634 \\u0627\\u0644\\u0633\\u0642\\u0641\",\"fa\":\"\\u0627\\u0628\\u0632\\u0627\\u0631 \\u0633\\u0642\\u0641\\u06CC\",\"hi\":\"\\u0938\\u0940\\u0932\\u093F\\u0902\\u0917 \\u0915\\u0949\\u0930\\u094D\\u0928\\u093F\\u0938\"}",
+                            PriceBudget = 500,
+                            PricePremium = 3000,
+                            PriceStandard = 1200,
+                            Slug = "ceiling-cornice",
+                            SortOrder = 29,
+                            Unit = "RunningMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("ac0a19cd-ebab-5363-bbac-7f8551ac5944"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0531\\u0576\\u056F\\u0575\\u0578\\u0582\\u0576\\u0561\\u0575\\u056B\\u0576 \\u057A\\u0580\\u0578\\u0586\\u056B\\u056C\",\"ru\":\"\\u0423\\u0433\\u043E\\u043B\\u043E\\u043A \\u0434\\u043B\\u044F \\u0448\\u0442\\u0443\\u043A\\u0430\\u0442\\u0443\\u0440\\u043A\\u0438\",\"en\":\"Corner bead\",\"ar\":\"\\u0632\\u0627\\u0648\\u064A\\u0629 \\u0644\\u064A\\u0627\\u0633\\u0629\",\"fa\":\"\\u0646\\u0628\\u0634\\u06CC \\u06AF\\u0686\\u200C\\u06A9\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0915\\u0949\\u0930\\u094D\\u0928\\u0930 \\u092C\\u0940\\u0921\"}",
+                            PriceBudget = 200,
+                            PricePremium = 500,
+                            PriceStandard = 300,
+                            Slug = "corner-bead",
+                            SortOrder = 30,
+                            Unit = "RunningMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("c686cc22-4094-5c63-9812-64b1c4eb0894"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0537\\u056C\\u0565\\u056F\\u057F\\u0580\\u0561\\u056F\\u0561\\u0576 \\u0574\\u0561\\u056C\\u0578\\u0582\\u056D\",\"ru\":\"\\u042D\\u043B\\u0435\\u043A\\u0442\\u0440\\u0438\\u0447\\u0435\\u0441\\u043A\\u0438\\u0439 \\u043A\\u0430\\u0431\\u0435\\u043B\\u044C\",\"en\":\"Electric cable\",\"ar\":\"\\u0643\\u0627\\u0628\\u0644 \\u0643\\u0647\\u0631\\u0628\\u0627\\u0626\\u064A\",\"fa\":\"\\u06A9\\u0627\\u0628\\u0644 \\u0628\\u0631\\u0642\",\"hi\":\"\\u092C\\u093F\\u091C\\u0932\\u0940 \\u0915\\u093E \\u0915\\u0947\\u092C\\u0932\"}",
+                            PriceBudget = 350,
+                            PricePremium = 800,
+                            PriceStandard = 500,
+                            Slug = "electric-cable",
+                            SortOrder = 31,
+                            Unit = "RunningMeter"
+                        },
+                        new
+                        {
+                            Id = new Guid("2c95d25a-b5e4-5b65-a172-c330c73cadbe"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054F\\u0561\\u056F\\u0564\\u056B\\u0580 \\u057F\\u0578\\u0582\\u0583\",\"ru\":\"\\u041F\\u043E\\u0434\\u0440\\u043E\\u0437\\u0435\\u0442\\u043D\\u0438\\u043A\",\"en\":\"Back box\",\"ar\":\"\\u0639\\u0644\\u0628\\u0629 \\u0643\\u0647\\u0631\\u0628\\u0627\\u0621\",\"fa\":\"\\u0642\\u0648\\u0637\\u06CC \\u0628\\u0631\\u0642\",\"hi\":\"\\u092C\\u0948\\u0915 \\u092C\\u0949\\u0915\\u094D\\u0938\"}",
+                            PriceBudget = 100,
+                            PricePremium = 250,
+                            PriceStandard = 150,
+                            Slug = "back-box",
+                            SortOrder = 32,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("b4d17f95-0902-5520-acd7-3e90b0b1e31f"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0561\\u056F\",\"ru\":\"\\u0420\\u043E\\u0437\\u0435\\u0442\\u043A\\u0430\",\"en\":\"Socket\",\"ar\":\"\\u0645\\u0642\\u0628\\u0633 \\u0643\\u0647\\u0631\\u0628\\u0627\\u0626\\u064A\",\"fa\":\"\\u067E\\u0631\\u06CC\\u0632 \\u0628\\u0631\\u0642\",\"hi\":\"\\u0938\\u0949\\u0915\\u0947\\u091F\"}",
+                            PriceBudget = 1500,
+                            PricePremium = 8000,
+                            PriceStandard = 3500,
+                            Slug = "socket",
+                            SortOrder = 33,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("6e6800d1-6be4-5b9b-84d9-c297be3a3925"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0531\\u0576\\u057B\\u0561\\u057F\\u056B\\u0579\",\"ru\":\"\\u0412\\u044B\\u043A\\u043B\\u044E\\u0447\\u0430\\u0442\\u0435\\u043B\\u044C\",\"en\":\"Light switch\",\"ar\":\"\\u0645\\u0641\\u062A\\u0627\\u062D \\u0625\\u0646\\u0627\\u0631\\u0629\",\"fa\":\"\\u06A9\\u0644\\u06CC\\u062F \\u0628\\u0631\\u0642\",\"hi\":\"\\u0932\\u093E\\u0907\\u091F \\u0938\\u094D\\u0935\\u093F\\u091A\"}",
+                            PriceBudget = 1500,
+                            PricePremium = 8000,
+                            PriceStandard = 3500,
+                            Slug = "light-switch",
+                            SortOrder = 34,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("fb27f958-9446-55a1-8bd6-2aff47914509"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0531\\u057C\\u0561\\u057D\\u057F\\u0561\\u0572\\u056B \\u056C\\u0578\\u0582\\u057D\\u0561\\u057F\\u0578\\u0582\",\"ru\":\"\\u041F\\u043E\\u0442\\u043E\\u043B\\u043E\\u0447\\u043D\\u044B\\u0439 \\u0441\\u0432\\u0435\\u0442\\u0438\\u043B\\u044C\\u043D\\u0438\\u043A\",\"en\":\"Ceiling light\",\"ar\":\"\\u0645\\u0635\\u0628\\u0627\\u062D \\u0633\\u0642\\u0641\",\"fa\":\"\\u0686\\u0631\\u0627\\u063A \\u0633\\u0642\\u0641\\u06CC\",\"hi\":\"\\u0938\\u0940\\u0932\\u093F\\u0902\\u0917 \\u0932\\u093E\\u0907\\u091F\"}",
+                            PriceBudget = 8000,
+                            PricePremium = 50000,
+                            PriceStandard = 20000,
+                            Slug = "ceiling-light",
+                            SortOrder = 35,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("68727bfc-3cae-5a69-a172-b480d1a2f498"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053F\\u0565\\u057F\\u0561\\u0575\\u056B\\u0576 \\u056C\\u0578\\u0582\\u057D\\u0561\\u057F\\u0578\\u0582\",\"ru\":\"\\u0422\\u043E\\u0447\\u0435\\u0447\\u043D\\u044B\\u0439 \\u0441\\u0432\\u0435\\u0442\\u0438\\u043B\\u044C\\u043D\\u0438\\u043A\",\"en\":\"Spotlight\",\"ar\":\"\\u0633\\u0628\\u0648\\u062A \\u0644\\u0627\\u064A\\u062A\",\"fa\":\"\\u0686\\u0631\\u0627\\u063A \\u0647\\u0627\\u0644\\u0648\\u0698\\u0646\",\"hi\":\"\\u0938\\u094D\\u092A\\u0949\\u091F\\u0932\\u093E\\u0907\\u091F\"}",
+                            PriceBudget = 2000,
+                            PricePremium = 8000,
+                            PriceStandard = 4000,
+                            Slug = "spotlight",
+                            SortOrder = 36,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("277e41c0-9250-58b6-b555-e4a7ebc413b8"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054B\\u0580\\u0561\\u0574\\u0565\\u056F\\u0578\\u0582\\u057D\\u056B\\u0579 \\u056D\\u0561\\u057C\\u0576\\u0578\\u0582\\u0580\\u0564\",\"ru\":\"\\u0413\\u0438\\u0434\\u0440\\u043E\\u0438\\u0437\\u043E\\u043B\\u044F\\u0446\\u0438\\u043E\\u043D\\u043D\\u0430\\u044F \\u0441\\u043C\\u0435\\u0441\\u044C\",\"en\":\"Waterproofing compound\",\"ar\":\"\\u0645\\u0631\\u0643\\u0628 \\u0639\\u0632\\u0644 \\u0645\\u0627\\u0626\\u064A\",\"fa\":\"\\u0645\\u0644\\u0627\\u062A \\u0639\\u0627\\u06CC\\u0642 \\u0631\\u0637\\u0648\\u0628\\u062A\\u06CC\",\"hi\":\"\\u0935\\u0949\\u091F\\u0930\\u092A\\u094D\\u0930\\u0942\\u092B\\u093C\\u093F\\u0902\\u0917 \\u0915\\u0902\\u092A\\u093E\\u0909\\u0902\\u0921\"}",
+                            PriceBudget = 600,
+                            PricePremium = 1500,
+                            PriceStandard = 900,
+                            Slug = "waterproofing-mix",
+                            SortOrder = 37,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("76a7fb3f-d88d-5d74-bf72-2f63a5019df3"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0534\\u0565\\u056F\\u0578\\u0580\\u0561\\u057F\\u056B\\u057E \\u057D\\u057E\\u0561\\u0572\",\"ru\":\"\\u0414\\u0435\\u043A\\u043E\\u0440\\u0430\\u0442\\u0438\\u0432\\u043D\\u0430\\u044F \\u0448\\u0442\\u0443\\u043A\\u0430\\u0442\\u0443\\u0440\\u043A\\u0430\",\"en\":\"Decorative plaster\",\"ar\":\"\\u0644\\u064A\\u0627\\u0633\\u0629 \\u062F\\u064A\\u0643\\u0648\\u0631\\u064A\\u0629\",\"fa\":\"\\u06AF\\u0686 \\u062F\\u06A9\\u0648\\u0631\\u0627\\u062A\\u06CC\\u0648\",\"hi\":\"\\u0921\\u0947\\u0915\\u094B\\u0930\\u0947\\u091F\\u093F\\u0935 \\u092A\\u094D\\u0932\\u093E\\u0938\\u094D\\u091F\\u0930\"}",
+                            PriceBudget = 600,
+                            PricePremium = 2500,
+                            PriceStandard = 1200,
+                            Slug = "decorative-plaster",
+                            SortOrder = 38,
+                            Unit = "Kilogram"
+                        },
+                        new
+                        {
+                            Id = new Guid("7166237c-8f6c-55eb-b10b-e4a8d3df6aca"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054D\\u056B\\u056C\\u056B\\u056F\\u0578\\u0576\\u0565 \\u0570\\u0565\\u0580\\u0574\\u0565\\u057F\\u056B\\u056F\",\"ru\":\"\\u0421\\u0438\\u043B\\u0438\\u043A\\u043E\\u043D\\u043E\\u0432\\u044B\\u0439 \\u0433\\u0435\\u0440\\u043C\\u0435\\u0442\\u0438\\u043A\",\"en\":\"Silicone sealant\",\"ar\":\"\\u0633\\u064A\\u0644\\u064A\\u0643\\u0648\\u0646 \\u0645\\u0627\\u0646\\u0639 \\u0644\\u0644\\u062A\\u0633\\u0631\\u0628\",\"fa\":\"\\u0686\\u0633\\u0628 \\u0633\\u06CC\\u0644\\u06CC\\u06A9\\u0648\\u0646\",\"hi\":\"\\u0938\\u093F\\u0932\\u093F\\u0915\\u0949\\u0928 \\u0938\\u0940\\u0932\\u0947\\u0902\\u091F\"}",
+                            PriceBudget = 1500,
+                            PricePremium = 4000,
+                            PriceStandard = 2500,
+                            Slug = "silicone-sealant",
+                            SortOrder = 39,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("22eff1e5-9a80-5f6b-b7a2-0f5862f253a4"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0536\\u0578\\u0582\\u0563\\u0561\\u0580\\u0561\\u0576\\u0561\\u056F\\u0578\\u0576\\u0584\",\"ru\":\"\\u0423\\u043D\\u0438\\u0442\\u0430\\u0437\",\"en\":\"Toilet\",\"ar\":\"\\u0645\\u0631\\u062D\\u0627\\u0636\",\"fa\":\"\\u062A\\u0648\\u0627\\u0644\\u062A \\u0641\\u0631\\u0646\\u06AF\\u06CC\",\"hi\":\"\\u091F\\u0949\\u092F\\u0932\\u0947\\u091F\"}",
+                            PriceBudget = 40000,
+                            PricePremium = 250000,
+                            PriceStandard = 90000,
+                            Slug = "toilet",
+                            SortOrder = 40,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("b8af3f88-1ddc-5feb-8516-4aad63fe230d"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053C\\u057E\\u0561\\u0581\\u0561\\u0580\\u0561\\u0576\",\"ru\":\"\\u0420\\u0430\\u043A\\u043E\\u0432\\u0438\\u043D\\u0430\",\"en\":\"Washbasin\",\"ar\":\"\\u062D\\u0648\\u0636 \\u063A\\u0633\\u064A\\u0644\",\"fa\":\"\\u0631\\u0648\\u0634\\u0648\\u06CC\\u06CC\",\"hi\":\"\\u0935\\u0949\\u0936\\u092C\\u0947\\u0938\\u093F\\u0928\"}",
+                            PriceBudget = 25000,
+                            PricePremium = 150000,
+                            PriceStandard = 60000,
+                            Slug = "washbasin",
+                            SortOrder = 41,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("fb023651-b621-5824-861e-f60b41cdd155"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053D\\u0561\\u057C\\u0576\\u056B\\u0579 \\u056E\\u0578\\u0580\\u0561\\u056F\",\"ru\":\"\\u0421\\u043C\\u0435\\u0441\\u0438\\u0442\\u0435\\u043B\\u044C\",\"en\":\"Mixer tap\",\"ar\":\"\\u062E\\u0644\\u0627\\u0637 \\u0645\\u064A\\u0627\\u0647\",\"fa\":\"\\u0634\\u06CC\\u0631 \\u0645\\u062E\\u0644\\u0648\\u0637\",\"hi\":\"\\u092E\\u093F\\u0915\\u094D\\u0938\\u0930 \\u091F\\u0948\\u092A\"}",
+                            PriceBudget = 12000,
+                            PricePremium = 80000,
+                            PriceStandard = 30000,
+                            Slug = "mixer-tap",
+                            SortOrder = 42,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("9233b7ba-8b48-5b0d-9d28-427d65cba9b6"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0563\\u0561\\u0580\\u0561\\u0576\",\"ru\":\"\\u0412\\u0430\\u043D\\u043D\\u0430\",\"en\":\"Bathtub\",\"ar\":\"\\u062D\\u0648\\u0636 \\u0627\\u0633\\u062A\\u062D\\u0645\\u0627\\u0645\",\"fa\":\"\\u0648\\u0627\\u0646 \\u062D\\u0645\\u0627\\u0645\",\"hi\":\"\\u092C\\u093E\\u0925\\u091F\\u092C\"}",
+                            PriceBudget = 60000,
+                            PricePremium = 400000,
+                            PriceStandard = 150000,
+                            Slug = "bathtub",
+                            SortOrder = 43,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("35c25029-da0c-57a9-92cc-5cd80833a0f5"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u053C\\u0578\\u0563\\u0561\\u056D\\u0581\\u056B\\u056F\",\"ru\":\"\\u0414\\u0443\\u0448\\u0435\\u0432\\u0430\\u044F \\u043A\\u0430\\u0431\\u0438\\u043D\\u0430\",\"en\":\"Shower cabin\",\"ar\":\"\\u0643\\u0627\\u0628\\u064A\\u0646\\u0629 \\u0627\\u0633\\u062A\\u062D\\u0645\\u0627\\u0645\",\"fa\":\"\\u06A9\\u0627\\u0628\\u06CC\\u0646 \\u062F\\u0648\\u0634\",\"hi\":\"\\u0936\\u0949\\u0935\\u0930 \\u0915\\u0947\\u092C\\u093F\\u0928\"}",
+                            PriceBudget = 120000,
+                            PricePremium = 600000,
+                            PriceStandard = 250000,
+                            Slug = "shower-cabin",
+                            SortOrder = 44,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("a4e520a7-14ba-5ded-a173-fcbe7eb37831"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u0546\\u0565\\u0580\\u0584\\u056B\\u0576 \\u0564\\u0578\\u0582\\u057C\",\"ru\":\"\\u041C\\u0435\\u0436\\u043A\\u043E\\u043C\\u043D\\u0430\\u0442\\u043D\\u0430\\u044F \\u0434\\u0432\\u0435\\u0440\\u044C\",\"en\":\"Interior door\",\"ar\":\"\\u0628\\u0627\\u0628 \\u062F\\u0627\\u062E\\u0644\\u064A\",\"fa\":\"\\u062F\\u0631 \\u062F\\u0627\\u062E\\u0644\\u06CC\",\"hi\":\"\\u0905\\u0902\\u0926\\u0930\\u0942\\u0928\\u0940 \\u0926\\u0930\\u0935\\u093E\\u091C\\u093C\\u093E\"}",
+                            PriceBudget = 40000,
+                            PricePremium = 180000,
+                            PriceStandard = 80000,
+                            Slug = "interior-door",
+                            SortOrder = 45,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("7769fe69-927f-54f9-8490-353d200ccb36"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054C\\u0561\\u0564\\u056B\\u0561\\u057F\\u0578\\u0580\",\"ru\":\"\\u0420\\u0430\\u0434\\u0438\\u0430\\u0442\\u043E\\u0440\",\"en\":\"Radiator\",\"ar\":\"\\u0645\\u0634\\u0639\\u0627\\u0639 \\u062A\\u062F\\u0641\\u0626\\u0629\",\"fa\":\"\\u0631\\u0627\\u062F\\u06CC\\u0627\\u062A\\u0648\\u0631\",\"hi\":\"\\u0930\\u0947\\u0921\\u093F\\u090F\\u091F\\u0930\"}",
+                            PriceBudget = 30000,
+                            PricePremium = 120000,
+                            PriceStandard = 60000,
+                            Slug = "radiator",
+                            SortOrder = 46,
+                            Unit = "Piece"
+                        },
+                        new
+                        {
+                            Id = new Guid("6764950a-64c5-581f-b057-1a580f22602f"),
+                            IsActive = true,
+                            Name = "{\"hy\":\"\\u054A\\u0561\\u057F\\u0578\\u0582\\u0570\\u0561\\u0576\\u0561\\u0563\\u0578\\u0563\",\"ru\":\"\\u041F\\u043E\\u0434\\u043E\\u043A\\u043E\\u043D\\u043D\\u0438\\u043A\",\"en\":\"Window sill\",\"ar\":\"\\u0639\\u062A\\u0628\\u0629 \\u0646\\u0627\\u0641\\u0630\\u0629\",\"fa\":\"\\u067E\\u06CC\\u0634\\u062E\\u0648\\u0627\\u0646 \\u067E\\u0646\\u062C\\u0631\\u0647 (\\u0633\\u0646\\u06AF \\u067E\\u0646\\u062C\\u0631\\u0647)\",\"hi\":\"\\u0935\\u093F\\u0902\\u0921\\u094B \\u0938\\u093F\\u0932\"}",
+                            PriceBudget = 4000,
+                            PricePremium = 15000,
+                            PriceStandard = 7000,
+                            Slug = "window-sill",
+                            SortOrder = 47,
+                            Unit = "RunningMeter"
+                        });
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Catalog.Region", b =>
                 {
                     b.Property<Guid>("Id")
@@ -11203,6 +11825,885 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Catalog.WorkItemMaterial", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("material_id");
+
+                    b.Property<decimal>("QuantityPerUnit")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("numeric(9,3)")
+                        .HasColumnName("quantity_per_unit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<int>("WastePercent")
+                        .HasColumnType("integer")
+                        .HasColumnName("waste_percent");
+
+                    b.Property<Guid>("WorkItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("work_item_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_work_item_materials");
+
+                    b.HasIndex("MaterialId")
+                        .HasDatabaseName("ix_work_item_materials_material_id");
+
+                    b.HasIndex("WorkItemId", "MaterialId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_work_item_materials_work_item_id_material_id");
+
+                    b.ToTable("work_item_materials");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c749c3fc-3c27-5ca6-a53a-43435f3e8b03"),
+                            MaterialId = new Guid("6b3f09c6-d8ff-5359-a620-c50520a20fde"),
+                            QuantityPerUnit = 2m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("368c3c4b-155d-5e28-bc50-39cb2fa346dc")
+                        },
+                        new
+                        {
+                            Id = new Guid("2d91980c-2829-5c54-8a78-5c4a45f37a4d"),
+                            MaterialId = new Guid("9f8a85e2-b4a3-563e-b05d-c70542f7938e"),
+                            QuantityPerUnit = 9m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("207cb7c7-d957-5a76-9276-a3e3f3d7b5a5")
+                        },
+                        new
+                        {
+                            Id = new Guid("1e957bcb-a2a2-54ad-8d88-fd1e52d3ea29"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.15m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("207cb7c7-d957-5a76-9276-a3e3f3d7b5a5")
+                        },
+                        new
+                        {
+                            Id = new Guid("3f0a1baf-1994-5082-9c99-8da383b5105b"),
+                            MaterialId = new Guid("9f8a85e2-b4a3-563e-b05d-c70542f7938e"),
+                            QuantityPerUnit = 8m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("7e3d6c11-3fb0-5d80-89ca-588b7f9c86d3")
+                        },
+                        new
+                        {
+                            Id = new Guid("6ea25882-a295-58a2-8a07-6b4564d37e84"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.15m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("7e3d6c11-3fb0-5d80-89ca-588b7f9c86d3")
+                        },
+                        new
+                        {
+                            Id = new Guid("e3765d57-0d02-5e11-ae8b-63f3c744cf28"),
+                            MaterialId = new Guid("9df0d7ff-35b8-5b46-b535-ae8355975de1"),
+                            QuantityPerUnit = 1.2m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("37ee7081-3836-5679-80b6-3ada931a2ce8")
+                        },
+                        new
+                        {
+                            Id = new Guid("0d11c1fa-6e64-553e-a6bf-f5e80ae3abfb"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.15m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("37ee7081-3836-5679-80b6-3ada931a2ce8")
+                        },
+                        new
+                        {
+                            Id = new Guid("9965347f-ac42-525f-b030-d058415b224f"),
+                            MaterialId = new Guid("9df0d7ff-35b8-5b46-b535-ae8355975de1"),
+                            QuantityPerUnit = 1.2m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("c65f69d0-3e04-51de-b41a-563899d92ab6")
+                        },
+                        new
+                        {
+                            Id = new Guid("eb51f352-68a8-51f5-86fb-2c117c64ebfe"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.15m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("c65f69d0-3e04-51de-b41a-563899d92ab6")
+                        },
+                        new
+                        {
+                            Id = new Guid("28ae9a55-f9df-5ab4-b7eb-d00c920d56de"),
+                            MaterialId = new Guid("ac0a19cd-ebab-5363-bbac-7f8551ac5944"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("2f925487-c521-527f-a0f7-f543f3467baa")
+                        },
+                        new
+                        {
+                            Id = new Guid("fcc25dc4-b061-5c14-85ce-6453c98a0d67"),
+                            MaterialId = new Guid("81a158f9-9e88-549c-b7b6-1a773e515d04"),
+                            QuantityPerUnit = 0.25m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("0b6f1ab4-07bb-5314-ae38-1477f56b0dcf")
+                        },
+                        new
+                        {
+                            Id = new Guid("7274711c-46e5-5095-b9d8-15f26b71d8b0"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.1m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("0b6f1ab4-07bb-5314-ae38-1477f56b0dcf")
+                        },
+                        new
+                        {
+                            Id = new Guid("073c7d24-c666-5e8a-b803-e43900625e8d"),
+                            MaterialId = new Guid("81a158f9-9e88-549c-b7b6-1a773e515d04"),
+                            QuantityPerUnit = 0.25m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("cbaa0c31-b390-5955-81ec-bb4d7fffc1a3")
+                        },
+                        new
+                        {
+                            Id = new Guid("bf44049f-e3d6-5ac2-a7d0-bf66b57ee896"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.1m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("cbaa0c31-b390-5955-81ec-bb4d7fffc1a3")
+                        },
+                        new
+                        {
+                            Id = new Guid("fd33cff3-b39b-5a14-a726-b0b153bf2343"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.15m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("94c3315b-80b8-5def-9f5d-10120cefdbe0")
+                        },
+                        new
+                        {
+                            Id = new Guid("4bae8ebd-104c-5468-aadf-156f0b4354cb"),
+                            MaterialId = new Guid("4998f2c5-d264-572d-863c-bf8e79a43fba"),
+                            QuantityPerUnit = 0.6m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("e672be9e-3dc0-5aac-a074-5de3106381ae")
+                        },
+                        new
+                        {
+                            Id = new Guid("da0ffd52-fa8c-50c8-99f9-fdadc2bb6766"),
+                            MaterialId = new Guid("4998f2c5-d264-572d-863c-bf8e79a43fba"),
+                            QuantityPerUnit = 0.4m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("9c8b1566-a45e-53d7-9a17-e818753d477e")
+                        },
+                        new
+                        {
+                            Id = new Guid("a2b08aef-5904-595e-a6fc-be38c8fc02c3"),
+                            MaterialId = new Guid("50286ae2-f5c5-51fa-a55e-e6deeecd6bb3"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 15,
+                            WorkItemId = new Guid("6eb0879f-09b7-5bb5-87c7-0a22439df06e")
+                        },
+                        new
+                        {
+                            Id = new Guid("0767be35-e9bd-5372-a05d-a59cb99f2999"),
+                            MaterialId = new Guid("92ae4fcc-d7ae-5707-9e52-59e9884233ff"),
+                            QuantityPerUnit = 0.02m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("6eb0879f-09b7-5bb5-87c7-0a22439df06e")
+                        },
+                        new
+                        {
+                            Id = new Guid("80d3081f-37a2-5d75-9445-6029381aeb6e"),
+                            MaterialId = new Guid("34aac121-8a63-5457-9d9a-b2c12f4843dc"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 15,
+                            WorkItemId = new Guid("596e6125-3a31-5272-9260-752f488cc20c")
+                        },
+                        new
+                        {
+                            Id = new Guid("d21cebba-3142-5367-b873-079dd26ea458"),
+                            MaterialId = new Guid("92ae4fcc-d7ae-5707-9e52-59e9884233ff"),
+                            QuantityPerUnit = 0.03m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("596e6125-3a31-5272-9260-752f488cc20c")
+                        },
+                        new
+                        {
+                            Id = new Guid("3478c734-c1ae-569e-898b-dba04c6ee7f9"),
+                            MaterialId = new Guid("81a158f9-9e88-549c-b7b6-1a773e515d04"),
+                            QuantityPerUnit = 0.3m,
+                            SortOrder = 3,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("596e6125-3a31-5272-9260-752f488cc20c")
+                        },
+                        new
+                        {
+                            Id = new Guid("790b9a34-f0b2-54e1-bdf0-40972e4a1824"),
+                            MaterialId = new Guid("6f590444-0e90-52c8-876f-762c0a59ec62"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("be10c7ad-bf9a-5cfc-a52d-7784414dc88e")
+                        },
+                        new
+                        {
+                            Id = new Guid("ec014c12-66c4-56ce-83a9-e6c6306a148e"),
+                            MaterialId = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
+                            QuantityPerUnit = 5m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("be10c7ad-bf9a-5cfc-a52d-7784414dc88e")
+                        },
+                        new
+                        {
+                            Id = new Guid("c924c394-8cbd-5817-861d-ecd3728e9315"),
+                            MaterialId = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            QuantityPerUnit = 0.3m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("be10c7ad-bf9a-5cfc-a52d-7784414dc88e")
+                        },
+                        new
+                        {
+                            Id = new Guid("d94fadad-bc0e-5067-9c52-06bd2ffdb0fd"),
+                            MaterialId = new Guid("8031a834-0e95-58bb-a13c-36d1dc1ff919"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("0f04b279-2a8f-561a-a8c8-897c916fda8e")
+                        },
+                        new
+                        {
+                            Id = new Guid("2d756261-0058-53a7-b934-111198c6c59d"),
+                            MaterialId = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
+                            QuantityPerUnit = 6m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("0f04b279-2a8f-561a-a8c8-897c916fda8e")
+                        },
+                        new
+                        {
+                            Id = new Guid("3bcafddf-5882-551d-9967-583dc079ad85"),
+                            MaterialId = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            QuantityPerUnit = 0.3m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("0f04b279-2a8f-561a-a8c8-897c916fda8e")
+                        },
+                        new
+                        {
+                            Id = new Guid("b793aae2-d66c-5960-b3dd-82103118553c"),
+                            MaterialId = new Guid("13bc3b02-b92a-55be-b637-e0ea5c42ae30"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 12,
+                            WorkItemId = new Guid("64adf4ac-a385-5e05-8f43-40985d7780ab")
+                        },
+                        new
+                        {
+                            Id = new Guid("91b1bdbc-6a14-5ae5-8192-83fa9ca14a01"),
+                            MaterialId = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
+                            QuantityPerUnit = 8m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("64adf4ac-a385-5e05-8f43-40985d7780ab")
+                        },
+                        new
+                        {
+                            Id = new Guid("01a5b308-7fcd-55b4-9201-ade807bf6aeb"),
+                            MaterialId = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            QuantityPerUnit = 0.2m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("64adf4ac-a385-5e05-8f43-40985d7780ab")
+                        },
+                        new
+                        {
+                            Id = new Guid("326739f9-fac6-5132-8e0b-cd7c6c0278c8"),
+                            MaterialId = new Guid("b71ba2d4-d5b6-5a4b-855b-528982d342ea"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("ac954ec4-01b7-54ab-b4c8-46e7d6dac4e4")
+                        },
+                        new
+                        {
+                            Id = new Guid("27b5332b-67ef-5862-810a-b242f43842ae"),
+                            MaterialId = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
+                            QuantityPerUnit = 4m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("ac954ec4-01b7-54ab-b4c8-46e7d6dac4e4")
+                        },
+                        new
+                        {
+                            Id = new Guid("61bc6cd8-1cc1-50b7-b14b-752036f5fa90"),
+                            MaterialId = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            QuantityPerUnit = 0.6m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("ac954ec4-01b7-54ab-b4c8-46e7d6dac4e4")
+                        },
+                        new
+                        {
+                            Id = new Guid("fd564239-7aaf-5ea5-bb6b-f18ffdab41df"),
+                            MaterialId = new Guid("6f590444-0e90-52c8-876f-762c0a59ec62"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("2bc1759e-5b47-5830-ba17-7e0554280a63")
+                        },
+                        new
+                        {
+                            Id = new Guid("b7730d19-a019-545e-ade3-60064b41c550"),
+                            MaterialId = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
+                            QuantityPerUnit = 5m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("2bc1759e-5b47-5830-ba17-7e0554280a63")
+                        },
+                        new
+                        {
+                            Id = new Guid("ce06855d-a75a-58d1-8d5a-f6010a8e84d6"),
+                            MaterialId = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            QuantityPerUnit = 0.3m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("2bc1759e-5b47-5830-ba17-7e0554280a63")
+                        },
+                        new
+                        {
+                            Id = new Guid("ec0b926b-e35b-5ad9-9359-985e3fd98fa3"),
+                            MaterialId = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
+                            QuantityPerUnit = 0.4m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("ddc04332-baca-5399-b4b8-4a6d002e14f6")
+                        },
+                        new
+                        {
+                            Id = new Guid("4d7f783c-a315-591f-8dde-34d41b532c26"),
+                            MaterialId = new Guid("e0509cca-a68a-5af0-97e8-245988a814ab"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 7,
+                            WorkItemId = new Guid("55408b7a-abf8-57d2-a11b-5dbf916473b8")
+                        },
+                        new
+                        {
+                            Id = new Guid("75d9bff6-48cf-5635-8971-e5f2a756291b"),
+                            MaterialId = new Guid("0aeacc79-15b8-5762-86ce-c2e7b77e52b3"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("55408b7a-abf8-57d2-a11b-5dbf916473b8")
+                        },
+                        new
+                        {
+                            Id = new Guid("73a58245-0faa-5bbf-a3ac-52b359247af7"),
+                            MaterialId = new Guid("b4a5823c-2b6d-5cac-b371-31248ab4bcaa"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 7,
+                            WorkItemId = new Guid("c8b55d98-d000-5c4b-aafb-3a806577b4d3")
+                        },
+                        new
+                        {
+                            Id = new Guid("1e078192-bb7c-5654-9ec2-620794f5c549"),
+                            MaterialId = new Guid("3104e53e-e8b0-5f76-aa6b-d9dc838bc460"),
+                            QuantityPerUnit = 1.2m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("c8b55d98-d000-5c4b-aafb-3a806577b4d3")
+                        },
+                        new
+                        {
+                            Id = new Guid("620b08c0-c7fe-51d3-858d-1b15b530c8f5"),
+                            MaterialId = new Guid("1d10ccf9-9dd3-5958-9030-01c8f0d34bb1"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("ca435290-d3f1-5726-9968-45dc89a39c2a")
+                        },
+                        new
+                        {
+                            Id = new Guid("fb4f7fe5-1fc1-57ff-98cc-fba3c4fd4851"),
+                            MaterialId = new Guid("e45888d9-64df-57b8-98c2-c376b94bacf9"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 8,
+                            WorkItemId = new Guid("25cc4a6c-ac3c-5a63-b426-57079059bae3")
+                        },
+                        new
+                        {
+                            Id = new Guid("39026154-e1bb-5198-94ab-20f7fc689d56"),
+                            MaterialId = new Guid("d7cd4f47-0a39-5e40-ae71-f0466d977788"),
+                            QuantityPerUnit = 90m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("45c54bec-1bdd-5fd6-a8aa-446905eac9df")
+                        },
+                        new
+                        {
+                            Id = new Guid("0776617d-82aa-5361-9be4-ac22cc7df486"),
+                            MaterialId = new Guid("a892ed8e-e82a-56db-87c7-3ab2f40e9d37"),
+                            QuantityPerUnit = 5m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("ba552c91-9d95-5acb-a9cf-e6c0e623b156")
+                        },
+                        new
+                        {
+                            Id = new Guid("95bb3ada-2c01-57f5-a5db-abd6d3f5342d"),
+                            MaterialId = new Guid("c0b00171-923b-5c56-a251-a11c54dfd110"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("c54b857f-a147-50cc-803e-ca5ae2ba71f7")
+                        },
+                        new
+                        {
+                            Id = new Guid("e5546f8e-af9a-5f6f-b647-2dfacb1da21f"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("b6ee2a3f-4f15-5f62-9bf5-5154e21d5461")
+                        },
+                        new
+                        {
+                            Id = new Guid("6ec785b1-e630-53cc-856e-a0cb96647e29"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 3m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("b6ee2a3f-4f15-5f62-9bf5-5154e21d5461")
+                        },
+                        new
+                        {
+                            Id = new Guid("a54b9e2b-58bf-5221-b355-0b8156442809"),
+                            MaterialId = new Guid("9df0d7ff-35b8-5b46-b535-ae8355975de1"),
+                            QuantityPerUnit = 0.5m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("b6ee2a3f-4f15-5f62-9bf5-5154e21d5461")
+                        },
+                        new
+                        {
+                            Id = new Guid("cd179083-9306-5ef4-9fd5-0d1bf853d67e"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 1.4m,
+                            SortOrder = 1,
+                            WastePercent = 12,
+                            WorkItemId = new Guid("87736dc2-df27-5bcf-a634-d6baf3d87105")
+                        },
+                        new
+                        {
+                            Id = new Guid("26a5f811-b600-5c4f-887a-6463053dd8d4"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 4m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("87736dc2-df27-5bcf-a634-d6baf3d87105")
+                        },
+                        new
+                        {
+                            Id = new Guid("b79fd74d-2d90-5b87-95a9-812f93a964b7"),
+                            MaterialId = new Guid("9df0d7ff-35b8-5b46-b535-ae8355975de1"),
+                            QuantityPerUnit = 0.6m,
+                            SortOrder = 3,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("87736dc2-df27-5bcf-a634-d6baf3d87105")
+                        },
+                        new
+                        {
+                            Id = new Guid("9b025b31-0546-5478-a667-954be6939e26"),
+                            MaterialId = new Guid("81b298a3-1e66-59e3-a8d3-195862de0e5e"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("f105cf7f-81bf-5f92-87c6-16d0e76bb84b")
+                        },
+                        new
+                        {
+                            Id = new Guid("7b8d4378-ba17-52ab-a46c-0a2127b756ca"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 2m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("93665c3c-046c-53bc-aaf8-6b08b4168da4")
+                        },
+                        new
+                        {
+                            Id = new Guid("d83c298e-f690-5ad7-9306-4743096ad442"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 3m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("93665c3c-046c-53bc-aaf8-6b08b4168da4")
+                        },
+                        new
+                        {
+                            Id = new Guid("af847e98-8f59-52e7-a6d2-faa55bbc6a24"),
+                            MaterialId = new Guid("73507bbd-db34-5567-984f-aeb418897fd6"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 3,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("93665c3c-046c-53bc-aaf8-6b08b4168da4")
+                        },
+                        new
+                        {
+                            Id = new Guid("1cc64285-97fa-5391-88bf-d0966761bcb5"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("727488ad-a41e-54ad-8e5d-db5d3611fe57")
+                        },
+                        new
+                        {
+                            Id = new Guid("32659e24-b50d-5f6d-9005-976e6e22323e"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 2m,
+                            SortOrder = 2,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("727488ad-a41e-54ad-8e5d-db5d3611fe57")
+                        },
+                        new
+                        {
+                            Id = new Guid("935f6ce2-b527-5882-8cd3-9ed727274afb"),
+                            MaterialId = new Guid("76a7fb3f-d88d-5d74-bf72-2f63a5019df3"),
+                            QuantityPerUnit = 1.5m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("3a79e4b4-32f4-522d-9926-c7ba3b80ebb0")
+                        },
+                        new
+                        {
+                            Id = new Guid("cc4daf18-10e0-56cb-b35c-37e1094ea214"),
+                            MaterialId = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
+                            QuantityPerUnit = 0.15m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("3a79e4b4-32f4-522d-9926-c7ba3b80ebb0")
+                        },
+                        new
+                        {
+                            Id = new Guid("6996509d-9e05-561d-a605-a0cb3e8e064a"),
+                            MaterialId = new Guid("22eff1e5-9a80-5f6b-b7a2-0f5862f253a4"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("ad56fcdb-622b-5b33-99d2-6271f077a337")
+                        },
+                        new
+                        {
+                            Id = new Guid("140ff69c-93be-56bb-97b3-b8d08db81375"),
+                            MaterialId = new Guid("b8af3f88-1ddc-5feb-8516-4aad63fe230d"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("39203f06-2d8e-5f8c-90ec-b2971bc44b3f")
+                        },
+                        new
+                        {
+                            Id = new Guid("bf5fa04f-6731-5f95-96f9-05c734abf104"),
+                            MaterialId = new Guid("fb023651-b621-5824-861e-f60b41cdd155"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("abe5e4ba-6cb8-57a6-9911-048b98b0d4a1")
+                        },
+                        new
+                        {
+                            Id = new Guid("73b813f9-d845-5485-8400-6ee7cdd4fef1"),
+                            MaterialId = new Guid("9233b7ba-8b48-5b0d-9d28-427d65cba9b6"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("b5d4bff0-cf90-5caf-b486-bed8db8ca0ce")
+                        },
+                        new
+                        {
+                            Id = new Guid("548ef067-0132-5897-a8c7-3dccdf93c7f6"),
+                            MaterialId = new Guid("7166237c-8f6c-55eb-b10b-e4a8d3df6aca"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("b5d4bff0-cf90-5caf-b486-bed8db8ca0ce")
+                        },
+                        new
+                        {
+                            Id = new Guid("e1916f22-1392-5c2b-a10a-6757010efa82"),
+                            MaterialId = new Guid("35c25029-da0c-57a9-92cc-5cd80833a0f5"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("cbbeac89-77e7-5bbe-a65e-9570c4a803e0")
+                        },
+                        new
+                        {
+                            Id = new Guid("900bb8e0-bd0a-5ec1-83a4-c374fc7d4c17"),
+                            MaterialId = new Guid("7166237c-8f6c-55eb-b10b-e4a8d3df6aca"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("cbbeac89-77e7-5bbe-a65e-9570c4a803e0")
+                        },
+                        new
+                        {
+                            Id = new Guid("2c8e3e0e-b3f9-5067-b960-294e0b7ae3af"),
+                            MaterialId = new Guid("7769fe69-927f-54f9-8490-353d200ccb36"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("0d121576-10c4-5f17-8014-b94389cb556a")
+                        },
+                        new
+                        {
+                            Id = new Guid("5d142bc2-86af-55f5-9c2a-6dd5f152cc6b"),
+                            MaterialId = new Guid("7769fe69-927f-54f9-8490-353d200ccb36"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("5f6817d3-c7e6-5979-98d1-0b70438a3d43")
+                        },
+                        new
+                        {
+                            Id = new Guid("e3c467e9-923c-5ed0-80a2-8ea33a88fe15"),
+                            MaterialId = new Guid("c686cc22-4094-5c63-9812-64b1c4eb0894"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("405f53e0-c392-51c2-9a57-34d010d70f3f")
+                        },
+                        new
+                        {
+                            Id = new Guid("267ba892-04cd-5116-8f33-b9130af1d5ed"),
+                            MaterialId = new Guid("b4d17f95-0902-5520-acd7-3e90b0b1e31f"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("9d3e65a0-4ae7-5f82-b027-8682905cff66")
+                        },
+                        new
+                        {
+                            Id = new Guid("9016f34d-0b40-57de-8952-0dd6e9dd7699"),
+                            MaterialId = new Guid("2c95d25a-b5e4-5b65-a172-c330c73cadbe"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("9d3e65a0-4ae7-5f82-b027-8682905cff66")
+                        },
+                        new
+                        {
+                            Id = new Guid("42ef49b0-7645-543e-ab1f-bcd706597559"),
+                            MaterialId = new Guid("6e6800d1-6be4-5b9b-84d9-c297be3a3925"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("1c41857b-8d24-5279-9d09-8a600ab81998")
+                        },
+                        new
+                        {
+                            Id = new Guid("0d651887-156b-555c-9a9a-4482e3d61511"),
+                            MaterialId = new Guid("2c95d25a-b5e4-5b65-a172-c330c73cadbe"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("1c41857b-8d24-5279-9d09-8a600ab81998")
+                        },
+                        new
+                        {
+                            Id = new Guid("e000baf8-88a0-599b-8740-a638face645e"),
+                            MaterialId = new Guid("2c95d25a-b5e4-5b65-a172-c330c73cadbe"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("55b7e113-f820-5d4c-9464-4b4ca760ad92")
+                        },
+                        new
+                        {
+                            Id = new Guid("dc639515-fcd6-5ef6-af1f-ba2b78bf7815"),
+                            MaterialId = new Guid("fb27f958-9446-55a1-8bd6-2aff47914509"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("83f122b5-0f61-5472-aafc-1cab03f2d4cd")
+                        },
+                        new
+                        {
+                            Id = new Guid("40e860a1-85f3-53d4-9ea4-cbf76a32296a"),
+                            MaterialId = new Guid("68727bfc-3cae-5a69-a172-b480d1a2f498"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("df07d90f-2ae3-5b2f-8154-daba46d0bc2d")
+                        },
+                        new
+                        {
+                            Id = new Guid("c550abae-9947-504f-bf95-c15113954260"),
+                            MaterialId = new Guid("277e41c0-9250-58b6-b555-e4a7ebc413b8"),
+                            QuantityPerUnit = 3m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("ff2a17f2-3198-52ae-a14b-4fa59b27e7af")
+                        },
+                        new
+                        {
+                            Id = new Guid("153864a1-3d2e-5a44-a987-9346497de647"),
+                            MaterialId = new Guid("277e41c0-9250-58b6-b555-e4a7ebc413b8"),
+                            QuantityPerUnit = 3m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("40f332de-01ef-596a-a64e-50f1d28d226b")
+                        },
+                        new
+                        {
+                            Id = new Guid("ab1032f0-70dd-5480-8b0c-ba5d103614e2"),
+                            MaterialId = new Guid("73507bbd-db34-5567-984f-aeb418897fd6"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("d9c7dc35-9cfa-5dd9-94fe-3e37a8a6028e")
+                        },
+                        new
+                        {
+                            Id = new Guid("92779753-ef4a-5273-bae2-c035ac5dc696"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("d9c7dc35-9cfa-5dd9-94fe-3e37a8a6028e")
+                        },
+                        new
+                        {
+                            Id = new Guid("fdd11e22-e35e-57b9-b9a9-d71b8213a9cd"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 2m,
+                            SortOrder = 3,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("d9c7dc35-9cfa-5dd9-94fe-3e37a8a6028e")
+                        },
+                        new
+                        {
+                            Id = new Guid("32aefc1f-3b70-5ab9-875c-0dd229c2a99b"),
+                            MaterialId = new Guid("239124a2-fd0c-512e-8409-3b9203fc6c77"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("c9fd15f2-52a2-56f3-9f7b-dffbefbc36da")
+                        },
+                        new
+                        {
+                            Id = new Guid("912fb46b-3ef1-5002-bc1e-c6e16bb17662"),
+                            MaterialId = new Guid("73507bbd-db34-5567-984f-aeb418897fd6"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("df929533-1208-5115-8bab-7b6968bb3896")
+                        },
+                        new
+                        {
+                            Id = new Guid("cfbf7408-6850-57eb-a104-3e8bedf61585"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("df929533-1208-5115-8bab-7b6968bb3896")
+                        },
+                        new
+                        {
+                            Id = new Guid("75d8e5df-5d16-523e-966d-4612f53d4781"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 2m,
+                            SortOrder = 3,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("df929533-1208-5115-8bab-7b6968bb3896")
+                        },
+                        new
+                        {
+                            Id = new Guid("11cbadbe-5a58-55c6-9013-6641e12f4d1c"),
+                            MaterialId = new Guid("73507bbd-db34-5567-984f-aeb418897fd6"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("9e9c873c-4a19-503a-a41b-5127aea6be00")
+                        },
+                        new
+                        {
+                            Id = new Guid("f251ce61-1bfe-5620-b4e5-fecfa3d4f41f"),
+                            MaterialId = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 2,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("9e9c873c-4a19-503a-a41b-5127aea6be00")
+                        },
+                        new
+                        {
+                            Id = new Guid("8b1d9e0a-7190-507c-8662-fc90631d563c"),
+                            MaterialId = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
+                            QuantityPerUnit = 3m,
+                            SortOrder = 3,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("9e9c873c-4a19-503a-a41b-5127aea6be00")
+                        },
+                        new
+                        {
+                            Id = new Guid("b0b430d0-52a6-5c96-b928-51a80cd098e0"),
+                            MaterialId = new Guid("a4e520a7-14ba-5ded-a173-fcbe7eb37831"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 0,
+                            WorkItemId = new Guid("49c03afc-c04c-5fa8-9e9c-ca0085ebf675")
+                        },
+                        new
+                        {
+                            Id = new Guid("2e57755b-9bc6-52d2-a5ba-d4d0f6210b84"),
+                            MaterialId = new Guid("6764950a-64c5-581f-b057-1a580f22602f"),
+                            QuantityPerUnit = 1m,
+                            SortOrder = 1,
+                            WastePercent = 5,
+                            WorkItemId = new Guid("eb9017a9-ae49-5576-a4de-801a0b757ee5")
+                        },
+                        new
+                        {
+                            Id = new Guid("67cd11f6-f332-5781-ac89-f545777bd509"),
+                            MaterialId = new Guid("7166237c-8f6c-55eb-b10b-e4a8d3df6aca"),
+                            QuantityPerUnit = 0.1m,
+                            SortOrder = 1,
+                            WastePercent = 10,
+                            WorkItemId = new Guid("de7bb175-4ece-5767-84bf-bbb921eba2ea")
+                        });
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Chat.Conversation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -11692,6 +13193,11 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text")
                         .HasColumnName("created_by");
+
+                    b.Property<string>("Materials")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("materials");
 
                     b.Property<bool>("OldBuilding")
                         .HasColumnType("boolean")
@@ -14654,6 +16160,23 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_work_items_categories_category_id");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Catalog.WorkItemMaterial", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Catalog.Material", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_work_item_materials_materials_material_id");
+
+                    b.HasOne("HomeServices.Domain.Catalog.WorkItem", null)
+                        .WithMany()
+                        .HasForeignKey("WorkItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_work_item_materials_work_items_work_item_id");
                 });
 
             modelBuilder.Entity("HomeServices.Domain.Chat.Conversation", b =>

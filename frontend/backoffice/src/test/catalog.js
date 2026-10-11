@@ -120,3 +120,34 @@ export const ROOM_TEMPLATES = ['LivingRoom', 'Bedroom', 'KidsRoom', 'Kitchen', '
         : [],
   }),
 )
+
+/** Materials as GET /admin/catalog/materials returns them. */
+export const MATERIALS = [
+  {
+    id: 'mat-putty',
+    slug: 'finishing-putty',
+    name: { hy: 'Վերջնական շպաքլ', en: 'Finishing putty' },
+    unit: 'Kilogram',
+    priceBudget: 150,
+    priceStandard: 230,
+    pricePremium: 380,
+    sortOrder: 1,
+    isActive: true,
+    workItemCount: 2,
+  },
+  {
+    id: 'mat-primer',
+    slug: 'primer',
+    name: { hy: 'Գրունտ', en: 'Primer' },
+    unit: 'Liter',
+    priceBudget: 500,
+    priceStandard: 850,
+    pricePremium: 1400,
+    sortOrder: 2,
+    isActive: false,
+    workItemCount: 0,
+  },
+]
+
+/** The materials of wall plastering as GET /admin/catalog/work-items/wi-plastering/materials returns them. */
+export const PLASTERING_MATERIALS = [{ materialId: 'mat-putty', quantityPerUnit: 1.2, wastePercent: 10 }]

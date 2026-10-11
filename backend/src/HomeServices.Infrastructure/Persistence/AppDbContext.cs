@@ -44,6 +44,10 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<WorkItem> WorkItems => Set<WorkItem>();
 
+    public DbSet<Material> Materials => Set<Material>();
+
+    public DbSet<WorkItemMaterial> WorkItemMaterials => Set<WorkItemMaterial>();
+
     public DbSet<PartnerPrice> PartnerPrices => Set<PartnerPrice>();
 
     public DbSet<RegionalMarketPrice> RegionalMarketPrices => Set<RegionalMarketPrice>();

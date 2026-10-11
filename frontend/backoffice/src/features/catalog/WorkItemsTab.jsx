@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, LockOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, EyeInvisibleOutlined, EyeOutlined, LockOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { Alert, App, Button, Flex, Input, Popconfirm, Select, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +15,7 @@ import {
 import { localizedName } from './names'
 import { useCatalogLanguages } from './useCatalogLanguages'
 import WorkItemFormModal from './WorkItemFormModal'
+import WorkItemMaterialsModal from './WorkItemMaterialsModal'
 import { categoryLookup, filterWorkItems, hasPrice, marketRangeText, priceRangeText } from './workItems'
 
 const STATUSES = ['all', 'active', 'hidden', 'unpriced']
@@ -39,6 +40,8 @@ export default function WorkItemsTab() {
   const [search, setSearch] = useState('')
   // { item } while the dialog is open; item is null when adding.
   const [dialog, setDialog] = useState(null)
+  // The work item whose materials are being edited.
+  const [materialsOf, setMaterialsOf] = useState(null)
 
   const nameOf = (item) => localizedName(item.name, lng, defaultCode)
   const lookup = useMemo(() => categoryLookup(categories, lng, defaultCode), [categories, lng, defaultCode])
@@ -165,6 +168,14 @@ export default function WorkItemsTab() {
             <Tooltip title={t('catalog.actions.edit')}>
               <Button type="text" icon={<EditOutlined />} aria-label={`${t('catalog.actions.edit')}: ${name}`} onClick={() => setDialog({ item })} />
             </Tooltip>
+            <Tooltip title={t('catalog.workItemMaterials.open')}>
+              <Button
+                type="text"
+                icon={<ShoppingCartOutlined />}
+                aria-label={`${t('catalog.workItemMaterials.open')}: ${name}`}
+                onClick={() => setMaterialsOf(item)}
+              />
+            </Tooltip>
             <Tooltip title={toggleLabel}>
               <Button
                 type="text"
@@ -249,6 +260,7 @@ export default function WorkItemsTab() {
         onSave={save}
         onClose={() => setDialog(null)}
       />
+      <WorkItemMaterialsModal key={materialsOf?.id ?? 'closed'} item={materialsOf} onClose={() => setMaterialsOf(null)} />
     </>
   )
 }

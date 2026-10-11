@@ -18,6 +18,8 @@ import {
 } from "@/features/catalog/catalogApi";
 import { formatMoney } from "@/shared/format";
 import { LIMITS, isRoomValid, newRoom, roomName } from "./draft";
+import { MATERIAL_GRADES, grandTotal, hasMaterials } from "./materials";
+import MaterialsList from "./MaterialsList";
 import { ROOM_TYPES, useRoomTemplates, useWorkItems } from "./estimatorApi";
 import RoomCard from "./RoomCard";
 import { useMeasure } from "./useMeasure";
@@ -70,6 +72,7 @@ export default function EstimateEditor({ draft, onChange, actions, notice }) {
 
   const pickingRoom = draft.rooms.find((room) => room.key === picking);
   const total = measure.total;
+  const grand = grandTotal(total);
   const unmeasured = draft.rooms.filter((room) => !isRoomValid(room)).length;
 
   return (
@@ -97,6 +100,23 @@ export default function EstimateEditor({ draft, onChange, actions, notice }) {
             />
             <p className={styles["estimator__hint"]}>
               {t("estimator.editor.townHint")}
+            </p>
+            <SelectField
+              label={t("estimator.materials.label")}
+              value={draft.materials ?? ""}
+              onChange={(event) =>
+                onChange({ ...draft, materials: event.target.value || null })
+              }
+              options={[
+                { value: "", label: t("estimator.materials.none") },
+                ...MATERIAL_GRADES.map((grade) => ({
+                  value: grade,
+                  label: t(`estimator.materials.grades.${grade}`),
+                })),
+              ]}
+            />
+            <p className={styles["estimator__hint"]}>
+              {t("estimator.materials.hint")}
             </p>
             <CheckboxField
               label={t("estimator.oldBuilding")}
@@ -139,6 +159,8 @@ export default function EstimateEditor({ draft, onChange, actions, notice }) {
           />
         ))}
 
+        {hasMaterials(total) && <MaterialsList measurement={total} />}
+
         <Card>
           <div className={styles["estimator__add-room"]}>
             <SelectField
@@ -174,20 +196,38 @@ export default function EstimateEditor({ draft, onChange, actions, notice }) {
             aria-live="polite"
             aria-busy={measure.loading}
           >
-            {total && total.totalTypical > 0 ? (
+            {total && grand.typical > 0 ? (
               <>
                 <p className={styles["quick-estimate__label"]}>
-                  {t("estimator.quick.resultLabel")}
+                  {t(
+                    hasMaterials(total)
+                      ? "estimator.materials.resultLabel"
+                      : "estimator.quick.resultLabel",
+                  )}
                 </p>
                 <p className={styles["quick-estimate__range"]}>
-                  {formatMoney(total.totalMin, lng)} –{" "}
-                  {formatMoney(total.totalMax, lng)}
+                  {formatMoney(grand.min, lng)} –{" "}
+                  {formatMoney(grand.max, lng)}
                 </p>
                 <p className={styles["quick-estimate__typical"]}>
                   {t("estimator.quick.usually", {
-                    amount: formatMoney(total.totalTypical, lng),
+                    amount: formatMoney(grand.typical, lng),
                   })}
                 </p>
+                {hasMaterials(total) && (
+                  <>
+                    <p className={styles["estimate-summary__note"]}>
+                      {t("estimator.materials.labour", {
+                        range: `${formatMoney(total.totalMin, lng)} – ${formatMoney(total.totalMax, lng)}`,
+                      })}
+                    </p>
+                    <p className={styles["estimate-summary__note"]}>
+                      {t("estimator.materials.total", {
+                        amount: formatMoney(total.materialsTotal, lng),
+                      })}
+                    </p>
+                  </>
+                )}
               </>
             ) : (
               <p className={styles["estimate-summary__empty"]}>

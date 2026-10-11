@@ -5,6 +5,7 @@ using HomeServices.Application.Abstractions;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Messaging;
 using HomeServices.Domain;
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Estimates;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +19,12 @@ public sealed record GetMyEstimate(Guid Id) : IQuery<EstimateDto>;
 
 /// <summary>
 /// Saves an estimate: a new one when <paramref name="Id"/> is null, otherwise replaces the title, place, building age and
-/// all rooms of that estimate with the ones sent.
+/// all rooms of that estimate with the ones sent. <paramref name="Materials"/>: the grade of materials to count, or null
+/// for labour only.
 /// </summary>
-public sealed record SaveMyEstimate(Guid? Id, string Title, Guid? CityId, bool OldBuilding, IReadOnlyList<EstimateRoomInput> Rooms) : ICommand<EstimateDto>;
+public sealed record SaveMyEstimate(
+    Guid? Id, string Title, Guid? CityId, bool OldBuilding, IReadOnlyList<EstimateRoomInput> Rooms, MaterialGrade? Materials = null)
+    : ICommand<EstimateDto>;
 
 public sealed record DeleteMyEstimate(Guid Id) : ICommand<bool>;
 
@@ -65,7 +69,8 @@ public sealed record EstimateDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt,
     IReadOnlyList<EstimateRoomDto> Rooms,
-    EstimateMeasurementDto Measurement);
+    EstimateMeasurementDto Measurement,
+    MaterialGrade? Materials = null);
 
 public sealed record EstimateRoomDto(
     Guid Id,
@@ -84,13 +89,15 @@ public sealed record SharedEstimateDto(
     bool OldBuilding,
     DateTimeOffset? UpdatedAt,
     IReadOnlyList<EstimateRoomDto> Rooms,
-    EstimateMeasurementDto Measurement);
+    EstimateMeasurementDto Measurement,
+    MaterialGrade? Materials = null);
 
 public sealed class SaveMyEstimateValidator : AbstractValidator<SaveMyEstimate>
 {
     public SaveMyEstimateValidator()
     {
         RuleFor(x => x.Title).Must(title => !string.IsNullOrWhiteSpace(title) && title.Trim().Length <= Estimate.TitleMaxLength).WithErrorCode("title.invalid");
+        RuleFor(x => x.Materials).IsInEnum().WithErrorCode("materials.invalid");
         RuleFor(x => x.Rooms).NotNull().WithErrorCode("rooms.required")
             .Must(rooms => rooms is null || rooms.Count <= Estimate.MaxRooms).WithErrorCode("rooms.count_invalid");
         RuleForEach(x => x.Rooms).ChildRules(room =>
@@ -173,6 +180,7 @@ public sealed class SaveMyEstimateHandler(IAppDbContext db, ICurrentUser current
             estimate.Rename(command.Title);
             estimate.MoveTo(command.CityId);
             estimate.SetOldBuilding(command.OldBuilding);
+            estimate.SetMaterials(command.Materials);
             estimate.ClearRooms();
             estimate.MarkUpdated(clock.GetUtcNow(), currentUser.UserId); // also when only rooms changed
         }
@@ -184,6 +192,7 @@ public sealed class SaveMyEstimateHandler(IAppDbContext db, ICurrentUser current
             }
 
             estimate = Estimate.Create(userId, command.Title, command.CityId, command.OldBuilding);
+            estimate.SetMaterials(command.Materials);
             db.Estimates.Add(estimate);
         }
 
@@ -259,7 +268,7 @@ public sealed class GetSharedEstimateHandler(IAppDbContext db, ICurrentLanguage 
         }
 
         var dto = await MyEstimateData.ToDtoAsync(db, language, estimate, cancellationToken);
-        return new SharedEstimateDto(dto.Title, dto.CityId, dto.OldBuilding, dto.UpdatedAt ?? dto.CreatedAt, dto.Rooms, dto.Measurement);
+        return new SharedEstimateDto(dto.Title, dto.CityId, dto.OldBuilding, dto.UpdatedAt ?? dto.CreatedAt, dto.Rooms, dto.Measurement, dto.Materials);
     }
 }
 
@@ -299,7 +308,8 @@ internal static class MyEstimateData
             estimate.CreatedAt,
             estimate.UpdatedAt,
             rooms,
-            measurement);
+            measurement,
+            estimate.Materials);
     }
 
     public static Task<EstimateMeasurementDto> MeasureAsync(IAppDbContext db, ICurrentLanguage language, Estimate estimate, CancellationToken cancellationToken) =>
@@ -309,6 +319,7 @@ internal static class MyEstimateData
             Rooms(estimate).Select(r => new RoomInput(r.Type, r.Length, r.Width, r.Area, r.Height, r.Openings, r.Lines)).ToList(),
             estimate.OldBuilding,
             estimate.CityId,
+            estimate.Materials,
             skipUnavailable: true,
             cancellationToken);
 

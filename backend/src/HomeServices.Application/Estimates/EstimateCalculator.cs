@@ -14,7 +14,8 @@ internal static class EstimateCalculator
     /// Measures and prices <paramref name="rooms"/>. Work that isn't offered (deleted or hidden) fails with
     /// "estimate.work_item_not_found", or with <paramref name="skipUnavailable"/> (saved estimates) is left out of the
     /// result, so the caller can tell the customer which of their lines are gone. With <paramref name="cityId"/>, work
-    /// priced by enough partners in the town's region uses that region's range (C2).
+    /// priced by enough partners in the town's region uses that region's range (C2). With <paramref name="materials"/>, the
+    /// materials the work needs are counted and priced for that grade (E1).
     /// </summary>
     public static async Task<EstimateMeasurementDto> CalculateAsync(
         IAppDbContext db,
@@ -22,6 +23,7 @@ internal static class EstimateCalculator
         IReadOnlyList<RoomInput> rooms,
         bool oldBuilding,
         Guid? cityId,
+        MaterialGrade? materials,
         bool skipUnavailable,
         CancellationToken cancellationToken)
     {
@@ -45,12 +47,16 @@ internal static class EstimateCalculator
 
         var measured = rooms.Select(room => Measure(room, items, MarketOf, oldBuilding, language)).ToList();
         var lines = measured.SelectMany(r => r.Lines).ToList();
-        return new EstimateMeasurementDto(
+        var result = new EstimateMeasurementDto(
             measured,
             measured.Sum(r => r.TotalMin),
             measured.Sum(r => r.TotalTypical),
             measured.Sum(r => r.TotalMax),
-            lines.Count(l => l.PriceTypical is null));
+            lines.Count(l => l.PriceTypical is null),
+            Materials: []);
+        return materials is { } grade
+            ? await EstimateMaterials.AddAsync(db, language, result, grade, cancellationToken)
+            : result;
     }
 
     private static RoomMeasurementDto Measure(
@@ -128,4 +134,71 @@ public static class EstimatePricing
 
     private static int Amount(decimal quantity, int unitPrice, decimal factor) =>
         MarketPrices.Tidy((double)Math.Min(quantity * unitPrice * factor, PriceRange.Limit));
+}
+
+/// <summary>
+/// The materials an estimate's work needs (E1): each line's quantity × the work item's materials (amount per unit plus
+/// waste), added up over all rooms, rounded up (whole pieces, otherwise tenths) and priced for the grade.
+/// </summary>
+public static class EstimateMaterials
+{
+    internal static async Task<EstimateMeasurementDto> AddAsync(
+        IAppDbContext db, ICurrentLanguage language, EstimateMeasurementDto measurement, MaterialGrade grade, CancellationToken cancellationToken)
+    {
+        var workItemIds = measurement.Rooms.SelectMany(r => r.Lines).Select(l => l.WorkItemId).Distinct().ToList();
+        var links = await db.WorkItemMaterials.AsNoTracking()
+            .Where(m => workItemIds.Contains(m.WorkItemId))
+            .OrderBy(m => m.SortOrder)
+            .ToListAsync(cancellationToken);
+        var materialIds = links.Select(l => l.MaterialId).Distinct().ToList();
+        var materials = await db.Materials.AsNoTracking()
+            .Where(m => materialIds.Contains(m.Id) && m.IsActive)
+            .ToDictionaryAsync(m => m.Id, cancellationToken);
+        var linksOf = links.Where(l => materials.ContainsKey(l.MaterialId)).ToLookup(l => l.WorkItemId);
+
+        var needed = new Dictionary<Guid, decimal>();
+        var rooms = new List<RoomMeasurementDto>(measurement.Rooms.Count);
+        foreach (var room in measurement.Rooms)
+        {
+            var roomCost = 0m;
+            foreach (var line in room.Lines.Where(l => l.Quantity is > 0))
+            {
+                foreach (var link in linksOf[line.WorkItemId])
+                {
+                    var amount = link.AmountFor(line.Quantity!.Value);
+                    needed[link.MaterialId] = needed.GetValueOrDefault(link.MaterialId) + amount;
+                    roomCost += amount * materials[link.MaterialId].PriceFor(grade);
+                }
+            }
+
+            rooms.Add(room with { MaterialsCost = Cost(roomCost) });
+        }
+
+        // In the catalog's material order.
+        var list = needed
+            .Select(entry => materials[entry.Key])
+            .OrderBy(m => m.SortOrder)
+            .ThenBy(m => m.Slug, StringComparer.Ordinal)
+            .Select(material =>
+            {
+                var quantity = RoundUp(needed[material.Id], material.Unit);
+                var unitPrice = material.PriceFor(grade);
+                return new MaterialNeedDto(
+                    material.Id,
+                    material.Name.Get(language.Code, language.DefaultCode),
+                    material.Unit,
+                    quantity,
+                    unitPrice,
+                    Cost(quantity * unitPrice));
+            })
+            .ToList();
+
+        return measurement with { Rooms = rooms, MaterialGrade = grade, Materials = list, MaterialsTotal = list.Sum(m => m.Cost) };
+    }
+
+    /// <summary>Whole pieces; tenths of other units.</summary>
+    public static decimal RoundUp(decimal quantity, MaterialUnit unit) =>
+        unit == MaterialUnit.Piece ? Math.Ceiling(quantity) : Math.Ceiling(quantity * 10) / 10;
+
+    private static int Cost(decimal amount) => MarketPrices.Tidy((double)Math.Min(amount, PriceRange.Limit));
 }

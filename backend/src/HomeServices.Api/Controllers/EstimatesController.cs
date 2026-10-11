@@ -1,5 +1,6 @@
 using HomeServices.Application.Estimates;
 using HomeServices.Application.Messaging;
+using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Estimates;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,22 +11,23 @@ namespace HomeServices.Api.Controllers;
 [Route("api/v1/estimates")]
 public sealed class EstimatesController : ControllerBase
 {
-    public sealed record MeasureRequest(IReadOnlyList<RoomInput> Rooms, bool OldBuilding = false, Guid? CityId = null);
+    public sealed record MeasureRequest(IReadOnlyList<RoomInput> Rooms, bool OldBuilding = false, Guid? CityId = null, MaterialGrade? Materials = null);
 
-    public sealed record QuickRequest(RoomType RoomType, decimal Area, decimal? Height = null, bool OldBuilding = false);
+    public sealed record QuickRequest(RoomType RoomType, decimal Area, decimal? Height = null, bool OldBuilding = false, MaterialGrade? Materials = null);
 
     /// <summary>
     /// Measures and prices rooms (floor, walls, ceiling, perimeter, skirting; each work item's quantity and labour price
     /// range; totals) without saving anything. <c>oldBuilding</c> adds 15%; ceilings above 3 m add 10% to wall and ceiling
     /// work. 422 "estimate.size_invalid" / "estimate.opening_invalid" for impossible sizes, "estimate.work_item_not_found"
-    /// for work that isn't offered. <c>cityId</c> (optional): the town, for its region's prices.
+    /// for work that isn't offered. <c>cityId</c> (optional): the town, for its region's prices. <c>materials</c> (optional: Budget, Standard,
+    /// Premium) also counts the materials the work needs.
     /// </summary>
     [HttpPost("measure")]
     public Task<EstimateMeasurementDto> Measure(
         MeasureRequest request,
         [FromServices] IQueryHandler<MeasureEstimate, EstimateMeasurementDto> handler,
         CancellationToken cancellationToken) =>
-        handler.HandleAsync(new MeasureEstimate(request.Rooms, request.OldBuilding, request.CityId), cancellationToken);
+        handler.HandleAsync(new MeasureEstimate(request.Rooms, request.OldBuilding, request.CityId, request.Materials), cancellationToken);
 
     /// <summary>The work usually wanted in each kind of room, with market prices and default counts.</summary>
     [HttpGet("templates")]
@@ -48,5 +50,5 @@ public sealed class EstimatesController : ControllerBase
         QuickRequest request,
         [FromServices] IQueryHandler<QuickEstimate, EstimateMeasurementDto> handler,
         CancellationToken cancellationToken) =>
-        handler.HandleAsync(new QuickEstimate(request.RoomType, request.Area, request.Height, request.OldBuilding), cancellationToken);
+        handler.HandleAsync(new QuickEstimate(request.RoomType, request.Area, request.Height, request.OldBuilding, request.Materials), cancellationToken);
 }

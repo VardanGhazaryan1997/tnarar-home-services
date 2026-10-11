@@ -94,6 +94,9 @@ describe('estimate drafts', () => {
     expect(measure.body.oldBuilding).toBe(true)
     expect(measure.body.rooms).toHaveLength(1)
     expect(measureRequest(emptyDraft())).toBeNull()
+    expect(toRequest({ ...draft, materials: 'Premium' }).materials).toBe('Premium')
+    expect(measureRequest({ ...draft, materials: 'Budget' }).body.materials).toBe('Budget')
+    expect(request.materials).toBeNull()
   })
 
   it('names rooms without repeating', () => {

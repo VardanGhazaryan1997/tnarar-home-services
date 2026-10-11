@@ -77,12 +77,16 @@ public class MyEstimatesTests
         var saved = await Saver().HandleAsync(Flat(), CancellationToken.None);
 
         var changed = await Saver().HandleAsync(
-            new SaveMyEstimate(saved.Id, "Renamed", null, OldBuilding: true, [new EstimateRoomInput("Kitchen", RoomType.Kitchen, null, null, 9m, null)]),
+            new SaveMyEstimate(
+                saved.Id, "Renamed", null, OldBuilding: true, [new EstimateRoomInput("Kitchen", RoomType.Kitchen, null, null, 9m, null)], MaterialGrade.Premium),
             CancellationToken.None);
 
         changed.Id.ShouldBe(saved.Id);
         changed.Title.ShouldBe("Renamed");
         changed.OldBuilding.ShouldBeTrue();
+        changed.Materials.ShouldBe(MaterialGrade.Premium);
+        changed.Measurement.MaterialGrade.ShouldBe(MaterialGrade.Premium);
+        saved.Materials.ShouldBeNull();
         changed.Rooms.Single().Name.ShouldBe("Kitchen");
         _db.Set<EstimateRoom>().Count().ShouldBe(1);
         _db.Set<EstimateLine>().Count().ShouldBe(0);

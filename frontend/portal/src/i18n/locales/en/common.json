@@ -403,6 +403,9 @@
       "room_name_invalid": "Name each room in up to 60 characters.",
       "too_many_rooms": "An estimate has at most 30 rooms.",
       "quantity_invalid": "An amount is too large."
+    },
+    "materials": {
+      "invalid": "Choose a materials option from the list."
     }
   },
   "pagination": {
@@ -1553,6 +1556,30 @@
       "makeYourOwn": "Make your own estimate",
       "subtitle": "A renovation estimate, updated {{date}}",
       "oldBuilding": "Old building: prices include about 15% extra."
+    },
+    "materials": {
+      "label": "Materials",
+      "none": "Labour only",
+      "grades": {
+        "Budget": "Budget materials",
+        "Standard": "Standard materials",
+        "Premium": "Premium materials"
+      },
+      "hint": "Add the materials the work needs, at budget, standard or premium store prices.",
+      "title": "Materials: {{grade}}",
+      "resultLabel": "Labour and materials, approximately",
+      "total": "Materials: {{amount}}",
+      "labour": "Labour: {{range}}",
+      "room": "Materials for this room: {{amount}}",
+      "note": "Rough amounts with a margin for waste, at usual Yerevan store prices. Buy once your specialist confirms the quantities.",
+      "units": {
+        "Kilogram": "kg",
+        "Liter": "l",
+        "SquareMeter": "m²",
+        "RunningMeter": "m",
+        "CubicMeter": "m³",
+        "Piece": "pcs"
+      }
     }
   }
 }

@@ -125,6 +125,7 @@ export const toRequest = (draft) => ({
   title: draft.title.trim(),
   cityId: draft.cityId || null,
   oldBuilding: draft.oldBuilding,
+  materials: draft.materials || null,
   rooms: draft.rooms.map(toRoomInput),
 })
 
@@ -139,6 +140,7 @@ export function measureRequest(draft) {
     body: {
       oldBuilding: draft.oldBuilding,
       ...(draft.cityId ? { cityId: draft.cityId } : {}),
+      ...(draft.materials ? { materials: draft.materials } : {}),
       rooms: indexes.map((index) => toRoomInput(draft.rooms[index])),
     },
     indexes,
@@ -185,6 +187,7 @@ export function fromEstimate(estimate) {
   return {
     title: estimate.title,
     cityId: estimate.cityId ?? null,
+    materials: estimate.materials ?? null,
     oldBuilding: estimate.oldBuilding,
     rooms: estimate.rooms.map((room) => ({
       key: room.id ?? newKey('room'),

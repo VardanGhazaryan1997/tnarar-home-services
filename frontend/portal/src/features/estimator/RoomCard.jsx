@@ -186,6 +186,9 @@ export default function RoomCard({ room, measured, workItems, onChange, onRemove
           </div>
         </fieldset>
 
+        {measured?.materialsCost > 0 && (
+          <p className={styles['room__geometry']}>{t('estimator.materials.room', { amount: formatMoney(measured.materialsCost, lng) })}</p>
+        )}
         <p className={styles['room__total']}>
           {hasPrice
             ? t('estimator.room.total', { range: `${formatMoney(measured.totalMin, lng)} – ${formatMoney(measured.totalMax, lng)}` })

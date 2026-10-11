@@ -2,6 +2,7 @@ using HomeServices.Application.Abstractions;
 using HomeServices.Application.Messaging;
 using HomeServices.Application.Partners;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Offers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +28,10 @@ public sealed class RecalculateMarketPricesHandler(IAppDbContext db, IOptions<Pr
 /// <summary>
 /// The market range of a work item from partners' prices: the middle half of their prices (25th–75th percentile) with
 /// the median as the usual price, so a few very cheap or very expensive prices don't move it. Counted: approved,
-/// visible partners' labour-only prices; a from–to range counts as its middle.
+/// visible partners' labour-only prices (a from–to range counts as its middle), and the line prices of work offers
+/// customers accepted in the last <see cref="PricingSettings.AcceptedOfferDays"/> days without materials — real deals,
+/// so each counts <see cref="PricingSettings.AcceptedOfferWeight"/> times. The partner count is the number of different
+/// partners behind those prices.
 /// </summary>
 public static class MarketPrices
 {
@@ -46,23 +50,56 @@ public static class MarketPrices
             return items;
         }
 
+        var now = clock.GetUtcNow();
         var ids = items.Select(i => i.Id).ToList();
         var counted = PublicPartnerQueries.Visible(db).Select(p => p.Id);
-        var prices = await db.PartnerPrices.AsNoTracking()
+        var listed = await db.PartnerPrices.AsNoTracking()
             .Where(p => ids.Contains(p.WorkItemId) && !p.IncludesMaterials && counted.Contains(p.PartnerProfileId))
-            .Select(p => new { p.WorkItemId, p.PriceFrom, p.PriceTo })
+            .Select(p => new { p.WorkItemId, p.PartnerProfileId, p.PriceFrom, p.PriceTo })
             .ToListAsync(cancellationToken);
-        var byItem = prices.ToLookup(p => p.WorkItemId, p => p.PriceTo is { } to ? (p.PriceFrom + to) / 2 : p.PriceFrom);
+        var observations = listed
+            .Select(p => new PriceObservation(p.WorkItemId, p.PartnerProfileId, p.PriceTo is { } to ? (p.PriceFrom + to) / 2 : p.PriceFrom, 1))
+            .Concat(await AcceptedAsync(db, settings, ids, now, cancellationToken))
+            .ToLookup(o => o.WorkItemId);
 
-        var now = clock.GetUtcNow();
         foreach (var item in items)
         {
-            var values = byItem[item.Id].ToList();
-            item.UpdateMarket(RangeOf(values), values.Count, settings.MinPartners, now);
+            var found = observations[item.Id].ToList();
+            var values = found.SelectMany(o => Enumerable.Repeat(o.Price, o.Weight)).ToList();
+            item.UpdateMarket(RangeOf(values), found.Select(o => o.PartnerId).Distinct().Count(), settings.MinPartners, now);
         }
 
         return items;
     }
+
+    // Unit prices of accepted, labour-only work offers, line by line, for the request lines' work items.
+    private static async Task<List<PriceObservation>> AcceptedAsync(
+        IAppDbContext db, PricingSettings settings, List<Guid> workItemIds, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var since = now.AddDays(-settings.AcceptedOfferDays);
+        var lines = await db.Offers.AsNoTracking()
+            .Where(o => o.Kind == OfferKind.Work && o.Status == OfferStatus.Accepted && o.DecidedAt >= since && !o.MaterialsIncluded)
+            .SelectMany(o => o.Items
+                .Where(i => i.Included && i.UnitPrice != null && i.RequestLineId != null)
+                .Select(i => new { o.PartnerProfileId, RequestLineId = i.RequestLineId!.Value, UnitPrice = i.UnitPrice!.Value }))
+            .ToListAsync(cancellationToken);
+        if (lines.Count == 0)
+        {
+            return [];
+        }
+
+        var requestLineIds = lines.Select(l => l.RequestLineId).Distinct().ToList();
+        var work = await db.ServiceRequests.AsNoTracking()
+            .SelectMany(r => r.Lines)
+            .Where(l => requestLineIds.Contains(l.Id) && workItemIds.Contains(l.WorkItemId))
+            .ToDictionaryAsync(l => l.Id, l => l.WorkItemId, cancellationToken);
+        return lines
+            .Where(l => work.ContainsKey(l.RequestLineId))
+            .Select(l => new PriceObservation(work[l.RequestLineId], l.PartnerProfileId, l.UnitPrice, settings.AcceptedOfferWeight))
+            .ToList();
+    }
+
+    private sealed record PriceObservation(Guid WorkItemId, Guid PartnerId, int Price, int Weight);
 
     /// <summary>25th percentile, median and 75th percentile of the prices, rounded to tidy amounts; null for none.</summary>
     public static PriceRange? RangeOf(IReadOnlyCollection<int> prices)

@@ -28,6 +28,7 @@ export const routes = [
           { path: 'partners/:slug', lazy: page(() => import('@/features/public/PartnerPage')) },
           { path: 'how-it-works', lazy: page(() => import('@/features/public/HowItWorksPage')) },
           { path: 'pages/:slug', lazy: page(() => import('@/features/public/InfoPage')) },
+          { path: 'renovation-prices', lazy: page(() => import('@/features/public/PriceGuidePage')) },
           { path: 'estimates', lazy: page(() => import('@/features/estimator/EstimatesPage')) },
           { path: 'estimates/new', lazy: page(() => import('@/features/estimator/NewEstimatePage')) },
           { path: 'estimates/shared/:token', lazy: page(() => import('@/features/estimator/SharedEstimatePage')) },

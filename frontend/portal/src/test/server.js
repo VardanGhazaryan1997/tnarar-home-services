@@ -21,6 +21,7 @@ export const handlers = [
   http.get('*/api/v1/conversations/unread', () => HttpResponse.json({ conversations: 0, messages: 0 })),
   http.get('*/api/v1/notifications/unread-count', () => HttpResponse.json({ count: 0 })),
   http.get('*/api/v1/partners/:slug/reviews', () => HttpResponse.json(page([]))),
+  http.get('*/api/v1/partners/:slug/prices', () => HttpResponse.json([])),
   http.get('*/api/v1/me/commissions/summary', () =>
     HttpResponse.json({ unbilled: 0, outstanding: 0, overdue: 0, nextDueOn: null, pausedSince: null, pauseAfterOverdueDays: 14 }),
   ),

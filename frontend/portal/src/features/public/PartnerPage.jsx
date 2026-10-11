@@ -11,6 +11,7 @@ import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate } from '@/shared/format'
 import Gallery from './Gallery'
 import { Rating } from './PartnerCard'
+import PartnerPrices from './PartnerPrices'
 import PartnerReviews from './PartnerReviews'
 import { usePartner } from './publicApi'
 import styles from './PartnerPage.module.scss'
@@ -90,6 +91,7 @@ export default function PartnerPage() {
                     <p className={styles['partner-page__about']}>{partner.about}</p>
                   </Card>
                 )}
+                <PartnerPrices slug={partner.slug} />
                 <Card title={t('public.profile.work', { n: partner.workExamples.length })}>
                   {partner.workExamples.length ? (
                     <Gallery items={partner.workExamples} label={t('public.profile.workList')} />

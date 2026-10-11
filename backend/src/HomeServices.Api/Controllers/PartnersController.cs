@@ -40,6 +40,17 @@ public sealed class PartnersController : ControllerBase
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new GetPublicPartner(slug), cancellationToken);
 
+    /// <summary>
+    /// The partner's prices for the work they offer, next to the market range, with "Below" / "Typical" / "Above"
+    /// the market; 404 "partner.not_found".
+    /// </summary>
+    [HttpGet("{slug}/prices")]
+    public Task<IReadOnlyList<PublicPriceDto>> Prices(
+        string slug,
+        [FromServices] IQueryHandler<GetPublicPartnerPrices, IReadOnlyList<PublicPriceDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetPublicPartnerPrices(slug), cancellationToken);
+
     /// <summary>The partner's visible reviews, newest first (customers' first names only). <paramref name="pageSize"/> is at most 50.</summary>
     [HttpGet("{slug}/reviews")]
     public Task<PagedResult<PublicReviewDto>> Reviews(

@@ -19,7 +19,8 @@ public sealed record GetWorkItems(string? Category = null) : IQuery<IReadOnlyLis
 
 /// <summary>
 /// A work item for the Portal. Prices are the usual market labour price range per unit in AMD (partners' prices once
-/// enough partners priced it, otherwise the staff range; null until priced).
+/// enough partners priced it, otherwise the staff range; null until priced). <see cref="PartnerCount"/>: how many
+/// partners' prices the range comes from, or null while it's the staff range.
 /// </summary>
 public sealed record WorkItemDto(
     Guid Id,
@@ -30,7 +31,8 @@ public sealed record WorkItemDto(
     WorkSurface Surface,
     int? PriceMin = null,
     int? PriceTypical = null,
-    int? PriceMax = null);
+    int? PriceMax = null,
+    int? PartnerCount = null);
 
 /// <summary>
 /// Every work item (hidden ones too) with all translations, for the Back Office. Filters: a category (a main category
@@ -189,7 +191,16 @@ public sealed class GetWorkItemsHandler(IAppDbContext db, ICurrentLanguage langu
 
         return WorkItemCatalog.Sort(items, wanted)
             .Select(w => new WorkItemDto(
-                w.Id, w.CategoryId, w.Slug, w.Name.Get(language.Code, language.DefaultCode), w.Unit, w.Surface, w.MarketMin, w.MarketTypical, w.MarketMax))
+                w.Id,
+                w.CategoryId,
+                w.Slug,
+                w.Name.Get(language.Code, language.DefaultCode),
+                w.Unit,
+                w.Surface,
+                w.MarketMin,
+                w.MarketTypical,
+                w.MarketMax,
+                w.MarketSource == MarketPriceSource.Partners ? w.MarketPartnerCount : null))
             .ToList();
     }
 }

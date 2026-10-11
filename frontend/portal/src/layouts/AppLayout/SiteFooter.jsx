@@ -10,6 +10,7 @@ const LINKS = [
   { key: 'services', to: '/services' },
   { key: 'search', to: '/search' },
   { key: 'how', to: '/how-it-works' },
+  { key: 'prices', to: '/renovation-prices' },
   { key: 'partners', to: '/how-it-works?for=partners' },
 ]
 

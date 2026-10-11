@@ -1,0 +1,95 @@
+@use 'styles/mixins' as *;
+
+// The public price guide: filters, then one card per main service with its work and price ranges.
+.price-guide {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+
+  &__note {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__filters {
+    display: grid;
+    gap: space(3);
+
+    @include up(md) {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+
+    & + & {
+      margin-block-start: space(4);
+    }
+  }
+
+  &__group-title {
+    @include text-small;
+
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(1) space(3);
+    justify-content: space-between;
+    padding-block-end: space(2);
+    border-block-end: 1px solid $color-border;
+  }
+
+  &__name {
+    display: flex;
+    flex: 1 1 220px;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__price {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    align-items: flex-end;
+    white-space: nowrap;
+  }
+
+  &__source {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__cta {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__cta-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-night;
+  }
+
+  &__cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+  }
+}

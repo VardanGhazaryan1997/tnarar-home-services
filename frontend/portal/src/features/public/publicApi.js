@@ -19,6 +19,8 @@ export const publicApi = baseApi.injectEndpoints({
     getPartnerReviews: build.query({
       query: ({ slug, page = 1 }) => ({ url: `/partners/${encodeURIComponent(slug)}/reviews`, params: { page, pageSize: REVIEWS_PAGE_SIZE } }),
     }),
+    /** The partner's prices next to the market, with `comparison`: Below | Typical | Above | null (A7). */
+    getPartnerPrices: build.query({ query: ({ slug }) => `/partners/${encodeURIComponent(slug)}/prices` }),
     getPages: build.query({ query: () => '/pages', keepUnusedDataFor: 60 * 30 }),
     getPage: build.query({ query: ({ slug }) => `/pages/${encodeURIComponent(slug)}` }),
     /** `audience`: General | Customers | Partners, or nothing for all. */
@@ -34,6 +36,7 @@ const useLanguage = () => useTranslation().i18n.language
 
 export const useSearchPartners = (params, options) => publicApi.useSearchPartnersQuery({ ...params, lng: useLanguage() }, options)
 export const usePartner = (slug) => publicApi.useGetPartnerQuery({ slug, lng: useLanguage() })
+export const usePartnerPrices = (slug) => publicApi.useGetPartnerPricesQuery({ slug, lng: useLanguage() })
 export const usePartnerReviews = (slug, page) => publicApi.useGetPartnerReviewsQuery({ slug, page })
 export const usePages = () => publicApi.useGetPagesQuery({ lng: useLanguage() })
 export const usePage = (slug) => publicApi.useGetPageQuery({ slug, lng: useLanguage() })

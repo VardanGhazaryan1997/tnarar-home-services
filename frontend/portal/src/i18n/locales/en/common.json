@@ -90,6 +90,7 @@
       "services": "Services",
       "search": "Find a specialist",
       "how": "How it works",
+      "prices": "Renovation prices",
       "partners": "For partners"
     }
   },
@@ -1059,6 +1060,37 @@
       "documentTitle": "{{title}} — Tnarar",
       "notFound": "Page not found",
       "updated": "Updated {{date}}"
+    },
+    "prices": {
+      "title": "Prices ({{n}})",
+      "hint": "Labour per unit, without materials unless marked. The final price is agreed after the specialist sees the job.",
+      "market": "Market: {{range}}",
+      "comparison": {
+        "Below": "Below market",
+        "Typical": "Market price",
+        "Above": "Above market"
+      },
+      "withMaterials": "With materials",
+      "all": "Show all {{n}} prices",
+      "fewer": "Show fewer"
+    },
+    "priceGuide": {
+      "documentTitle": "Renovation prices in Armenia — Tnarar",
+      "description": "How much renovation work costs in Armenia: usual labour prices per m², per piece and per job, from what specialists charge.",
+      "title": "Renovation prices in Armenia",
+      "subtitle": "The usual labour price of each kind of work, per unit.",
+      "estimate": "Estimate my renovation",
+      "note": "Labour only, without materials, in drams. Ranges come from the prices specialists on Tnarar charge (the middle half of them), or our own estimate until enough specialists have priced the work.",
+      "search": "Find work",
+      "service": "Service",
+      "allServices": "All services",
+      "none": "No prices found",
+      "fromSpecialists": "From {{n}} specialists' prices",
+      "ourEstimate": "Our estimate",
+      "usually": "usually {{amount}} per {{unit}}",
+      "ctaTitle": "Know what your renovation will cost",
+      "ctaText": "Add your rooms and get a price range in a minute, then exact offers from specialists.",
+      "request": "Get offers"
     }
   },
   "partner": {

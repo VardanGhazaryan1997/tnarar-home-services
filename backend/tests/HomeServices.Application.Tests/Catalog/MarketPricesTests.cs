@@ -3,7 +3,9 @@ using HomeServices.Application.Partners;
 using HomeServices.Application.Tests.Partners;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Offers;
 using HomeServices.Domain.Partners;
+using HomeServices.Domain.Requests;
 using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Tests.Catalog;
@@ -130,4 +132,42 @@ public class MarketPricesTests
 
     [Fact]
     public void No_prices_give_no_range() => MarketPrices.RangeOf([]).ShouldBeNull();
+
+    // A customer accepted a work offer that priced this work at unitPrice per unit, at decidedAt.
+    private void GivenAcceptedOffer(int unitPrice, DateTimeOffset decidedAt, bool materials = false)
+    {
+        var partner = _data.GivenProfile($"Deal {Guid.NewGuid():N}"[..20], PartnerStatus.Approved);
+        var request = ServiceRequest.Create(_data.User.Id, RequestKind.Open, _data.Plumbing.Id, _data.Yerevan.Id, null, "Fix the leaking pipe, please.", null, null, null, null);
+        var line = request.AddLine("Kitchen", _item.Id, WorkUnit.Fixed, 2m, null, null);
+        var terms = new OfferTerms(
+            "Fix the leak under the sink.",
+            [new OfferLine("Kitchen · leak repair", true, line.Id, 2m, unitPrice)],
+            unitPrice * 2,
+            materials,
+            null,
+            null,
+            1,
+            null,
+            []);
+        var offer = Offer.Create(request.Id, partner.Id, OfferKind.Work, terms, decidedAt.AddDays(7), decidedAt);
+        offer.Accept(Guid.NewGuid(), decidedAt);
+        _data.Db.ServiceRequests.Add(request);
+        _data.Db.Offers.Add(offer);
+        _data.Db.SaveChanges();
+    }
+
+    [Fact]
+    public async Task Accepted_offers_count_twice_as_much_as_listed_prices()
+    {
+        GivenPrices(prices: [(10000, null), (12000, null), (14000, null)]);
+        GivenAcceptedOffer(40000, PartnerTestData.Now.AddDays(-10));
+        GivenAcceptedOffer(1000, PartnerTestData.Now.AddDays(-400)); // too old
+        GivenAcceptedOffer(1000, PartnerTestData.Now.AddDays(-5), materials: true); // not labour only
+
+        (await RecalculateAsync(minPartners: 4)).FromPartners.ShouldBe(1);
+
+        // 10,000 · 12,000 · 14,000 · 40,000 · 40,000 from four partners.
+        _item.MarketPartnerCount.ShouldBe(4);
+        _item.Market.ShouldBe(new PriceRange(12000, 14000, 40000));
+    }
 }

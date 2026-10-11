@@ -313,6 +313,7 @@ Errors: `comment.required`, `comment.too_long`, `status.invalid`, `type.invalid`
 | --- | --- |
 | `GET /api/v1/partners?category=&city=&district=&type=&search=&page=&pageSize=` | Approved partners whose account isn't blocked, newest approval first (`pageSize` at most 50). Filters are slugs: a category includes its subcategories; partners serving a whole city match each of its districts; `district` needs `city`. An unknown or hidden category/place gives an empty list. `search` matches the name or about text |
 | `GET /api/v1/partners/{slug}` | The public profile: about, categories, areas, avatar, work examples, `memberSince`. Not approved → 404 `partner.not_found` |
+| `GET /api/v1/partners/{slug}/prices` | The partner's prices for work they still offer, in catalog order, with the market range and `comparison`: `Below` (under the market's 25th percentile), `Typical`, `Above` (over the 75th); null for prices with materials or work without a market price |
 
 - Each profile gets a slug when it's created, e.g. `aram-santekhnik-3f9a2c`: the name in Latin letters (Armenian and Russian are transliterated) plus 6 characters of the id. Renaming keeps the slug. The owner's `GET /me/partner-profile` returns it as `slug`.
 - Visitors see only the avatar and work examples, never documents or the owner's phone. File links are signed and expire after an hour, so pages fetch them fresh.
@@ -337,6 +338,7 @@ Broken JSON, an unknown enum name or a missing required field return the usual 4
 | `GET /api/v1/admin/catalog/room-templates`, `PUT …/room-templates/{roomType}` | Back Office (`catalog.manage`): every room type's usual work; replace one type's list |
 | `GET /api/v1/admin/estimates?search=&withRequest=&shared=&page=`, `GET …/stats`, `GET …/{id}` | Back Office (`requests.view`): customers' estimates with owner, totals and requests made from them; how many became requests (conversion, all time and last 30 days) |
 
+- Market ranges (`Pricing` settings): the 25th percentile – median – 75th percentile of approved partners' labour-only prices plus the line prices of accepted work offers without materials from the last `AcceptedOfferDays` (365) days, each counted `AcceptedOfferWeight` (2) times. Partners' prices replace the staff range once `MinPartners` different partners are behind them; staff can lock a range. `GET /api/v1/work-items` returns `partnerCount` (null while it's the staff range) for the public price guide.
 - Prices are labour only: quantity × the work item's market range, +15% in an old building, +10% on wall and ceiling work under ceilings above 3 m. Amounts are rounded (10 under 1,000, 100 under 100,000, else 1,000).
 - Visitors keep their estimate in the browser; it's saved on the server once they sign in. A saved estimate keeps lines for work hidden since; its prices leave them out (the line is missing from `measurement`).
 - A template line is measured from the room, or has a fixed `quantity`, or a `quantityPerSquareMeter` of floor (rounded up, at least 1). Work that can't be measured (pieces, points, hours, m³) needs one of the two: 422 `room_template.quantity_required`.

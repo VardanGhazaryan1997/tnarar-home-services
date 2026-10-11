@@ -18,6 +18,7 @@ using HomeServices.Domain.Orders;
 using HomeServices.Domain.Requests;
 using HomeServices.Domain.Reviews;
 using HomeServices.Domain.Staff;
+using HomeServices.Domain.Stores;
 using HomeServices.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -107,6 +108,12 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<CommissionStatement> CommissionStatements => Set<CommissionStatement>();
 
     public DbSet<Settlement> Settlements => Set<Settlement>();
+
+    public DbSet<Store> Stores => Set<Store>();
+
+    public DbSet<StoreBranch> StoreBranches => Set<StoreBranch>();
+
+    public DbSet<StoreProduct> StoreProducts => Set<StoreProduct>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

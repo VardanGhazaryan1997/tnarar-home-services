@@ -4615,6 +4615,30 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
 
+                    b.Property<bool>("IsPriceLocked")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_price_locked");
+
+                    b.Property<int?>("MarketBudget")
+                        .HasColumnType("integer")
+                        .HasColumnName("market_budget");
+
+                    b.Property<int?>("MarketPremium")
+                        .HasColumnType("integer")
+                        .HasColumnName("market_premium");
+
+                    b.Property<int?>("MarketStandard")
+                        .HasColumnType("integer")
+                        .HasColumnName("market_standard");
+
+                    b.Property<int>("MarketStoreCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("market_store_count");
+
+                    b.Property<DateTimeOffset?>("MarketUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("market_updated_at");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("jsonb")
@@ -4671,6 +4695,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("9f8a85e2-b4a3-563e-b05d-c70542f7938e"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0533\\u056B\\u057A\\u057D\\u0561\\u0575\\u056B\\u0576 \\u057D\\u057E\\u0561\\u0572\",\"ru\":\"\\u0413\\u0438\\u043F\\u0441\\u043E\\u0432\\u0430\\u044F \\u0448\\u0442\\u0443\\u043A\\u0430\\u0442\\u0443\\u0440\\u043A\\u0430\",\"en\":\"Gypsum plaster\",\"ar\":\"\\u062C\\u0635 (\\u0644\\u064A\\u0627\\u0633\\u0629 \\u062C\\u0628\\u0633\\u064A\\u0629)\",\"fa\":\"\\u06AF\\u0686 \\u0627\\u0646\\u062F\\u0648\\u062F\",\"hi\":\"\\u091C\\u093F\\u092A\\u094D\\u0938\\u092E \\u092A\\u094D\\u0932\\u093E\\u0938\\u094D\\u091F\\u0930\"}",
                             PriceBudget = 90,
                             PricePremium = 170,
@@ -4684,6 +4710,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("6b3f09c6-d8ff-5359-a620-c50520a20fde"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0544\\u0565\\u056F\\u0576\\u0561\\u0580\\u056F\\u0561\\u0575\\u056B\\u0576 \\u0577\\u057A\\u0561\\u0584\\u056C\",\"ru\":\"\\u0421\\u0442\\u0430\\u0440\\u0442\\u043E\\u0432\\u0430\\u044F \\u0448\\u043F\\u0430\\u043A\\u043B\\u0451\\u0432\\u043A\\u0430\",\"en\":\"Base putty\",\"ar\":\"\\u0645\\u0639\\u062C\\u0648\\u0646 \\u0623\\u0633\\u0627\\u0633\",\"fa\":\"\\u0628\\u062A\\u0648\\u0646\\u0647 \\u0632\\u06CC\\u0631\\u06A9\\u0627\\u0631\",\"hi\":\"\\u092C\\u0947\\u0938 \\u092A\\u0941\\u091F\\u094D\\u091F\\u0940\"}",
                             PriceBudget = 100,
                             PricePremium = 200,
@@ -4697,6 +4725,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("9df0d7ff-35b8-5b46-b535-ae8355975de1"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054E\\u0565\\u0580\\u057B\\u0576\\u0561\\u056F\\u0561\\u0576 \\u0577\\u057A\\u0561\\u0584\\u056C\",\"ru\":\"\\u0424\\u0438\\u043D\\u0438\\u0448\\u043D\\u0430\\u044F \\u0448\\u043F\\u0430\\u043A\\u043B\\u0451\\u0432\\u043A\\u0430\",\"en\":\"Finishing putty\",\"ar\":\"\\u0645\\u0639\\u062C\\u0648\\u0646 \\u062A\\u0634\\u0637\\u064A\\u0628\",\"fa\":\"\\u0628\\u062A\\u0648\\u0646\\u0647 \\u0631\\u0648\\u06CC\\u0647\",\"hi\":\"\\u092B\\u093C\\u093F\\u0928\\u093F\\u0936\\u093F\\u0902\\u0917 \\u092A\\u0941\\u091F\\u094D\\u091F\\u0940\"}",
                             PriceBudget = 150,
                             PricePremium = 380,
@@ -4710,6 +4740,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("8741452e-9b8e-56c2-9754-d942c6aa20c3"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0533\\u0580\\u0578\\u0582\\u0576\\u057F\",\"ru\":\"\\u0413\\u0440\\u0443\\u043D\\u0442\\u043E\\u0432\\u043A\\u0430\",\"en\":\"Primer\",\"ar\":\"\\u0637\\u0644\\u0627\\u0621 \\u0623\\u0633\\u0627\\u0633 (\\u0628\\u0631\\u0627\\u064A\\u0645\\u0631)\",\"fa\":\"\\u0622\\u0633\\u062A\\u0631\",\"hi\":\"\\u092A\\u094D\\u0930\\u093E\\u0907\\u092E\\u0930\"}",
                             PriceBudget = 500,
                             PricePremium = 1400,
@@ -4723,6 +4755,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("81a158f9-9e88-549c-b7b6-1a773e515d04"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0546\\u0565\\u0580\\u0584\\u056B\\u0576 \\u0576\\u0565\\u0580\\u056F\",\"ru\":\"\\u0418\\u043D\\u0442\\u0435\\u0440\\u044C\\u0435\\u0440\\u043D\\u0430\\u044F \\u043A\\u0440\\u0430\\u0441\\u043A\\u0430\",\"en\":\"Interior paint\",\"ar\":\"\\u062F\\u0647\\u0627\\u0646 \\u062F\\u0627\\u062E\\u0644\\u064A\",\"fa\":\"\\u0631\\u0646\\u06AF \\u062F\\u0627\\u062E\\u0644\\u06CC\",\"hi\":\"\\u0907\\u0902\\u091F\\u0940\\u0930\\u093F\\u092F\\u0930 \\u092A\\u0947\\u0902\\u091F\"}",
                             PriceBudget = 1200,
                             PricePremium = 5000,
@@ -4736,6 +4770,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("4998f2c5-d264-572d-863c-bf8e79a43fba"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0537\\u0574\\u0561\\u056C \\u0576\\u0565\\u0580\\u056F\",\"ru\":\"\\u042D\\u043C\\u0430\\u043B\\u044C\",\"en\":\"Enamel paint\",\"ar\":\"\\u062F\\u0647\\u0627\\u0646 \\u0645\\u064A\\u0646\\u0627\",\"fa\":\"\\u0631\\u0646\\u06AF \\u0631\\u0648\\u063A\\u0646\\u06CC (\\u0644\\u0639\\u0627\\u0628\\u06CC)\",\"hi\":\"\\u0907\\u0928\\u0947\\u092E\\u0932 \\u092A\\u0947\\u0902\\u091F\"}",
                             PriceBudget = 2500,
                             PricePremium = 7000,
@@ -4749,6 +4785,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("50286ae2-f5c5-51fa-a55e-e6deeecd6bb3"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054A\\u0561\\u057D\\u057F\\u0561\\u057C\",\"ru\":\"\\u041E\\u0431\\u043E\\u0438\",\"en\":\"Wallpaper\",\"ar\":\"\\u0648\\u0631\\u0642 \\u062C\\u062F\\u0631\\u0627\\u0646\",\"fa\":\"\\u06A9\\u0627\\u063A\\u0630 \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0935\\u0949\\u0932\\u092A\\u0947\\u092A\\u0930\"}",
                             PriceBudget = 800,
                             PricePremium = 5000,
@@ -4762,6 +4800,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("92ae4fcc-d7ae-5707-9e52-59e9884233ff"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054A\\u0561\\u057D\\u057F\\u0561\\u057C\\u056B \\u057D\\u0578\\u057D\\u056B\\u0576\\u0571\",\"ru\":\"\\u041A\\u043B\\u0435\\u0439 \\u0434\\u043B\\u044F \\u043E\\u0431\\u043E\\u0435\\u0432\",\"en\":\"Wallpaper paste\",\"ar\":\"\\u063A\\u0631\\u0627\\u0621 \\u0648\\u0631\\u0642 \\u0627\\u0644\\u062C\\u062F\\u0631\\u0627\\u0646\",\"fa\":\"\\u0686\\u0633\\u0628 \\u06A9\\u0627\\u063A\\u0630 \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0935\\u0949\\u0932\\u092A\\u0947\\u092A\\u0930 \\u092A\\u0947\\u0938\\u094D\\u091F\"}",
                             PriceBudget = 2000,
                             PricePremium = 4500,
@@ -4775,6 +4815,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("34aac121-8a63-5457-9d9a-b2c12f4843dc"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0531\\u057A\\u0561\\u056F\\u0565\\u0569\\u0565\\u056C\\u0561\\u0575\\u056B\\u0576 \\u057A\\u0561\\u057D\\u057F\\u0561\\u057C\",\"ru\":\"\\u0421\\u0442\\u0435\\u043A\\u043B\\u043E\\u043E\\u0431\\u043E\\u0438\",\"en\":\"Glass fibre wallpaper\",\"ar\":\"\\u0648\\u0631\\u0642 \\u062C\\u062F\\u0631\\u0627\\u0646 \\u0645\\u0646 \\u0627\\u0644\\u0623\\u0644\\u064A\\u0627\\u0641 \\u0627\\u0644\\u0632\\u062C\\u0627\\u062C\\u064A\\u0629\",\"fa\":\"\\u06A9\\u0627\\u063A\\u0630 \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC \\u0641\\u0627\\u06CC\\u0628\\u0631\\u06AF\\u0644\\u0627\\u0633\",\"hi\":\"\\u0917\\u094D\\u0932\\u093E\\u0938 \\u092B\\u093C\\u093E\\u0907\\u092C\\u0930 \\u0935\\u0949\\u0932\\u092A\\u0947\\u092A\\u0930\"}",
                             PriceBudget = 900,
                             PricePremium = 2500,
@@ -4788,6 +4830,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("6f590444-0e90-52c8-876f-762c0a59ec62"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054A\\u0561\\u057F\\u056B \\u057D\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041D\\u0430\\u0441\\u0442\\u0435\\u043D\\u043D\\u0430\\u044F \\u043F\\u043B\\u0438\\u0442\\u043A\\u0430\",\"en\":\"Wall tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u062C\\u062F\\u0631\\u0627\\u0646\",\"fa\":\"\\u06A9\\u0627\\u0634\\u06CC \\u062F\\u06CC\\u0648\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0926\\u0940\\u0935\\u093E\\u0930 \\u0915\\u0940 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
                             PriceBudget = 5000,
                             PricePremium = 18000,
@@ -4801,6 +4845,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("8031a834-0e95-58bb-a13c-36d1dc1ff919"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0540\\u0561\\u057F\\u0561\\u056F\\u056B \\u057D\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041D\\u0430\\u043F\\u043E\\u043B\\u044C\\u043D\\u0430\\u044F \\u043F\\u043B\\u0438\\u0442\\u043A\\u0430\",\"en\":\"Floor tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u0623\\u0631\\u0636\\u064A\\u0627\\u062A\",\"fa\":\"\\u06A9\\u0627\\u0634\\u06CC \\u06A9\\u0641\",\"hi\":\"\\u092B\\u093C\\u0930\\u094D\\u0936 \\u0915\\u0940 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
                             PriceBudget = 6000,
                             PricePremium = 20000,
@@ -4814,6 +4860,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("13bc3b02-b92a-55be-b637-e0ea5c42ae30"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053D\\u0578\\u0577\\u0578\\u0580 \\u0579\\u0561\\u0583\\u056B \\u056F\\u0565\\u0580\\u0561\\u0574\\u0578\\u0563\\u0580\\u0561\\u0576\\u056B\\u057F\",\"ru\":\"\\u041A\\u0440\\u0443\\u043F\\u043D\\u043E\\u0444\\u043E\\u0440\\u043C\\u0430\\u0442\\u043D\\u044B\\u0439 \\u043A\\u0435\\u0440\\u0430\\u043C\\u043E\\u0433\\u0440\\u0430\\u043D\\u0438\\u0442\",\"en\":\"Large-format porcelain tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u0628\\u0648\\u0631\\u0633\\u0644\\u064A\\u0646 \\u0643\\u0628\\u064A\\u0631 \\u0627\\u0644\\u062D\\u062C\\u0645\",\"fa\":\"\\u0633\\u0631\\u0627\\u0645\\u06CC\\u06A9 \\u067E\\u0631\\u0633\\u0644\\u0627\\u0646\\u06CC \\u0628\\u0632\\u0631\\u06AF\",\"hi\":\"\\u092C\\u0921\\u093C\\u0947 \\u0906\\u0915\\u093E\\u0930 \\u0915\\u0940 \\u092A\\u094B\\u0930\\u094D\\u0938\\u093F\\u0932\\u0947\\u0928 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
                             PriceBudget = 12000,
                             PricePremium = 40000,
@@ -4827,6 +4875,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("b71ba2d4-d5b6-5a4b-855b-528982d342ea"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053D\\u0573\\u0561\\u0576\\u056F\\u0561\\u0580\\u0561\\u0575\\u056B\\u0576 \\u057D\\u0561\\u056C\\u056B\\u056F\",\"ru\":\"\\u041C\\u043E\\u0437\\u0430\\u0438\\u043A\\u0430\",\"en\":\"Mosaic tiles\",\"ar\":\"\\u0628\\u0644\\u0627\\u0637 \\u0641\\u0633\\u064A\\u0641\\u0633\\u0627\\u0621\",\"fa\":\"\\u06A9\\u0627\\u0634\\u06CC \\u0645\\u0648\\u0632\\u0627\\u06CC\\u06CC\\u06A9\\u06CC\",\"hi\":\"\\u092E\\u094B\\u091C\\u093C\\u0947\\u0915 \\u091F\\u093E\\u0907\\u0932\\u0947\\u0902\"}",
                             PriceBudget = 15000,
                             PricePremium = 45000,
@@ -4840,6 +4890,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("de366b65-a1f2-5736-a287-e9fdb66260b2"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054D\\u0561\\u056C\\u056B\\u056F\\u056B \\u057D\\u0578\\u057D\\u056B\\u0576\\u0571\",\"ru\":\"\\u041F\\u043B\\u0438\\u0442\\u043E\\u0447\\u043D\\u044B\\u0439 \\u043A\\u043B\\u0435\\u0439\",\"en\":\"Tile adhesive\",\"ar\":\"\\u0644\\u0627\\u0635\\u0642 \\u0628\\u0644\\u0627\\u0637\",\"fa\":\"\\u0686\\u0633\\u0628 \\u06A9\\u0627\\u0634\\u06CC\",\"hi\":\"\\u091F\\u093E\\u0907\\u0932 \\u090F\\u0921\\u0939\\u0947\\u0938\\u093F\\u0935\"}",
                             PriceBudget = 100,
                             PricePremium = 260,
@@ -4853,6 +4905,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("7d1b804c-3f8c-5dee-a028-d922fbc183e1"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054D\\u0561\\u056C\\u056B\\u056F\\u056B \\u0561\\u0580\\u0561\\u0576\\u0584\\u0561\\u056C\\u0581\\u056B\\u0579\",\"ru\":\"\\u0417\\u0430\\u0442\\u0438\\u0440\\u043A\\u0430 \\u0434\\u043B\\u044F \\u0448\\u0432\\u043E\\u0432\",\"en\":\"Tile grout\",\"ar\":\"\\u0631\\u0648\\u0628\\u0629 \\u0627\\u0644\\u0628\\u0644\\u0627\\u0637\",\"fa\":\"\\u067E\\u0648\\u062F\\u0631 \\u0628\\u0646\\u062F\\u06A9\\u0634\\u06CC\",\"hi\":\"\\u091F\\u093E\\u0907\\u0932 \\u0917\\u094D\\u0930\\u093E\\u0909\\u091F\"}",
                             PriceBudget = 600,
                             PricePremium = 3000,
@@ -4866,6 +4920,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e0509cca-a68a-5af0-97e8-245988a814ab"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053C\\u0561\\u0574\\u056B\\u0576\\u0561\\u057F\",\"ru\":\"\\u041B\\u0430\\u043C\\u0438\\u043D\\u0430\\u0442\",\"en\":\"Laminate flooring\",\"ar\":\"\\u0623\\u0631\\u0636\\u064A\\u0627\\u062A \\u0644\\u0627\\u0645\\u064A\\u0646\\u064A\\u062A\",\"fa\":\"\\u0644\\u0645\\u06CC\\u0646\\u062A\",\"hi\":\"\\u0932\\u0948\\u092E\\u093F\\u0928\\u0947\\u091F \\u092B\\u093C\\u094D\\u0932\\u094B\\u0930\\u093F\\u0902\\u0917\"}",
                             PriceBudget = 3500,
                             PricePremium = 10000,
@@ -4879,6 +4935,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("0aeacc79-15b8-5762-86ce-c2e7b77e52b3"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0540\\u0561\\u057F\\u0561\\u056F\\u056B \\u057F\\u0561\\u056F\\u0564\\u056B\\u0580\",\"ru\":\"\\u041F\\u043E\\u0434\\u043B\\u043E\\u0436\\u043A\\u0430\",\"en\":\"Floor underlay\",\"ar\":\"\\u0637\\u0628\\u0642\\u0629 \\u0639\\u0627\\u0632\\u0644\\u0629 \\u062A\\u062D\\u062A \\u0627\\u0644\\u0623\\u0631\\u0636\\u064A\\u0629\",\"fa\":\"\\u0632\\u06CC\\u0631\\u0627\\u0646\\u062F\\u0627\\u0632 \\u06A9\\u0641\",\"hi\":\"\\u092B\\u093C\\u094D\\u0932\\u094B\\u0930 \\u0905\\u0902\\u0921\\u0930\\u0932\\u0947\"}",
                             PriceBudget = 300,
                             PricePremium = 1200,
@@ -4892,6 +4950,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("b4a5823c-2b6d-5cac-b371-31248ab4bcaa"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0544\\u0561\\u0576\\u0580\\u0561\\u0570\\u0561\\u057F\\u0561\\u056F\",\"ru\":\"\\u041F\\u0430\\u0440\\u043A\\u0435\\u0442\",\"en\":\"Parquet\",\"ar\":\"\\u0628\\u0627\\u0631\\u0643\\u064A\\u0647\",\"fa\":\"\\u067E\\u0627\\u0631\\u06A9\\u062A\",\"hi\":\"\\u092A\\u093E\\u0930\\u094D\\u0915\\u0947\\u091F\"}",
                             PriceBudget = 12000,
                             PricePremium = 35000,
@@ -4905,6 +4965,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("3104e53e-e8b0-5f76-aa6b-d9dc838bc460"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0544\\u0561\\u0576\\u0580\\u0561\\u0570\\u0561\\u057F\\u0561\\u056F\\u056B \\u057D\\u0578\\u057D\\u056B\\u0576\\u0571\",\"ru\":\"\\u041F\\u0430\\u0440\\u043A\\u0435\\u0442\\u043D\\u044B\\u0439 \\u043A\\u043B\\u0435\\u0439\",\"en\":\"Parquet adhesive\",\"ar\":\"\\u0644\\u0627\\u0635\\u0642 \\u0628\\u0627\\u0631\\u0643\\u064A\\u0647\",\"fa\":\"\\u0686\\u0633\\u0628 \\u067E\\u0627\\u0631\\u06A9\\u062A\",\"hi\":\"\\u092A\\u093E\\u0930\\u094D\\u0915\\u0947\\u091F \\u090F\\u0921\\u0939\\u0947\\u0938\\u093F\\u0935\"}",
                             PriceBudget = 1500,
                             PricePremium = 4000,
@@ -4918,6 +4980,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("1d10ccf9-9dd3-5958-9030-01c8f0d34bb1"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054E\\u056B\\u0576\\u056B\\u056C\\u0561\\u0575\\u056B\\u0576 \\u056E\\u0561\\u056E\\u056F\",\"ru\":\"\\u0412\\u0438\\u043D\\u0438\\u043B\\u043E\\u0432\\u043E\\u0435 \\u043F\\u043E\\u043A\\u0440\\u044B\\u0442\\u0438\\u0435\",\"en\":\"Vinyl flooring\",\"ar\":\"\\u0623\\u0631\\u0636\\u064A\\u0627\\u062A \\u0641\\u064A\\u0646\\u064A\\u0644\",\"fa\":\"\\u06A9\\u0641\\u067E\\u0648\\u0634 \\u0648\\u06CC\\u0646\\u06CC\\u0644\",\"hi\":\"\\u0935\\u093F\\u0928\\u093E\\u0907\\u0932 \\u092B\\u093C\\u094D\\u0932\\u094B\\u0930\\u093F\\u0902\\u0917\"}",
                             PriceBudget = 4000,
                             PricePremium = 12000,
@@ -4931,6 +4995,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("e45888d9-64df-57b8-98c2-c376b94bacf9"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0547\\u0580\\u056B\\u0577\\u0561\\u056F\",\"ru\":\"\\u041F\\u043B\\u0438\\u043D\\u0442\\u0443\\u0441\",\"en\":\"Skirting board\",\"ar\":\"\\u0648\\u0632\\u0631\\u0629 (\\u0646\\u0639\\u0644\\u0629)\",\"fa\":\"\\u0642\\u0631\\u0646\\u06CC\\u0632 \\u06A9\\u0641\",\"hi\":\"\\u0938\\u094D\\u0915\\u0930\\u094D\\u091F\\u093F\\u0902\\u0917 \\u092C\\u094B\\u0930\\u094D\\u0921\"}",
                             PriceBudget = 600,
                             PricePremium = 2500,
@@ -4944,6 +5010,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("d7cd4f47-0a39-5e40-ae71-f0466d977788"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0540\\u0561\\u057F\\u0561\\u056F\\u056B \\u056C\\u0581\\u0561\\u0576\\u0575\\u0578\\u0582\\u0569\",\"ru\":\"\\u0421\\u043C\\u0435\\u0441\\u044C \\u0434\\u043B\\u044F \\u0441\\u0442\\u044F\\u0436\\u043A\\u0438\",\"en\":\"Screed mix\",\"ar\":\"\\u062E\\u0644\\u0637\\u0629 \\u062A\\u0633\\u0648\\u064A\\u0629 \\u0627\\u0644\\u0623\\u0631\\u0636\\u064A\\u0629\",\"fa\":\"\\u0645\\u0644\\u0627\\u062A \\u06A9\\u0641\\u0633\\u0627\\u0632\\u06CC\",\"hi\":\"\\u0938\\u094D\\u0915\\u094D\\u0930\\u0940\\u0921 \\u092E\\u093F\\u0915\\u094D\\u0938\"}",
                             PriceBudget = 40,
                             PricePremium = 75,
@@ -4957,6 +5025,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("a892ed8e-e82a-56db-87c7-3ab2f40e9d37"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053B\\u0576\\u0584\\u0576\\u0561\\u0570\\u0561\\u0580\\u0569\\u0565\\u0581\\u057E\\u0578\\u0572 \\u056D\\u0561\\u057C\\u0576\\u0578\\u0582\\u0580\\u0564\",\"ru\":\"\\u041D\\u0430\\u043B\\u0438\\u0432\\u043D\\u043E\\u0439 \\u043F\\u043E\\u043B (\\u0441\\u043C\\u0435\\u0441\\u044C)\",\"en\":\"Self-levelling compound\",\"ar\":\"\\u062E\\u0644\\u0637\\u0629 \\u062A\\u0633\\u0648\\u064A\\u0629 \\u0630\\u0627\\u062A\\u064A\\u0629\",\"fa\":\"\\u0645\\u0644\\u0627\\u062A \\u062E\\u0648\\u062F\\u062A\\u0631\\u0627\\u0632\",\"hi\":\"\\u0938\\u0947\\u0932\\u094D\\u092B\\u093C-\\u0932\\u0947\\u0935\\u0932\\u093F\\u0902\\u0917 \\u0915\\u0902\\u092A\\u093E\\u0909\\u0902\\u0921\"}",
                             PriceBudget = 200,
                             PricePremium = 450,
@@ -4970,6 +5040,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("6f4492c8-bbb1-556a-a081-3651875933f9"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0533\\u056B\\u057A\\u057D\\u0561\\u057D\\u057F\\u057E\\u0561\\u0580\\u0561\\u0569\\u0578\\u0582\\u0572\\u0569\",\"ru\":\"\\u0413\\u0438\\u043F\\u0441\\u043E\\u043A\\u0430\\u0440\\u0442\\u043E\\u043D\",\"en\":\"Drywall sheet\",\"ar\":\"\\u0644\\u0648\\u062D \\u062C\\u0628\\u0633\",\"fa\":\"\\u0635\\u0641\\u062D\\u0647 \\u06A9\\u0646\\u0627\\u0641 (\\u06AF\\u0686\\u200C\\u0628\\u0631\\u06AF)\",\"hi\":\"\\u0921\\u094D\\u0930\\u093E\\u0908\\u0935\\u0949\\u0932 \\u0936\\u0940\\u091F\"}",
                             PriceBudget = 2000,
                             PricePremium = 4000,
@@ -4983,6 +5055,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("90e64574-fd59-582e-8ad9-c077ab09f8e6"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0544\\u0565\\u057F\\u0561\\u0572\\u0561\\u056F\\u0561\\u0576 \\u057A\\u0580\\u0578\\u0586\\u056B\\u056C\",\"ru\":\"\\u041C\\u0435\\u0442\\u0430\\u043B\\u043B\\u0438\\u0447\\u0435\\u0441\\u043A\\u0438\\u0439 \\u043F\\u0440\\u043E\\u0444\\u0438\\u043B\\u044C\",\"en\":\"Metal profile\",\"ar\":\"\\u0645\\u0642\\u0637\\u0639 \\u0645\\u0639\\u062F\\u0646\\u064A\",\"fa\":\"\\u067E\\u0631\\u0648\\u0641\\u06CC\\u0644 \\u0641\\u0644\\u0632\\u06CC\",\"hi\":\"\\u092E\\u0947\\u091F\\u0932 \\u092A\\u094D\\u0930\\u094B\\u092B\\u093C\\u093E\\u0907\\u0932\"}",
                             PriceBudget = 400,
                             PricePremium = 900,
@@ -4996,6 +5070,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("73507bbd-db34-5567-984f-aeb418897fd6"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0540\\u0561\\u0576\\u0584\\u0561\\u0575\\u056B\\u0576 \\u0562\\u0561\\u0574\\u0562\\u0561\\u056F\",\"ru\":\"\\u041C\\u0438\\u043D\\u0435\\u0440\\u0430\\u043B\\u044C\\u043D\\u0430\\u044F \\u0432\\u0430\\u0442\\u0430\",\"en\":\"Mineral wool\",\"ar\":\"\\u0635\\u0648\\u0641 \\u0645\\u0639\\u062F\\u0646\\u064A\",\"fa\":\"\\u067E\\u0634\\u0645 \\u0633\\u0646\\u06AF\",\"hi\":\"\\u092E\\u093F\\u0928\\u0930\\u0932 \\u0935\\u0942\\u0932\"}",
                             PriceBudget = 1200,
                             PricePremium = 3000,
@@ -5009,6 +5085,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("239124a2-fd0c-512e-8409-3b9203fc6c77"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054A\\u0565\\u0576\\u0578\\u057A\\u056C\\u0561\\u057D\\u057F\",\"ru\":\"\\u041F\\u0435\\u043D\\u043E\\u043F\\u043E\\u043B\\u0438\\u0441\\u0442\\u0438\\u0440\\u043E\\u043B\",\"en\":\"Polystyrene board\",\"ar\":\"\\u0623\\u0644\\u0648\\u0627\\u062D \\u0627\\u0644\\u0628\\u0648\\u0644\\u064A\\u0633\\u062A\\u0631\\u064A\\u0646\",\"fa\":\"\\u06CC\\u0648\\u0646\\u0648\\u0644\\u06CC\\u062A (\\u067E\\u0644\\u06CC\\u200C\\u0627\\u0633\\u062A\\u0627\\u06CC\\u0631\\u0646)\",\"hi\":\"\\u092A\\u0949\\u0932\\u0940\\u0938\\u094D\\u091F\\u093E\\u0907\\u0930\\u0940\\u0928 \\u092C\\u094B\\u0930\\u094D\\u0921\"}",
                             PriceBudget = 1500,
                             PricePremium = 4000,
@@ -5022,6 +5100,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("c0b00171-923b-5c56-a251-a11c54dfd110"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0541\\u0563\\u057E\\u0578\\u0572 \\u0561\\u057C\\u0561\\u057D\\u057F\\u0561\\u0572\\u056B \\u0569\\u0561\\u0572\\u0561\\u0576\\u0569\",\"ru\":\"\\u041F\\u043B\\u0451\\u043D\\u043A\\u0430 \\u043D\\u0430\\u0442\\u044F\\u0436\\u043D\\u043E\\u0433\\u043E \\u043F\\u043E\\u0442\\u043E\\u043B\\u043A\\u0430\",\"en\":\"Stretch ceiling film\",\"ar\":\"\\u063A\\u0634\\u0627\\u0621 \\u0633\\u0642\\u0641 \\u0645\\u0634\\u062F\\u0648\\u062F\",\"fa\":\"\\u067E\\u0627\\u0631\\u0686\\u0647 \\u0633\\u0642\\u0641 \\u06A9\\u0634\\u0633\\u0627\\u0646\",\"hi\":\"\\u0938\\u094D\\u091F\\u094D\\u0930\\u0947\\u091A \\u0938\\u0940\\u0932\\u093F\\u0902\\u0917 \\u092B\\u093C\\u093F\\u0932\\u094D\\u092E\"}",
                             PriceBudget = 2500,
                             PricePremium = 8000,
@@ -5035,6 +5115,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("81b298a3-1e66-59e3-a8d3-195862de0e5e"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0531\\u057C\\u0561\\u057D\\u057F\\u0561\\u0572\\u056B \\u0565\\u0566\\u0580\\u0561\\u0577\\u0565\\u0580\\u057F\",\"ru\":\"\\u041F\\u043E\\u0442\\u043E\\u043B\\u043E\\u0447\\u043D\\u044B\\u0439 \\u043A\\u0430\\u0440\\u043D\\u0438\\u0437\",\"en\":\"Ceiling cornice\",\"ar\":\"\\u0643\\u0648\\u0631\\u0646\\u064A\\u0634 \\u0627\\u0644\\u0633\\u0642\\u0641\",\"fa\":\"\\u0627\\u0628\\u0632\\u0627\\u0631 \\u0633\\u0642\\u0641\\u06CC\",\"hi\":\"\\u0938\\u0940\\u0932\\u093F\\u0902\\u0917 \\u0915\\u0949\\u0930\\u094D\\u0928\\u093F\\u0938\"}",
                             PriceBudget = 500,
                             PricePremium = 3000,
@@ -5048,6 +5130,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("ac0a19cd-ebab-5363-bbac-7f8551ac5944"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0531\\u0576\\u056F\\u0575\\u0578\\u0582\\u0576\\u0561\\u0575\\u056B\\u0576 \\u057A\\u0580\\u0578\\u0586\\u056B\\u056C\",\"ru\":\"\\u0423\\u0433\\u043E\\u043B\\u043E\\u043A \\u0434\\u043B\\u044F \\u0448\\u0442\\u0443\\u043A\\u0430\\u0442\\u0443\\u0440\\u043A\\u0438\",\"en\":\"Corner bead\",\"ar\":\"\\u0632\\u0627\\u0648\\u064A\\u0629 \\u0644\\u064A\\u0627\\u0633\\u0629\",\"fa\":\"\\u0646\\u0628\\u0634\\u06CC \\u06AF\\u0686\\u200C\\u06A9\\u0627\\u0631\\u06CC\",\"hi\":\"\\u0915\\u0949\\u0930\\u094D\\u0928\\u0930 \\u092C\\u0940\\u0921\"}",
                             PriceBudget = 200,
                             PricePremium = 500,
@@ -5061,6 +5145,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("c686cc22-4094-5c63-9812-64b1c4eb0894"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0537\\u056C\\u0565\\u056F\\u057F\\u0580\\u0561\\u056F\\u0561\\u0576 \\u0574\\u0561\\u056C\\u0578\\u0582\\u056D\",\"ru\":\"\\u042D\\u043B\\u0435\\u043A\\u0442\\u0440\\u0438\\u0447\\u0435\\u0441\\u043A\\u0438\\u0439 \\u043A\\u0430\\u0431\\u0435\\u043B\\u044C\",\"en\":\"Electric cable\",\"ar\":\"\\u0643\\u0627\\u0628\\u0644 \\u0643\\u0647\\u0631\\u0628\\u0627\\u0626\\u064A\",\"fa\":\"\\u06A9\\u0627\\u0628\\u0644 \\u0628\\u0631\\u0642\",\"hi\":\"\\u092C\\u093F\\u091C\\u0932\\u0940 \\u0915\\u093E \\u0915\\u0947\\u092C\\u0932\"}",
                             PriceBudget = 350,
                             PricePremium = 800,
@@ -5074,6 +5160,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("2c95d25a-b5e4-5b65-a172-c330c73cadbe"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054F\\u0561\\u056F\\u0564\\u056B\\u0580 \\u057F\\u0578\\u0582\\u0583\",\"ru\":\"\\u041F\\u043E\\u0434\\u0440\\u043E\\u0437\\u0435\\u0442\\u043D\\u0438\\u043A\",\"en\":\"Back box\",\"ar\":\"\\u0639\\u0644\\u0628\\u0629 \\u0643\\u0647\\u0631\\u0628\\u0627\\u0621\",\"fa\":\"\\u0642\\u0648\\u0637\\u06CC \\u0628\\u0631\\u0642\",\"hi\":\"\\u092C\\u0948\\u0915 \\u092C\\u0949\\u0915\\u094D\\u0938\"}",
                             PriceBudget = 100,
                             PricePremium = 250,
@@ -5087,6 +5175,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("b4d17f95-0902-5520-acd7-3e90b0b1e31f"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054E\\u0561\\u0580\\u0564\\u0561\\u056F\",\"ru\":\"\\u0420\\u043E\\u0437\\u0435\\u0442\\u043A\\u0430\",\"en\":\"Socket\",\"ar\":\"\\u0645\\u0642\\u0628\\u0633 \\u0643\\u0647\\u0631\\u0628\\u0627\\u0626\\u064A\",\"fa\":\"\\u067E\\u0631\\u06CC\\u0632 \\u0628\\u0631\\u0642\",\"hi\":\"\\u0938\\u0949\\u0915\\u0947\\u091F\"}",
                             PriceBudget = 1500,
                             PricePremium = 8000,
@@ -5100,6 +5190,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("6e6800d1-6be4-5b9b-84d9-c297be3a3925"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0531\\u0576\\u057B\\u0561\\u057F\\u056B\\u0579\",\"ru\":\"\\u0412\\u044B\\u043A\\u043B\\u044E\\u0447\\u0430\\u0442\\u0435\\u043B\\u044C\",\"en\":\"Light switch\",\"ar\":\"\\u0645\\u0641\\u062A\\u0627\\u062D \\u0625\\u0646\\u0627\\u0631\\u0629\",\"fa\":\"\\u06A9\\u0644\\u06CC\\u062F \\u0628\\u0631\\u0642\",\"hi\":\"\\u0932\\u093E\\u0907\\u091F \\u0938\\u094D\\u0935\\u093F\\u091A\"}",
                             PriceBudget = 1500,
                             PricePremium = 8000,
@@ -5113,6 +5205,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("fb27f958-9446-55a1-8bd6-2aff47914509"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0531\\u057C\\u0561\\u057D\\u057F\\u0561\\u0572\\u056B \\u056C\\u0578\\u0582\\u057D\\u0561\\u057F\\u0578\\u0582\",\"ru\":\"\\u041F\\u043E\\u0442\\u043E\\u043B\\u043E\\u0447\\u043D\\u044B\\u0439 \\u0441\\u0432\\u0435\\u0442\\u0438\\u043B\\u044C\\u043D\\u0438\\u043A\",\"en\":\"Ceiling light\",\"ar\":\"\\u0645\\u0635\\u0628\\u0627\\u062D \\u0633\\u0642\\u0641\",\"fa\":\"\\u0686\\u0631\\u0627\\u063A \\u0633\\u0642\\u0641\\u06CC\",\"hi\":\"\\u0938\\u0940\\u0932\\u093F\\u0902\\u0917 \\u0932\\u093E\\u0907\\u091F\"}",
                             PriceBudget = 8000,
                             PricePremium = 50000,
@@ -5126,6 +5220,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("68727bfc-3cae-5a69-a172-b480d1a2f498"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053F\\u0565\\u057F\\u0561\\u0575\\u056B\\u0576 \\u056C\\u0578\\u0582\\u057D\\u0561\\u057F\\u0578\\u0582\",\"ru\":\"\\u0422\\u043E\\u0447\\u0435\\u0447\\u043D\\u044B\\u0439 \\u0441\\u0432\\u0435\\u0442\\u0438\\u043B\\u044C\\u043D\\u0438\\u043A\",\"en\":\"Spotlight\",\"ar\":\"\\u0633\\u0628\\u0648\\u062A \\u0644\\u0627\\u064A\\u062A\",\"fa\":\"\\u0686\\u0631\\u0627\\u063A \\u0647\\u0627\\u0644\\u0648\\u0698\\u0646\",\"hi\":\"\\u0938\\u094D\\u092A\\u0949\\u091F\\u0932\\u093E\\u0907\\u091F\"}",
                             PriceBudget = 2000,
                             PricePremium = 8000,
@@ -5139,6 +5235,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("277e41c0-9250-58b6-b555-e4a7ebc413b8"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054B\\u0580\\u0561\\u0574\\u0565\\u056F\\u0578\\u0582\\u057D\\u056B\\u0579 \\u056D\\u0561\\u057C\\u0576\\u0578\\u0582\\u0580\\u0564\",\"ru\":\"\\u0413\\u0438\\u0434\\u0440\\u043E\\u0438\\u0437\\u043E\\u043B\\u044F\\u0446\\u0438\\u043E\\u043D\\u043D\\u0430\\u044F \\u0441\\u043C\\u0435\\u0441\\u044C\",\"en\":\"Waterproofing compound\",\"ar\":\"\\u0645\\u0631\\u0643\\u0628 \\u0639\\u0632\\u0644 \\u0645\\u0627\\u0626\\u064A\",\"fa\":\"\\u0645\\u0644\\u0627\\u062A \\u0639\\u0627\\u06CC\\u0642 \\u0631\\u0637\\u0648\\u0628\\u062A\\u06CC\",\"hi\":\"\\u0935\\u0949\\u091F\\u0930\\u092A\\u094D\\u0930\\u0942\\u092B\\u093C\\u093F\\u0902\\u0917 \\u0915\\u0902\\u092A\\u093E\\u0909\\u0902\\u0921\"}",
                             PriceBudget = 600,
                             PricePremium = 1500,
@@ -5152,6 +5250,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("76a7fb3f-d88d-5d74-bf72-2f63a5019df3"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0534\\u0565\\u056F\\u0578\\u0580\\u0561\\u057F\\u056B\\u057E \\u057D\\u057E\\u0561\\u0572\",\"ru\":\"\\u0414\\u0435\\u043A\\u043E\\u0440\\u0430\\u0442\\u0438\\u0432\\u043D\\u0430\\u044F \\u0448\\u0442\\u0443\\u043A\\u0430\\u0442\\u0443\\u0440\\u043A\\u0430\",\"en\":\"Decorative plaster\",\"ar\":\"\\u0644\\u064A\\u0627\\u0633\\u0629 \\u062F\\u064A\\u0643\\u0648\\u0631\\u064A\\u0629\",\"fa\":\"\\u06AF\\u0686 \\u062F\\u06A9\\u0648\\u0631\\u0627\\u062A\\u06CC\\u0648\",\"hi\":\"\\u0921\\u0947\\u0915\\u094B\\u0930\\u0947\\u091F\\u093F\\u0935 \\u092A\\u094D\\u0932\\u093E\\u0938\\u094D\\u091F\\u0930\"}",
                             PriceBudget = 600,
                             PricePremium = 2500,
@@ -5165,6 +5265,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("7166237c-8f6c-55eb-b10b-e4a8d3df6aca"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054D\\u056B\\u056C\\u056B\\u056F\\u0578\\u0576\\u0565 \\u0570\\u0565\\u0580\\u0574\\u0565\\u057F\\u056B\\u056F\",\"ru\":\"\\u0421\\u0438\\u043B\\u0438\\u043A\\u043E\\u043D\\u043E\\u0432\\u044B\\u0439 \\u0433\\u0435\\u0440\\u043C\\u0435\\u0442\\u0438\\u043A\",\"en\":\"Silicone sealant\",\"ar\":\"\\u0633\\u064A\\u0644\\u064A\\u0643\\u0648\\u0646 \\u0645\\u0627\\u0646\\u0639 \\u0644\\u0644\\u062A\\u0633\\u0631\\u0628\",\"fa\":\"\\u0686\\u0633\\u0628 \\u0633\\u06CC\\u0644\\u06CC\\u06A9\\u0648\\u0646\",\"hi\":\"\\u0938\\u093F\\u0932\\u093F\\u0915\\u0949\\u0928 \\u0938\\u0940\\u0932\\u0947\\u0902\\u091F\"}",
                             PriceBudget = 1500,
                             PricePremium = 4000,
@@ -5178,6 +5280,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("22eff1e5-9a80-5f6b-b7a2-0f5862f253a4"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0536\\u0578\\u0582\\u0563\\u0561\\u0580\\u0561\\u0576\\u0561\\u056F\\u0578\\u0576\\u0584\",\"ru\":\"\\u0423\\u043D\\u0438\\u0442\\u0430\\u0437\",\"en\":\"Toilet\",\"ar\":\"\\u0645\\u0631\\u062D\\u0627\\u0636\",\"fa\":\"\\u062A\\u0648\\u0627\\u0644\\u062A \\u0641\\u0631\\u0646\\u06AF\\u06CC\",\"hi\":\"\\u091F\\u0949\\u092F\\u0932\\u0947\\u091F\"}",
                             PriceBudget = 40000,
                             PricePremium = 250000,
@@ -5191,6 +5295,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("b8af3f88-1ddc-5feb-8516-4aad63fe230d"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053C\\u057E\\u0561\\u0581\\u0561\\u0580\\u0561\\u0576\",\"ru\":\"\\u0420\\u0430\\u043A\\u043E\\u0432\\u0438\\u043D\\u0430\",\"en\":\"Washbasin\",\"ar\":\"\\u062D\\u0648\\u0636 \\u063A\\u0633\\u064A\\u0644\",\"fa\":\"\\u0631\\u0648\\u0634\\u0648\\u06CC\\u06CC\",\"hi\":\"\\u0935\\u0949\\u0936\\u092C\\u0947\\u0938\\u093F\\u0928\"}",
                             PriceBudget = 25000,
                             PricePremium = 150000,
@@ -5204,6 +5310,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("fb023651-b621-5824-861e-f60b41cdd155"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053D\\u0561\\u057C\\u0576\\u056B\\u0579 \\u056E\\u0578\\u0580\\u0561\\u056F\",\"ru\":\"\\u0421\\u043C\\u0435\\u0441\\u0438\\u0442\\u0435\\u043B\\u044C\",\"en\":\"Mixer tap\",\"ar\":\"\\u062E\\u0644\\u0627\\u0637 \\u0645\\u064A\\u0627\\u0647\",\"fa\":\"\\u0634\\u06CC\\u0631 \\u0645\\u062E\\u0644\\u0648\\u0637\",\"hi\":\"\\u092E\\u093F\\u0915\\u094D\\u0938\\u0930 \\u091F\\u0948\\u092A\"}",
                             PriceBudget = 12000,
                             PricePremium = 80000,
@@ -5217,6 +5325,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("9233b7ba-8b48-5b0d-9d28-427d65cba9b6"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053C\\u0578\\u0563\\u0561\\u0580\\u0561\\u0576\",\"ru\":\"\\u0412\\u0430\\u043D\\u043D\\u0430\",\"en\":\"Bathtub\",\"ar\":\"\\u062D\\u0648\\u0636 \\u0627\\u0633\\u062A\\u062D\\u0645\\u0627\\u0645\",\"fa\":\"\\u0648\\u0627\\u0646 \\u062D\\u0645\\u0627\\u0645\",\"hi\":\"\\u092C\\u093E\\u0925\\u091F\\u092C\"}",
                             PriceBudget = 60000,
                             PricePremium = 400000,
@@ -5230,6 +5340,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("35c25029-da0c-57a9-92cc-5cd80833a0f5"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u053C\\u0578\\u0563\\u0561\\u056D\\u0581\\u056B\\u056F\",\"ru\":\"\\u0414\\u0443\\u0448\\u0435\\u0432\\u0430\\u044F \\u043A\\u0430\\u0431\\u0438\\u043D\\u0430\",\"en\":\"Shower cabin\",\"ar\":\"\\u0643\\u0627\\u0628\\u064A\\u0646\\u0629 \\u0627\\u0633\\u062A\\u062D\\u0645\\u0627\\u0645\",\"fa\":\"\\u06A9\\u0627\\u0628\\u06CC\\u0646 \\u062F\\u0648\\u0634\",\"hi\":\"\\u0936\\u0949\\u0935\\u0930 \\u0915\\u0947\\u092C\\u093F\\u0928\"}",
                             PriceBudget = 120000,
                             PricePremium = 600000,
@@ -5243,6 +5355,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("a4e520a7-14ba-5ded-a173-fcbe7eb37831"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u0546\\u0565\\u0580\\u0584\\u056B\\u0576 \\u0564\\u0578\\u0582\\u057C\",\"ru\":\"\\u041C\\u0435\\u0436\\u043A\\u043E\\u043C\\u043D\\u0430\\u0442\\u043D\\u0430\\u044F \\u0434\\u0432\\u0435\\u0440\\u044C\",\"en\":\"Interior door\",\"ar\":\"\\u0628\\u0627\\u0628 \\u062F\\u0627\\u062E\\u0644\\u064A\",\"fa\":\"\\u062F\\u0631 \\u062F\\u0627\\u062E\\u0644\\u06CC\",\"hi\":\"\\u0905\\u0902\\u0926\\u0930\\u0942\\u0928\\u0940 \\u0926\\u0930\\u0935\\u093E\\u091C\\u093C\\u093E\"}",
                             PriceBudget = 40000,
                             PricePremium = 180000,
@@ -5256,6 +5370,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("7769fe69-927f-54f9-8490-353d200ccb36"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054C\\u0561\\u0564\\u056B\\u0561\\u057F\\u0578\\u0580\",\"ru\":\"\\u0420\\u0430\\u0434\\u0438\\u0430\\u0442\\u043E\\u0440\",\"en\":\"Radiator\",\"ar\":\"\\u0645\\u0634\\u0639\\u0627\\u0639 \\u062A\\u062F\\u0641\\u0626\\u0629\",\"fa\":\"\\u0631\\u0627\\u062F\\u06CC\\u0627\\u062A\\u0648\\u0631\",\"hi\":\"\\u0930\\u0947\\u0921\\u093F\\u090F\\u091F\\u0930\"}",
                             PriceBudget = 30000,
                             PricePremium = 120000,
@@ -5269,6 +5385,8 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("6764950a-64c5-581f-b057-1a580f22602f"),
                             IsActive = true,
+                            IsPriceLocked = false,
+                            MarketStoreCount = 0,
                             Name = "{\"hy\":\"\\u054A\\u0561\\u057F\\u0578\\u0582\\u0570\\u0561\\u0576\\u0561\\u0563\\u0578\\u0563\",\"ru\":\"\\u041F\\u043E\\u0434\\u043E\\u043A\\u043E\\u043D\\u043D\\u0438\\u043A\",\"en\":\"Window sill\",\"ar\":\"\\u0639\\u062A\\u0628\\u0629 \\u0646\\u0627\\u0641\\u0630\\u0629\",\"fa\":\"\\u067E\\u06CC\\u0634\\u062E\\u0648\\u0627\\u0646 \\u067E\\u0646\\u062C\\u0631\\u0647 (\\u0633\\u0646\\u06AF \\u067E\\u0646\\u062C\\u0631\\u0647)\",\"hi\":\"\\u0935\\u093F\\u0902\\u0921\\u094B \\u0938\\u093F\\u0932\"}",
                             PriceBudget = 4000,
                             PricePremium = 15000,
@@ -16214,6 +16332,255 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                     b.ToTable("staff_user_role");
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Stores.Store", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<Guid?>("LogoFileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("logo_file_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("phone");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("slug");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("website");
+
+                    b.HasKey("Id")
+                        .HasName("pk_stores");
+
+                    b.HasIndex("LogoFileId")
+                        .HasDatabaseName("ix_stores_logo_file_id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_stores_slug");
+
+                    b.HasIndex("IsActive", "SortOrder")
+                        .HasDatabaseName("ix_stores_is_active_sort_order");
+
+                    b.ToTable("stores");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Stores.StoreBranch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("address");
+
+                    b.Property<Guid>("CityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("city_id");
+
+                    b.Property<Guid?>("DistrictId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("district_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("OpeningHours")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("opening_hours");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("phone");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_store_branches");
+
+                    b.HasIndex("CityId")
+                        .HasDatabaseName("ix_store_branches_city_id");
+
+                    b.HasIndex("DistrictId")
+                        .HasDatabaseName("ix_store_branches_district_id");
+
+                    b.HasIndex("StoreId", "SortOrder")
+                        .HasDatabaseName("ix_store_branches_store_id_sort_order");
+
+                    b.ToTable("store_branches");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Stores.StoreProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("brand");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Grade")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("grade");
+
+                    b.Property<bool>("InStock")
+                        .HasColumnType("boolean")
+                        .HasColumnName("in_stock");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<Guid?>("MaterialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("material_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PackLabel")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("pack_label");
+
+                    b.Property<decimal>("PackSize")
+                        .HasPrecision(10, 3)
+                        .HasColumnType("numeric(10,3)")
+                        .HasColumnName("pack_size");
+
+                    b.Property<Guid?>("PhotoFileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_file_id");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("integer")
+                        .HasColumnName("price");
+
+                    b.Property<DateTimeOffset>("PriceUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("price_updated_at");
+
+                    b.Property<DateOnly?>("SaleEndsOn")
+                        .HasColumnType("date")
+                        .HasColumnName("sale_ends_on");
+
+                    b.Property<int?>("SalePrice")
+                        .HasColumnType("integer")
+                        .HasColumnName("sale_price");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_store_products");
+
+                    b.HasIndex("MaterialId")
+                        .HasDatabaseName("ix_store_products_material_id");
+
+                    b.HasIndex("PhotoFileId")
+                        .HasDatabaseName("ix_store_products_photo_file_id");
+
+                    b.HasIndex("StoreId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_store_products_store_id_code")
+                        .HasFilter("code IS NOT NULL");
+
+                    b.ToTable("store_products", t =>
+                        {
+                            t.HasCheckConstraint("ck_store_products_grade", "material_id IS NULL OR grade IS NOT NULL");
+
+                            t.HasCheckConstraint("ck_store_products_price", "price >= 1 AND pack_size > 0");
+
+                            t.HasCheckConstraint("ck_store_products_sale", "(sale_price IS NULL AND sale_ends_on IS NULL) OR (sale_price >= 1 AND sale_price < price AND sale_ends_on IS NOT NULL)");
+                        });
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Catalog.Category", b =>
                 {
                     b.HasOne("HomeServices.Domain.Catalog.Category", null)
@@ -16896,6 +17263,60 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_staff_user_role_staff_users_staff_user_id");
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Stores.Store", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Files.StoredFile", null)
+                        .WithMany()
+                        .HasForeignKey("LogoFileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_stores_files_logo_file_id");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Stores.StoreBranch", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Catalog.City", null)
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_store_branches_cities_city_id");
+
+                    b.HasOne("HomeServices.Domain.Catalog.District", null)
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_store_branches_districts_district_id");
+
+                    b.HasOne("HomeServices.Domain.Stores.Store", null)
+                        .WithMany("Branches")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_store_branches_stores_store_id");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Stores.StoreProduct", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Catalog.Material", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_store_products_materials_material_id");
+
+                    b.HasOne("HomeServices.Domain.Files.StoredFile", null)
+                        .WithMany()
+                        .HasForeignKey("PhotoFileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_store_products_files_photo_file_id");
+
+                    b.HasOne("HomeServices.Domain.Stores.Store", null)
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_store_products_stores_store_id");
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Catalog.City", b =>
                 {
                     b.Navigation("Districts");
@@ -16959,6 +17380,11 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("HomeServices.Domain.Staff.StaffUser", b =>
                 {
                     b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Stores.Store", b =>
+                {
+                    b.Navigation("Branches");
                 });
 #pragma warning restore 612, 618
         }

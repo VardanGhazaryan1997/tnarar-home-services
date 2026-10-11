@@ -15,6 +15,7 @@ using HomeServices.Domain.Payments;
 using HomeServices.Domain.Requests;
 using HomeServices.Domain.Reviews;
 using HomeServices.Domain.Staff;
+using HomeServices.Domain.Stores;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeServices.Application.Abstractions;
@@ -96,6 +97,12 @@ public interface IAppDbContext
     DbSet<CommissionStatement> CommissionStatements { get; }
 
     DbSet<Settlement> Settlements { get; }
+
+    DbSet<Store> Stores { get; }
+
+    DbSet<StoreBranch> StoreBranches { get; }
+
+    DbSet<StoreProduct> StoreProducts { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

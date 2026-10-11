@@ -37,6 +37,29 @@ public sealed class Material : Entity, IAudited
     /// <summary>When staff last set or checked the prices; store prices drift, so they're checked now and then.</summary>
     public DateTimeOffset PricesCheckedAt { get; private set; }
 
+    /// <summary>
+    /// The usual price per unit worked out from store prices (see <c>StoreProduct</c>), per grade; null while too few
+    /// stores sell materials of that grade. Calculated, so changes aren't written to the audit log.
+    /// </summary>
+    [NotAudited]
+    public int? MarketBudget { get; private set; }
+
+    [NotAudited]
+    public int? MarketStandard { get; private set; }
+
+    [NotAudited]
+    public int? MarketPremium { get; private set; }
+
+    /// <summary>How many stores' prices the last calculation counted (distinct stores across all grades).</summary>
+    [NotAudited]
+    public int MarketStoreCount { get; private set; }
+
+    [NotAudited]
+    public DateTimeOffset? MarketUpdatedAt { get; private set; }
+
+    /// <summary>True when staff keep their own prices: store prices are shown but don't change estimates.</summary>
+    public bool IsPriceLocked { get; private set; }
+
     public static Material Create(
         string slug, LocalizedText name, MaterialUnit unit, int priceBudget, int priceStandard, int pricePremium, int sortOrder, DateTimeOffset now)
     {
@@ -84,13 +107,53 @@ public sealed class Material : Entity, IAudited
     public static bool ArePricesValid(int budget, int standard, int premium) =>
         budget >= 1 && budget <= standard && standard <= premium && premium <= PriceLimit;
 
-    /// <summary>The price per unit for materials of this grade.</summary>
-    public int PriceFor(MaterialGrade grade) => grade switch
+    /// <summary>
+    /// The price per unit for materials of this grade: the store-based price when staff didn't lock the material and
+    /// stores gave a price for the grade, otherwise the staff price.
+    /// </summary>
+    public int PriceFor(MaterialGrade grade) => UsableMarketFor(grade) ?? StaffPriceFor(grade);
+
+    /// <summary>Where <see cref="PriceFor"/> gets the price for this grade, for display.</summary>
+    public MaterialPriceSource PriceSourceFor(MaterialGrade grade) =>
+        UsableMarketFor(grade) is null ? MaterialPriceSource.Staff : MaterialPriceSource.Stores;
+
+    /// <summary>The price staff set for this grade, whatever the stores ask.</summary>
+    public int StaffPriceFor(MaterialGrade grade) => grade switch
     {
         MaterialGrade.Budget => PriceBudget,
         MaterialGrade.Premium => PricePremium,
         _ => PriceStandard,
     };
+
+    /// <summary>The store-based price for this grade (null when there is none), even when staff locked the material.</summary>
+    public int? MarketPriceFor(MaterialGrade grade) => grade switch
+    {
+        MaterialGrade.Budget => MarketBudget,
+        MaterialGrade.Premium => MarketPremium,
+        _ => MarketStandard,
+    };
+
+    /// <summary>Stores the prices worked out from store products; null for a grade without enough stores.</summary>
+    public void UpdateMarket(int? budget, int? standard, int? premium, int storeCount, DateTimeOffset now)
+    {
+        if (!IsMarketPriceValid(budget) || !IsMarketPriceValid(standard) || !IsMarketPriceValid(premium) || storeCount < 0)
+        {
+            throw new DomainException("material.price_invalid", $"Store prices are 1–{PriceLimit} AMD.");
+        }
+
+        MarketBudget = budget;
+        MarketStandard = standard;
+        MarketPremium = premium;
+        MarketStoreCount = storeCount;
+        MarketUpdatedAt = now;
+    }
+
+    /// <summary>Keeps the staff prices (true) or lets store prices drive the estimator (false).</summary>
+    public void LockPrice(bool locked) => IsPriceLocked = locked;
+
+    private int? UsableMarketFor(MaterialGrade grade) => IsPriceLocked ? null : MarketPriceFor(grade);
+
+    private static bool IsMarketPriceValid(int? price) => price is null or (>= 1 and <= PriceLimit);
 
     /// <summary>Staff checked the prices and they're still right.</summary>
     public void ConfirmPrices(DateTimeOffset now) => PricesCheckedAt = now;

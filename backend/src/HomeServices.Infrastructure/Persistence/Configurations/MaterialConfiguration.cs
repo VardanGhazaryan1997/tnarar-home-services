@@ -33,6 +33,8 @@ internal sealed class MaterialConfiguration : IEntityTypeConfiguration<Material>
             SortOrder = index + 1,
             IsActive = true,
             PricesCheckedAt = SeededAt,
+            IsPriceLocked = false,
+            MarketStoreCount = 0,
         }));
     }
 }

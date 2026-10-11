@@ -173,7 +173,8 @@ public sealed class AdminCatalogController : ControllerBase
         int PriceStandard,
         int PricePremium,
         int SortOrder,
-        bool IsActive = true);
+        bool IsActive = true,
+        bool IsPriceLocked = false);
 
     public sealed record WorkItemMaterialsRequest(IReadOnlyList<WorkItemMaterialInput> Items);
 
@@ -205,7 +206,7 @@ public sealed class AdminCatalogController : ControllerBase
         CancellationToken cancellationToken) =>
         handler.HandleAsync(
             new UpdateMaterial(
-                id, request.Slug, request.Name, request.Unit, request.PriceBudget, request.PriceStandard, request.PricePremium, request.SortOrder, request.IsActive),
+                id, request.Slug, request.Name, request.Unit, request.PriceBudget, request.PriceStandard, request.PricePremium, request.SortOrder, request.IsActive, request.IsPriceLocked),
             cancellationToken);
 
     /// <summary>Marks the material's prices as checked and still right.</summary>

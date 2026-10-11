@@ -1,11 +1,13 @@
 using HomeServices.Application.Catalog;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Estimates;
+using HomeServices.Application.Stores;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain;
 using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Estimates;
 using HomeServices.Domain.Localization;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Tests.Catalog;
 
@@ -105,7 +107,7 @@ public class MaterialsTests
             new CreateMaterial("primer", Name("Again"), MaterialUnit.Liter, 1, 1, 1, 6), CancellationToken.None)))
             .Code.ShouldBe("material.slug_taken");
 
-        var updated = await new UpdateMaterialHandler(_db, _clock).HandleAsync(
+        var updated = await new UpdateMaterialHandler(_db, Options.Create(new StorePricingSettings()), _clock).HandleAsync(
             new UpdateMaterial(created.Id, "primer", Name("Deep primer"), MaterialUnit.Liter, 600, 900, 1500, 5, IsActive: false),
             CancellationToken.None);
         (updated.Name["en"], updated.PriceBudget, updated.IsActive).ShouldBe(("Deep primer", 600, false));

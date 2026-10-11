@@ -353,6 +353,31 @@ Broken JSON, an unknown enum name or a missing required field return the usual 4
 - Requests from an estimate: `POST /api/v1/requests` with `estimateId` copies the estimate's work into the request (`lines`: room, work, unit, amount; the estimated range only in the customer's view, like the budget) and also sends it to partners offering the services of those lines. Partners can price a work offer line by line: each offer line may carry `requestLineId`, `quantity` and `unitPrice` (its `amount` is worked out); when any line is priced, every included line must be, and the amounts must add up to the price (422 `offer.lines_unpriced`, `offer.lines_sum_mismatch`; `offer.line_invalid` for a line of another request). Up to 200 lines per request and per offer.
 - Errors: `title.invalid`, `rooms.required`, `rooms.count_invalid`, `room.name_invalid`, `room.type_invalid`, `room.duplicate_lines`, `line.quantity_invalid` (400); `estimate.size_invalid`, `estimate.opening_invalid`, `estimate.work_item_not_found`, `estimate.city_not_found`, `estimate.too_many` (422); `estimate.not_found` (404).
 
+## Stores and material prices (E2)
+
+Staff keep stores, their branches and their products in the Back Office; customers compare the products per unit of one of our materials. Everything below needs `materials.pricing` (`api/v1/admin/stores`).
+
+| Endpoint | What it does |
+|---|---|
+| `GET stores?search=&isActive=` | Stores with `branchCount`, `productCount`, `linkedCount` (compared) and `staleCount` (price not checked within `StorePricing:FreshDays`, 90) |
+| `POST stores`, `PUT stores/{id}`, `DELETE stores/{id}` | `slug`, `name` (the brand, the same in every language), `description` per language (optional), `website` (http/https), `phone`, `logoFileId` (an uploaded image), `sortOrder`, `isActive`. 409 `store.slug_taken`; a store with products can't be deleted (422 `store.has_products`, hide it instead) |
+| `GET stores/{id}` | One store with its `branches` |
+| `PUT stores/{id}/branches` | Replaces the branch list (up to 50): `[{ name, cityId, districtId?, address, phone?, openingHours? }]`; the district must be in the town |
+| `GET stores/{id}/products?search=&materialId=&linked=&stale=&page=&pageSize=` | The store's products by name, paged, with the material's name and unit, `currentPrice` (the sale price until `saleEndsOn`, inclusive), `unitPrice` (per unit of the material; null while not linked) and `isStale` |
+| `POST stores/{id}/products`, `PUT stores/{id}/products/{productId}`, `DELETE …` | `name`, `brand`, `code` (the store's own, unique in the store: 409 `store_product.code_taken`), `packSize` (in the material's unit, e.g. 25 for a 25 kg bag), `packLabel`, `price` (AMD per pack), `salePrice` + `saleEndsOn` (both or neither; the sale price is below the price), `inStock`, `photoFileId`, `isActive`, and the link: `materialId` + `grade` (Budget, Standard, Premium; required with a material) |
+| `POST stores/{id}/products/{productId}/confirm` | The store's price is still right: sets `priceUpdatedAt` to now |
+| `GET catalog/materials/{id}/store-products` | Every product linked to the material across stores, by grade and then per-unit price |
+
+- `priceUpdatedAt` is set when a product is created and whenever its price, sale price or sale end date changes (or staff confirm it). Sales end at the end of `saleEndsOn` in local time (`StorePricing:UtcOffsetHours`, 4).
+- Products without a material link are visible only in the Back Office.
+
+### Store prices become material prices
+
+- A material's price for a grade comes from the stores (`StorePricing` settings) once at least `MinStores` (2) different stores sell it: products that are active and in stock, of active stores, linked to the material with that grade, whose price was set or confirmed within `FreshDays` (90). A product's per-unit price is its current price (the sale price up to and including `saleEndsOn`) over its pack size; a store counts once per grade (the median of its products); the grade's price is the median of the stores' prices. Prices of 100 AMD and more are tidied like market ranges (`MarketPrices.Tidy`); smaller unit prices (bulk materials) are rounded to whole drams, never below 1. A grade without enough stores keeps the staff price; prices keep the order budget ≤ standard ≤ premium (a lower price is raised to the cheaper grade's).
+- `Material.PriceFor(grade)` (used by estimates) is that store price unless staff **locked** the material (`isPriceLocked`, `PUT catalog/materials/{id}`), otherwise the staff price. The admin material has `marketBudget`, `marketStandard`, `marketPremium` and `marketStoreCount` (distinct stores behind them) whether or not it is locked, so the Back Office can show both.
+- Recalculated right after a store product is created, changed, confirmed or deleted (its material, and the old one when relinked), after a store is hidden or shown, after a material is updated, and by the background job that also recalculates labour prices (`Pricing:RecalculateHours`): sales end and prices go stale without anyone saving anything.
+- A material that store products link to can't be deleted (422 `material.in_use`).
+
 ## Code coverage
 
 CI fails when backend coverage drops below 90% of lines or 85% of branches (migrations excluded). To see the report locally (one-time: `dotnet tool install --global dotnet-reportgenerator-globaltool`):

@@ -3,10 +3,12 @@ using HomeServices.Application.Abstractions;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Languages;
 using HomeServices.Application.Messaging;
+using HomeServices.Application.Stores;
 using HomeServices.Domain;
 using HomeServices.Domain.Catalog;
 using HomeServices.Domain.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HomeServices.Application.Catalog;
 
@@ -29,7 +31,12 @@ public sealed record AdminMaterialDto(
     bool IsActive,
     int WorkItemCount = 0,
     DateTimeOffset? PricesCheckedAt = null,
-    bool PricesNeedChecking = false)
+    bool PricesNeedChecking = false,
+    int? MarketBudget = null,
+    int? MarketStandard = null,
+    int? MarketPremium = null,
+    int MarketStoreCount = 0,
+    bool IsPriceLocked = false)
 {
     public static AdminMaterialDto From(Material material, DateTimeOffset now, int workItemCount = 0) =>
         new(
@@ -44,7 +51,12 @@ public sealed record AdminMaterialDto(
             material.IsActive,
             workItemCount,
             material.PricesCheckedAt,
-            material.PricesNeedChecking(now, MaterialData.CheckEvery));
+            material.PricesNeedChecking(now, MaterialData.CheckEvery),
+            material.MarketBudget,
+            material.MarketStandard,
+            material.MarketPremium,
+            material.MarketStoreCount,
+            material.IsPriceLocked);
 }
 
 /// <summary>The fields a staff member edits on a material.</summary>
@@ -87,7 +99,8 @@ public sealed record UpdateMaterial(
     int PriceStandard,
     int PricePremium,
     int SortOrder,
-    bool IsActive = true) : ICommand<AdminMaterialDto>, IMaterialFields;
+    bool IsActive = true,
+    bool IsPriceLocked = false) : ICommand<AdminMaterialDto>, IMaterialFields;
 
 /// <summary>Staff checked a material's prices and they're still right.</summary>
 public sealed record ConfirmMaterialPrices(Guid Id) : ICommand<AdminMaterialDto>;
@@ -183,7 +196,8 @@ public sealed class CreateMaterialHandler(IAppDbContext db, TimeProvider clock) 
     }
 }
 
-public sealed class UpdateMaterialHandler(IAppDbContext db, TimeProvider clock) : ICommandHandler<UpdateMaterial, AdminMaterialDto>
+public sealed class UpdateMaterialHandler(IAppDbContext db, IOptions<StorePricingSettings> storePricing, TimeProvider clock)
+    : ICommandHandler<UpdateMaterial, AdminMaterialDto>
 {
     public async Task<AdminMaterialDto> HandleAsync(UpdateMaterial command, CancellationToken cancellationToken)
     {
@@ -201,7 +215,9 @@ public sealed class UpdateMaterialHandler(IAppDbContext db, TimeProvider clock) 
             material.Deactivate();
         }
 
+        material.LockPrice(command.IsPriceLocked);
         await db.SaveChangesAsync(cancellationToken);
+        await StoreData.RefreshMaterialPricesAsync(db, storePricing.Value, clock, [material.Id], cancellationToken);
         return AdminMaterialDto.From(material, now, await db.WorkItemMaterials.CountAsync(m => m.MaterialId == material.Id, cancellationToken));
     }
 }
@@ -212,9 +228,10 @@ public sealed class DeleteMaterialHandler(IAppDbContext db) : ICommandHandler<De
     {
         var material = await MaterialData.LoadAsync(db, command.Id, cancellationToken);
         if (await db.WorkItemMaterials.AnyAsync(m => m.MaterialId == material.Id, cancellationToken)
-            || await db.ServiceRequests.AnyAsync(r => r.Materials.Any(m => m.MaterialId == material.Id), cancellationToken))
+            || await db.ServiceRequests.AnyAsync(r => r.Materials.Any(m => m.MaterialId == material.Id), cancellationToken)
+            || await db.StoreProducts.AnyAsync(p => p.MaterialId == material.Id, cancellationToken))
         {
-            throw new DomainException("material.in_use", "Work items use this material. Hide it instead.");
+            throw new DomainException("material.in_use", "Work items, requests or store products use this material. Hide it instead.");
         }
 
         db.Materials.Remove(material);

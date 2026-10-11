@@ -8,6 +8,7 @@ using HomeServices.Application.Notifications;
 using HomeServices.Application.Orders;
 using HomeServices.Application.Requests;
 using HomeServices.Application.Staff;
+using HomeServices.Application.Stores;
 using HomeServices.Infrastructure.Files;
 using HomeServices.Infrastructure.Identity;
 using HomeServices.Infrastructure.Localization;
@@ -80,6 +81,11 @@ public static class DependencyInjection
             .Validate(s => s.AcceptedOfferDays is >= 1 and <= 3650, "Pricing:AcceptedOfferDays must be between 1 and 3650.")
             .Validate(s => s.PriceFreshDays is >= 7 and <= 3650, "Pricing:PriceFreshDays must be between 7 and 3650.")
             .Validate(s => s.MaxPriceDeviation is >= 2 and <= 100, "Pricing:MaxPriceDeviation must be between 2 and 100.");
+        services.AddOptions<StorePricingSettings>()
+            .BindConfiguration(StorePricingSettings.SectionName)
+            .Validate(s => s.MinStores is >= 1 and <= 100, "StorePricing:MinStores must be between 1 and 100.")
+            .Validate(s => s.FreshDays is >= 7 and <= 3650, "StorePricing:FreshDays must be between 7 and 3650.")
+            .Validate(s => s.UtcOffsetHours is >= -12 and <= 14, "StorePricing:UtcOffsetHours must be between -12 and 14.");
         services.AddOptions<NotificationSettings>()
             .BindConfiguration(NotificationSettings.SectionName)
             .Validate(s => Uri.TryCreate(s.PortalUrl, UriKind.Absolute, out _), "Notifications:PortalUrl must be an absolute URL.")

@@ -115,6 +115,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<StoreProduct> StoreProducts => Set<StoreProduct>();
 
+    public DbSet<StoreProductPrice> StoreProductPrices => Set<StoreProductPrice>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         // Every LocalizedText property becomes a jsonb column.

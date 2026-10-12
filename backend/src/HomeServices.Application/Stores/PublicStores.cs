@@ -50,7 +50,7 @@ public sealed record PublicStoreMaterialDto(string Slug, string Name, MaterialUn
 
 /// <summary>
 /// A store product with today's price: <see cref="SalePrice"/> and <see cref="SaleEndsOn"/> are set only while the sale
-/// lasts, <see cref="CurrentPrice"/> is what a pack costs now and <see cref="UnitPrice"/> is per unit of the material.
+/// lasts, <see cref="PriceBefore"/> is the usual price about three months ago when it was different, <see cref="CurrentPrice"/> is what a pack costs now and <see cref="UnitPrice"/> is per unit of the material.
 /// </summary>
 public sealed record PublicProductDto(
     Guid Id,
@@ -66,7 +66,8 @@ public sealed record PublicProductDto(
     decimal UnitPrice,
     bool InStock,
     string? PhotoUrl,
-    DateTimeOffset PriceUpdatedAt);
+    DateTimeOffset PriceUpdatedAt,
+    int? PriceBefore = null);
 
 /// <summary>The price per unit for one grade and where it comes from (staff or stores).</summary>
 public sealed record PublicGradePriceDto(int Price, MaterialPriceSource Source);
@@ -159,7 +160,8 @@ internal static class PublicStoreData
                 }).ToList());
     }
 
-    public static PublicProductDto Product(StoreProduct product, DateOnly today, IReadOnlyDictionary<Guid, string> photos)
+    public static PublicProductDto Product(
+        StoreProduct product, DateOnly today, IReadOnlyDictionary<Guid, string> photos, IReadOnlyDictionary<Guid, int>? pricesBefore = null)
     {
         var onSale = product.SalePrice is not null && today <= product.SaleEndsOn;
         return new PublicProductDto(
@@ -176,7 +178,8 @@ internal static class PublicStoreData
             product.UnitPrice(today),
             product.InStock,
             product.PhotoFileId is { } photo && photos.TryGetValue(photo, out var url) ? url : null,
-            product.PriceUpdatedAt);
+            product.PriceUpdatedAt,
+            pricesBefore is not null && pricesBefore.TryGetValue(product.Id, out var before) ? before : null);
     }
 
     public static PublicMaterialPricesDto Prices(Material material) => new(
@@ -242,6 +245,7 @@ public sealed class GetPublicStoreHandler(
             .OrderBy(m => m.SortOrder)
             .ToListAsync(cancellationToken);
         var pictures = await StoreData.PictureUrlsAsync(db, files, products.Select(p => p.PhotoFileId).Append(store.LogoFileId), cancellationToken);
+        var before = await StorePriceHistory.PriceBeforeAsync(db, settings.Value, now, products, cancellationToken);
 
         var groups = materials
             .Select(m => new PublicStoreMaterialDto(
@@ -252,7 +256,7 @@ public sealed class GetPublicStoreHandler(
                     .Where(p => p.MaterialId == m.Id)
                     .OrderBy(p => p.Grade)
                     .ThenBy(p => p.UnitPrice(today))
-                    .Select(p => PublicStoreData.Product(p, today, pictures))
+                    .Select(p => PublicStoreData.Product(p, today, pictures, before))
                     .ToList()))
             .ToList();
 
@@ -346,6 +350,7 @@ public sealed class GetPublicMaterialHandler(
         var branches = await PublicStoreData.BranchesAsync(db, language, storeIds, cityIds, cancellationToken);
         var pictures = await StoreData.PictureUrlsAsync(
             db, files, products.Select(p => p.PhotoFileId).Concat(stores.Values.Select(s => s.LogoFileId)), cancellationToken);
+        var before = await StorePriceHistory.PriceBeforeAsync(db, settings.Value, now, products, cancellationToken);
 
         var result = products
             .Select(p =>
@@ -358,7 +363,7 @@ public sealed class GetPublicMaterialHandler(
                         store.LogoFileId is { } logo ? pictures.GetValueOrDefault(logo) : null,
                         store.Website,
                         branches.GetValueOrDefault(store.Id) ?? []),
-                    PublicStoreData.Product(p, today, pictures));
+                    PublicStoreData.Product(p, today, pictures, before));
             })
             .ToList();
 

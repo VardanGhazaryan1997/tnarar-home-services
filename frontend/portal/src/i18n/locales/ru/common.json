@@ -1640,6 +1640,7 @@
       "inStock": "В наличии",
       "outOfStock": "Нет в наличии",
       "saleUntil": "Скидка до {{date}}",
+      "wasBefore": "Было {{price}} около 3 месяцев назад",
       "checked": "Цена проверена {{date}}",
       "branches": "филиалы: {{places}}"
     }

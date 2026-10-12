@@ -276,4 +276,24 @@ public class PublicStoresTests
         (await Should.ThrowAsync<NotFoundException>(() => MaterialAsync("nope"))).Code.ShouldBe("material.not_found");
         (await MaterialAsync(" PUTTY ")).Offers.ShouldBeEmpty();
     }
+
+    [Fact]
+    public async Task A_product_shows_the_price_it_had_three_months_ago_only_when_it_differs()
+    {
+        var changed = Add(_alpha, _putty, MaterialGrade.Standard, 200, name: "Changed");
+        var same = Add(_beta, _putty, MaterialGrade.Standard, 200, name: "Same");
+        Add(_beta, _putty, MaterialGrade.Premium, 300, name: "New");
+        _db.StoreProductPrices.AddRange(
+            StoreProductPrice.Record(changed, 4000, Now.AddDays(-120)),
+            StoreProductPrice.Record(changed, 4500, Now.AddDays(-95)), // the latest one at least 90 days old
+            StoreProductPrice.Record(changed, 4800, Now.AddDays(-10)),
+            StoreProductPrice.Record(same, same.Price, Now.AddDays(-100)));
+        _db.SaveChanges();
+
+        var offers = (await MaterialAsync("putty")).Offers.ToDictionary(o => o.Product.Name, o => o.Product.PriceBefore);
+        offers.ShouldBe(new Dictionary<string, int?> { ["Changed"] = 4500, ["Same"] = null, ["New"] = null }, ignoreOrder: true);
+
+        var inStore = (await StoreAsync("alpha")).Materials!.Single().Products.Single();
+        inStore.PriceBefore.ShouldBe(4500);
+    }
 }

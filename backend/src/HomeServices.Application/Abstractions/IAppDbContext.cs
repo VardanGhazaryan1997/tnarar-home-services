@@ -104,5 +104,7 @@ public interface IAppDbContext
 
     DbSet<StoreProduct> StoreProducts { get; }
 
+    DbSet<StoreProductPrice> StoreProductPrices { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

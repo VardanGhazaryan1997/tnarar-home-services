@@ -283,4 +283,45 @@ public class AdminStoreProductsTests
         (await validator.ValidateAsync(new GetAdminStoreProducts(Guid.NewGuid(), PageSize: GetAdminStoreProducts.MaxPageSize + 1))).Errors.Single().ErrorCode.ShouldBe("page_size.invalid");
         (await validator.ValidateAsync(new GetAdminStoreProducts(Guid.NewGuid()))).IsValid.ShouldBeTrue();
     }
+
+    [Fact]
+    public async Task A_price_history_row_is_added_when_a_product_is_created_and_whenever_its_price_or_sale_changes()
+    {
+        var created = await CreateAsync(_market);
+        var handler = new UpdateStoreProductHandler(_db, Files, _language, _settings, _clock);
+        UpdateStoreProduct Update(int price, int? sale = null, DateOnly? saleEnds = null, string name = "Putty") =>
+            new(_market.Id, created.Id, name, null, "P-25", 25m, "25 kg bag", price, sale, saleEnds, true, null, _putty.Id, MaterialGrade.Standard);
+
+        _db.StoreProductPrices.Single().ShouldSatisfyAllConditions(
+            r => r.Price.ShouldBe(5000),
+            r => r.SalePrice.ShouldBeNull(),
+            r => r.RecordedAt.ShouldBe(Now));
+
+        _clock.Now = Now.AddDays(10);
+        await handler.HandleAsync(Update(5000, name: "Renamed"), CancellationToken.None); // nothing price-related changed
+        _db.StoreProductPrices.Count().ShouldBe(1);
+
+        _clock.Now = Now.AddDays(11);
+        await handler.HandleAsync(Update(5400), CancellationToken.None);
+        _clock.Now = Now.AddDays(12);
+        await handler.HandleAsync(Update(5400, 4800, Today.AddDays(30)), CancellationToken.None);
+        _clock.Now = Now.AddDays(13);
+        await handler.HandleAsync(Update(5400, 4800, Today.AddDays(40)), CancellationToken.None);
+
+        var rows = _db.StoreProductPrices.OrderBy(r => r.RecordedAt).ToList();
+        rows.Select(r => (r.Price, r.SalePrice)).ShouldBe(new (int, int?)[] { (5000, null), (5400, null), (5400, 4800), (5400, 4800) });
+        rows.ShouldAllBe(r => r.StoreProductId == created.Id);
+    }
+
+    [Fact]
+    public async Task Confirming_a_price_adds_no_history_row()
+    {
+        var created = await CreateAsync(_market);
+        _clock.Now = Now.AddDays(100);
+
+        await new ConfirmStoreProductPriceHandler(_db, Files, _language, _settings, _clock)
+            .HandleAsync(new ConfirmStoreProductPrice(_market.Id, created.Id), CancellationToken.None);
+
+        _db.StoreProductPrices.Count().ShouldBe(1);
+    }
 }

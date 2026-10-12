@@ -97,4 +97,16 @@ public class SeedDemoStoresTests
         (await _db.StoreProducts.CountAsync()).ShouldBe(4); // the two primer products, each in two stores
     }
 
+    [Fact]
+    public async Task Records_a_price_for_every_product_and_an_older_different_price_for_some()
+    {
+        await SeedAsync();
+
+        var products = await _db.StoreProducts.ToListAsync();
+        var rows = await _db.StoreProductPrices.ToListAsync();
+        products.ShouldAllBe(p => rows.Any(r => r.StoreProductId == p.Id && r.Price == p.Price));
+        var older = rows.Where(r => r.RecordedAt < Now.AddDays(-90)).ToList();
+        older.Count.ShouldBeGreaterThan(0);
+        older.ShouldAllBe(r => r.Price != products.Single(p => p.Id == r.StoreProductId).Price);
+    }
 }

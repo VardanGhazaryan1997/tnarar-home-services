@@ -1640,6 +1640,7 @@
       "inStock": "स्टॉक में",
       "outOfStock": "स्टॉक में नहीं",
       "saleUntil": "{{date}} तक छूट",
+      "wasBefore": "लगभग 3 महीने पहले {{price}} था",
       "checked": "कीमत {{date}} को जांची गई",
       "branches": "शाखाएं: {{places}}"
     }

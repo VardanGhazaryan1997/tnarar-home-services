@@ -1640,6 +1640,7 @@
       "inStock": "متوفر",
       "outOfStock": "غير متوفر",
       "saleUntil": "التخفيض حتى {{date}}",
+      "wasBefore": "كان {{price}} قبل نحو 3 أشهر",
       "checked": "تم التحقق من السعر في {{date}}",
       "branches": "الفروع: {{places}}"
     }

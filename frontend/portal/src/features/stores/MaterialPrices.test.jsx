@@ -100,6 +100,32 @@ describe('Material comparison', () => {
     expect(screen.getByText(d.offers.replace('{{n}}', '2'))).toBeInTheDocument()
   }, SLOW)
 
+  it('shows the price from about three months ago when it was different, with its direction', async () => {
+    server.use(
+      http.get('*/api/v1/materials/finishing-putty', () =>
+        HttpResponse.json(
+          materialDetail({
+            offers: [
+              { store: offerStore(), product: offerProduct({ id: 'a', name: 'Dearer now', price: 5500, currentPrice: 5500, priceBefore: 5000 }) },
+              { store: offerStore(), product: offerProduct({ id: 'b', name: 'Cheaper now', price: 4800, currentPrice: 4800, priceBefore: 5200 }) },
+              { store: offerStore(), product: offerProduct({ id: 'c', name: 'Unchanged', price: 5000, currentPrice: 5000 }) },
+            ],
+            storeCount: 3,
+          }),
+        ),
+      ),
+    )
+    renderRoute('/en/material-prices/finishing-putty')
+
+    const dearer = await screen.findByRole('article', { name: /Dearer now/ })
+    expect(within(dearer).getByText(/Was 5,000 ֏ about 3 months ago/)).toBeInTheDocument()
+    expect(within(dearer).getByText(/↑/)).toBeInTheDocument()
+    const cheaper = screen.getByRole('article', { name: /Cheaper now/ })
+    expect(within(cheaper).getByText(/Was 5,200 ֏ about 3 months ago/)).toBeInTheDocument()
+    expect(within(cheaper).getByText(/↓/)).toBeInTheDocument()
+    expect(within(screen.getByRole('article', { name: /Unchanged/ })).queryByText(/about 3 months ago/)).not.toBeInTheDocument()
+  }, SLOW)
+
   it('narrows the offers by quality, region and stock, keeping them in the address', async () => {
     const asked = []
     server.use(

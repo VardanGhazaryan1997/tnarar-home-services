@@ -1640,6 +1640,7 @@
       "inStock": "In stock",
       "outOfStock": "Out of stock",
       "saleUntil": "Sale until {{date}}",
+      "wasBefore": "Was {{price}} about 3 months ago",
       "checked": "Price checked {{date}}",
       "branches": "branches: {{places}}"
     }

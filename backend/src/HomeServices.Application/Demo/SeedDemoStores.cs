@@ -14,7 +14,7 @@ namespace HomeServices.Application.Demo;
 /// Adds three clearly fictional building-materials stores with branches and products linked to the catalog materials
 /// (staging and local development only), so material prices, the comparison pages and "where to buy" have something to
 /// show. Prices are the material's usual price times the pack size, nudged up or down per store. Does nothing when any
-/// demo store already exists. Returns how many stores were created.
+/// demo store already exists. Some products also get an older price, so the price history has something to show. Returns how many stores were created.
 /// </summary>
 public sealed record SeedDemoStores : ICommand<int>;
 
@@ -70,6 +70,14 @@ public sealed class SeedDemoStoresHandler(IAppDbContext db, IOptions<StorePricin
                     now);
                 item.LinkTo(material.Id, product.Grade);
                 db.StoreProducts.Add(item);
+                StorePriceHistory.Record(db, item, now);
+                if ((productIndex + storeIndex) % 4 == 0)
+                {
+                    // Some products cost more or less than they did about 100 days ago, so "was X" has something to show.
+                    var older = MarketPrices.Tidy(price * (productIndex % 2 == 0 ? 1.12 : 0.92));
+                    db.StoreProductPrices.Add(StoreProductPrice.Record(item, older == price ? price + 10 : older, now.AddDays(-100)));
+                }
+
                 touched.Add(material.Id);
             }
 

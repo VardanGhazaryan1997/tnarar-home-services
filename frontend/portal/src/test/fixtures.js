@@ -483,6 +483,7 @@ export const offerProduct = (overrides = {}) => ({
   inStock: true,
   photoUrl: null,
   priceUpdatedAt: '2026-10-05T09:00:00Z',
+  priceBefore: null,
   ...overrides,
 })
 

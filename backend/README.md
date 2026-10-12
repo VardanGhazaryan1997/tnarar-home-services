@@ -391,6 +391,7 @@ Customers see stores and compare prices without signing in (`api/v1`). Names are
 | `GET materials/{slug}?region=&grade=&inStock=` | One material with its `offers`, in-stock first and then cheapest per unit: the `store` (slug, name, logo, website, branches in the region) and the `product` (name, brand, `grade`, `packLabel`, `packSize`, `price`, `salePrice` and `saleEndsOn` only while the sale lasts, `currentPrice`, `unitPrice`, `inStock`, `photoUrl`, `priceUpdatedAt`). `grade` is Budget, Standard or Premium (anything else is 400). 404 `material.not_found` |
 
 - Only products that are active, linked to a material, of an active store and whose price was set or confirmed within `StorePricing:FreshDays` (90) are shown; out-of-stock products are shown, marked `inStock: false`. Products without a link and stale prices stay in the Back Office.
+- Price history (S9): `store_product_prices` gets a row when a product is created and whenever its price, sale price or sale end date changes (confirming an unchanged price adds none). Public products carry `priceBefore`: the regular price the product had `StorePricing:HistoryDays` (90) days ago (the latest entry at or before then), only when it differs from the current regular price; products younger than that have none.
 - Prices are those staff entered; nothing is tracked about what customers click.
 
 ### Where to buy

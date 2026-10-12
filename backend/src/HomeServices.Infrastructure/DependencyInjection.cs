@@ -85,6 +85,7 @@ public static class DependencyInjection
             .BindConfiguration(StorePricingSettings.SectionName)
             .Validate(s => s.MinStores is >= 1 and <= 100, "StorePricing:MinStores must be between 1 and 100.")
             .Validate(s => s.FreshDays is >= 7 and <= 3650, "StorePricing:FreshDays must be between 7 and 3650.")
+            .Validate(s => s.HistoryDays is >= 7 and <= 3650, "StorePricing:HistoryDays must be between 7 and 3650.")
             .Validate(s => s.UtcOffsetHours is >= -12 and <= 14, "StorePricing:UtcOffsetHours must be between -12 and 14.");
         services.AddOptions<NotificationSettings>()
             .BindConfiguration(NotificationSettings.SectionName)

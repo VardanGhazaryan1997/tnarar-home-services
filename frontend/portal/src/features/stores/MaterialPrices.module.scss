@@ -148,6 +148,18 @@
     @include text-muted;
   }
 
+  &__trend {
+    @include text-small;
+
+    &--up {
+      color: $color-warning;
+    }
+
+    &--down {
+      color: $color-success;
+    }
+  }
+
   &__unit {
     font-weight: $font-weight-medium;
   }

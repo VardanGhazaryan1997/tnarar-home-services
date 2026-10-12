@@ -1640,6 +1640,7 @@
       "inStock": "موجود",
       "outOfStock": "ناموجود",
       "saleUntil": "تخفیف تا {{date}}",
+      "wasBefore": "حدود 3 ماه پیش {{price}} بود",
       "checked": "قیمت در {{date}} بررسی شد",
       "branches": "شعبه‌ها: {{places}}"
     }

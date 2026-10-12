@@ -74,3 +74,14 @@ internal sealed class StoreProductConfiguration : IEntityTypeConfiguration<Store
         });
     }
 }
+
+internal sealed class StoreProductPriceConfiguration : IEntityTypeConfiguration<StoreProductPrice>
+{
+    public void Configure(EntityTypeBuilder<StoreProductPrice> builder)
+    {
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.HasIndex(p => new { p.StoreProductId, p.RecordedAt });
+        builder.HasOne<StoreProduct>().WithMany().HasForeignKey(p => p.StoreProductId).OnDelete(DeleteBehavior.Cascade);
+        builder.ToTable(t => t.HasCheckConstraint("ck_store_product_prices_price", "price >= 1"));
+    }
+}

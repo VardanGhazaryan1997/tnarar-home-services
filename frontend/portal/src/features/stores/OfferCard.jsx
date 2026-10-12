@@ -23,6 +23,12 @@ export function ProductPrice({ product, unit, lowest = false }) {
       {product.salePrice != null && (
         <p className={styles['material-prices__muted']}>{t('materialPrices.offer.saleUntil', { date: formatDate(product.saleEndsOn, lng) })}</p>
       )}
+      {product.priceBefore != null && (
+        <p className={`${styles['offer__trend']} ${styles[product.price > product.priceBefore ? 'offer__trend--up' : 'offer__trend--down']}`}>
+          <span aria-hidden="true">{product.price > product.priceBefore ? '↑' : '↓'} </span>
+          {t('materialPrices.offer.wasBefore', { price: formatMoney(product.priceBefore, lng) })}
+        </p>
+      )}
       <p className={styles['offer__unit']}>
         {t('materialPrices.offer.perUnit', { amount: formatUnitPrice(product.unitPrice, lng), unit: t(`estimator.materials.units.${unit}`) })}
       </p>

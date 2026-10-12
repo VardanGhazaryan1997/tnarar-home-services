@@ -14,6 +14,9 @@ public sealed class StorePricingSettings
     /// <summary>Hours from UTC to the stores' local time (Armenia: 4), to tell when a sale ends.</summary>
     public int UtcOffsetHours { get; set; } = 4;
 
+    /// <summary>The price shown as "was X" is the one the product had this many days ago.</summary>
+    public int HistoryDays { get; set; } = 90;
+
     public TimeSpan FreshFor => TimeSpan.FromDays(FreshDays);
 
     /// <summary>Today's date where the stores are.</summary>

@@ -245,6 +245,7 @@ public sealed class CreateStoreProductHandler(
         }
 
         db.StoreProducts.Add(product);
+        StorePriceHistory.Record(db, product, now);
         await db.SaveChangesAsync(cancellationToken);
         await StoreData.RefreshMaterialPricesAsync(db, settings.Value, clock, [product.MaterialId], cancellationToken);
         return await StoreData.ProductDtoAsync(db, files, language, settings.Value, now, product, cancellationToken);
@@ -263,6 +264,7 @@ public sealed class UpdateStoreProductHandler(
 
         var now = clock.GetUtcNow();
         var oldMaterialId = product.MaterialId;
+        var (oldPrice, oldSalePrice, oldSaleEndsOn) = (product.Price, product.SalePrice, product.SaleEndsOn);
         product.Update(
             command.Name,
             command.Brand,
@@ -275,6 +277,11 @@ public sealed class UpdateStoreProductHandler(
             command.InStock,
             command.PhotoFileId,
             now);
+        if (product.Price != oldPrice || product.SalePrice != oldSalePrice || product.SaleEndsOn != oldSaleEndsOn)
+        {
+            StorePriceHistory.Record(db, product, now);
+        }
+
         await StoreData.ApplyLinkAsync(db, product, command.MaterialId, command.Grade, cancellationToken);
         if (command.IsActive)
         {

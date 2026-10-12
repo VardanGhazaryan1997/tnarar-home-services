@@ -109,6 +109,8 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
     public DbSet<StoreProduct> StoreProducts => Set<StoreProduct>();
 
+    public DbSet<StoreProductPrice> StoreProductPrices => Set<StoreProductPrice>();
+
     public static InMemoryAppDbContext Create() =>
         new(new DbContextOptionsBuilder<InMemoryAppDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
 
@@ -121,7 +123,7 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var type in new[] { typeof(Language), typeof(Category), typeof(WorkItem), typeof(Material), typeof(WorkItemMaterial), typeof(PartnerPrice), typeof(RegionalMarketPrice), typeof(Estimate), typeof(EstimateRoom), typeof(EstimateOpening), typeof(EstimateLine), typeof(RoomTemplate), typeof(Region), typeof(City), typeof(District), typeof(User), typeof(OtpCode), typeof(RefreshToken), typeof(StaffUser), typeof(StaffRefreshToken), typeof(Role), typeof(AuditLogEntry), typeof(StoredFile), typeof(PartnerProfile), typeof(PartnerArea), typeof(PartnerMedia), typeof(PartnerStatusChange), typeof(UiTranslation), typeof(StaticPage), typeof(FaqItem), typeof(ServiceRequest), typeof(RequestRecipient), typeof(RequestMedia), typeof(RequestLine), typeof(RequestMaterial), typeof(Offer), typeof(OfferItem), typeof(OfferPaymentStage), typeof(Order), typeof(OrderStage), typeof(OrderStatusChange), typeof(OrderChangeRequest), typeof(Conversation), typeof(Message), typeof(MessageAttachment), typeof(Payment), typeof(Review), typeof(Notification), typeof(CommissionRate), typeof(CommissionObligation), typeof(CommissionStatement), typeof(Settlement), typeof(Store), typeof(StoreBranch), typeof(StoreProduct) })
+        foreach (var type in new[] { typeof(Language), typeof(Category), typeof(WorkItem), typeof(Material), typeof(WorkItemMaterial), typeof(PartnerPrice), typeof(RegionalMarketPrice), typeof(Estimate), typeof(EstimateRoom), typeof(EstimateOpening), typeof(EstimateLine), typeof(RoomTemplate), typeof(Region), typeof(City), typeof(District), typeof(User), typeof(OtpCode), typeof(RefreshToken), typeof(StaffUser), typeof(StaffRefreshToken), typeof(Role), typeof(AuditLogEntry), typeof(StoredFile), typeof(PartnerProfile), typeof(PartnerArea), typeof(PartnerMedia), typeof(PartnerStatusChange), typeof(UiTranslation), typeof(StaticPage), typeof(FaqItem), typeof(ServiceRequest), typeof(RequestRecipient), typeof(RequestMedia), typeof(RequestLine), typeof(RequestMaterial), typeof(Offer), typeof(OfferItem), typeof(OfferPaymentStage), typeof(Order), typeof(OrderStage), typeof(OrderStatusChange), typeof(OrderChangeRequest), typeof(Conversation), typeof(Message), typeof(MessageAttachment), typeof(Payment), typeof(Review), typeof(Notification), typeof(CommissionRate), typeof(CommissionObligation), typeof(CommissionStatement), typeof(Settlement), typeof(Store), typeof(StoreBranch), typeof(StoreProduct), typeof(StoreProductPrice) })
         {
             modelBuilder.Entity(type).Ignore(nameof(Entity.DomainEvents));
         }
@@ -156,6 +158,7 @@ public sealed class InMemoryAppDbContext(DbContextOptions<InMemoryAppDbContext> 
 
         // Same shape as Infrastructure/Persistence/Configurations/StoreConfiguration.cs.
         modelBuilder.Entity<StoreBranch>().Property(b => b.Id).ValueGeneratedNever();
+        modelBuilder.Entity<StoreProductPrice>().Property(p => p.Id).ValueGeneratedNever();
         modelBuilder.Entity<Store>().HasMany(s => s.Branches).WithOne().HasForeignKey(b => b.StoreId);
 
         // Same shape as Infrastructure/Persistence/Configurations/EstimateConfiguration.cs.

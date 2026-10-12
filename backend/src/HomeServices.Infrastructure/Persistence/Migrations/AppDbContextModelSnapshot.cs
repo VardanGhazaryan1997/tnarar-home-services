@@ -16581,6 +16581,44 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HomeServices.Domain.Stores.StoreProductPrice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("integer")
+                        .HasColumnName("price");
+
+                    b.Property<DateTimeOffset>("RecordedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("recorded_at");
+
+                    b.Property<DateOnly?>("SaleEndsOn")
+                        .HasColumnType("date")
+                        .HasColumnName("sale_ends_on");
+
+                    b.Property<int?>("SalePrice")
+                        .HasColumnType("integer")
+                        .HasColumnName("sale_price");
+
+                    b.Property<Guid>("StoreProductId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("store_product_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_store_product_prices");
+
+                    b.HasIndex("StoreProductId", "RecordedAt")
+                        .HasDatabaseName("ix_store_product_prices_store_product_id_recorded_at");
+
+                    b.ToTable("store_product_prices", t =>
+                        {
+                            t.HasCheckConstraint("ck_store_product_prices_price", "price >= 1");
+                        });
+                });
+
             modelBuilder.Entity("HomeServices.Domain.Catalog.Category", b =>
                 {
                     b.HasOne("HomeServices.Domain.Catalog.Category", null)
@@ -17315,6 +17353,16 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_store_products_stores_store_id");
+                });
+
+            modelBuilder.Entity("HomeServices.Domain.Stores.StoreProductPrice", b =>
+                {
+                    b.HasOne("HomeServices.Domain.Stores.StoreProduct", null)
+                        .WithMany()
+                        .HasForeignKey("StoreProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_store_product_prices_store_products_store_product_id");
                 });
 
             modelBuilder.Entity("HomeServices.Domain.Catalog.City", b =>

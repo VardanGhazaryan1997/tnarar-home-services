@@ -1640,6 +1640,7 @@
       "inStock": "Առկա է",
       "outOfStock": "Սպառված է",
       "saleUntil": "Զեղչը մինչև {{date}}",
+      "wasBefore": "Եղել է {{price}} մոտ 3 ամիս առաջ",
       "checked": "Գինը ստուգվել է {{date}}",
       "branches": "մասնաճյուղեր՝ {{places}}"
     }

@@ -5,8 +5,8 @@ namespace HomeServices.Api.Demo;
 
 /// <summary>
 /// On startup, adds demo companies and specialists when "DemoData:SeedPartners" is true (staging and local
-/// development only; Program refuses it in Production), and gives demo partners without prices a price list.
-/// Both steps skip what already exists, so restarts change nothing.
+/// development only; Program refuses it in Production), gives demo partners without prices a price list, and adds three fictional
+/// building-materials stores with products. Every step skips what already exists, so restarts change nothing.
 /// </summary>
 public static partial class DemoDataBootstrapper
 {
@@ -34,6 +34,13 @@ public static partial class DemoDataBootstrapper
         {
             LogPriced(logger, priced);
         }
+
+        var stores = scope.ServiceProvider.GetRequiredService<ICommandHandler<SeedDemoStores, int>>();
+        var storesAdded = await stores.HandleAsync(new SeedDemoStores(), CancellationToken.None);
+        if (storesAdded > 0)
+        {
+            LogStores(logger, storesAdded);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Added {Count} demo partners (DemoData:SeedPartners is on).")]
@@ -41,4 +48,7 @@ public static partial class DemoDataBootstrapper
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Gave {Count} demo partners a price list (DemoData:SeedPartners is on).")]
     private static partial void LogPriced(ILogger logger, int count);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Added {Count} demo stores with products (DemoData:SeedPartners is on).")]
+    private static partial void LogStores(ILogger logger, int count);
 }

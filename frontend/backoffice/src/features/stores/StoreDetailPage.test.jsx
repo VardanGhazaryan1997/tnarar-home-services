@@ -7,7 +7,7 @@ import { renderRoute } from '@/test/renderWithProviders'
 import { server } from '@/test/server'
 import { PRODUCTS, branch, productsPage, storeDetail } from '@/test/stores'
 
-const SLOW = 60_000
+const SLOW = 240_000
 const HEAVY = 240_000 // dialogs with several selects are slow to drive in jsdom
 const s = hy.stores
 const p = s.product

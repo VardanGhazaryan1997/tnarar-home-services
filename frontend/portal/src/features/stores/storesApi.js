@@ -18,6 +18,14 @@ export const storesApi = baseApi.injectEndpoints({
       }),
     }),
     getStore: build.query({ query: ({ slug }) => `/stores/${encodeURIComponent(slug)}` }),
+    /**
+     * `{ grade, materials: [{ materialId, quantity }], region? }` → `{ cheapest, stores }`: the cheapest store offer per
+     * material in whole packs, and each store's total for the materials it has. A read, so it is cached like one.
+     */
+    getWhereToBuy: build.query({
+      query: (body) => ({ url: '/materials/where-to-buy', method: 'POST', body }),
+      keepUnusedDataFor: 60,
+    }),
   }),
 })
 
@@ -30,3 +38,4 @@ const useLanguage = () => useTranslation().i18n.language
 export const useMaterialPrices = (params) => storesApi.useGetMaterialPricesQuery({ ...params, lng: useLanguage() })
 export const useMaterialOffers = (params) => storesApi.useGetMaterialOffersQuery({ ...params, lng: useLanguage() })
 export const useStore = (slug) => storesApi.useGetStoreQuery({ slug, lng: useLanguage() })
+export const useWhereToBuy = (body, options) => storesApi.useGetWhereToBuyQuery(body, options)

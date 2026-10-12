@@ -156,7 +156,7 @@ describe('Materials of a work item', () => {
       await user.click(await screen.findByRole('button', { name: `${m.compare}: Վերջնական շպաքլ` }))
       const drawer = await screen.findByRole('dialog')
       expect(await within(drawer).findByRole('link', { name: 'Demo Hardware' })).toHaveAttribute('href', '/stores/store-demo?tab=products')
-      expect(within(drawer).getByText('Putty 25 kg')).toBeInTheDocument()
+      expect(within(drawer).getAllByText('Putty 25 kg')).toHaveLength(2)
       expect(within(drawer).getByText(/^200 ֏$/)).toBeInTheDocument()
       expect(within(drawer).getByText(/^12[.,]5 ֏$/)).toBeInTheDocument()
       expect(within(drawer).getAllByText(hy.stores.product.stale)).toHaveLength(1)

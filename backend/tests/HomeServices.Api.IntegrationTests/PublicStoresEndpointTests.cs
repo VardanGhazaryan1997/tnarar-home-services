@@ -127,4 +127,34 @@ public class PublicStoresEndpointTests(ApiFactory factory)
 
         (await customer.GetAsync($"/api/v1/stores/off-{tag}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Where_to_buy_prices_whole_packs_per_store_and_checks_the_request()
+    {
+        var staff = StaffClient();
+        var tag = Guid.NewGuid().ToString("N")[..8];
+        var cityId = await FirstCityAsync();
+        await GivenStoreWithPuttyAsync(staff, $"wa-{tag}", price: 5000, active: true, inStock: true, cityId);
+        await GivenStoreWithPuttyAsync(staff, $"wb-{tag}", price: 7500, active: true, inStock: true, cityId);
+        var putty = (await staff.GetFromJsonAsync<List<AdminMaterialDto>>("/api/v1/admin/stores/materials", Json))!.Single(m => m.Slug == "finishing-putty");
+        var customer = Customer(factory.CreateClient());
+
+        var response = await customer.PostAsJsonAsync(
+            "/api/v1/materials/where-to-buy",
+            new { grade = "Standard", materials = new[] { new { materialId = putty.Id, quantity = 60 } } });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var result = (await response.Content.ReadFromJsonAsync<WhereToBuyDto>(Json))!;
+        var ours = result.Stores.Where(s => s.StoreSlug.EndsWith(tag, StringComparison.Ordinal)).ToList();
+        ours.Select(s => (s.Total, s.Covered, s.Missing)).ToArray().ShouldBe(new[] { (15000, 1, 0), (22500, 1, 0) });
+        var cheapest = result.Cheapest.Single();
+        cheapest.MaterialSlug.ShouldBe("finishing-putty");
+        cheapest.Packs.ShouldBe(3);
+        cheapest.Cost.ShouldBeLessThanOrEqualTo(15000);
+
+        var bad = await customer.PostAsJsonAsync(
+            "/api/v1/materials/where-to-buy",
+            new { grade = "Standard", materials = new[] { new { materialId = putty.Id, quantity = 0 } } });
+        bad.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
 }

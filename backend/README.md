@@ -393,6 +393,10 @@ Customers see stores and compare prices without signing in (`api/v1`). Names are
 - Only products that are active, linked to a material, of an active store and whose price was set or confirmed within `StorePricing:FreshDays` (90) are shown; out-of-stock products are shown, marked `inStock: false`. Products without a link and stale prices stay in the Back Office.
 - Prices are those staff entered; nothing is tracked about what customers click.
 
+### Where to buy
+
+`POST /api/v1/materials/where-to-buy` (public) takes `{ grade, region?, materials: [{ materialId, quantity }] }` (up to 100 materials, quantities as an estimate counted them) and returns `cheapest`, the cheapest offer for each material a store sells in that grade (packs rounded up, cost = packs × current price; a sale price counts until its end date), and `stores`, each store's total for the materials it has with `covered` and `missing` counts, most covered first, then cheapest. Only active, in-stock, fresh products of active stores count; with `region` only stores with a branch there.
+
 ## Code coverage
 
 CI fails when backend coverage drops below 90% of lines or 85% of branches (migrations excluded). To see the report locally (one-time: `dotnet tool install --global dotnet-reportgenerator-globaltool`):

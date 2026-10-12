@@ -1654,5 +1654,13 @@
     "noProducts": "No current prices from this store",
     "notFound": "Store not found",
     "notFoundText": "It may have been removed. Look through all material prices."
+  },
+  "whereToBuy": {
+    "title": "Where to buy",
+    "cheapest": "Cheapest: {{packs}} × {{pack}} at {{store}} — {{cost}}",
+    "hasAll": "has all {{count}} materials",
+    "hasSome": "has {{covered}} of {{count}} materials",
+    "note": "Totals are for the materials a store has in stock, rounded up to whole packs, at the grade you chose.",
+    "compare": "Compare all material prices"
   }
 }

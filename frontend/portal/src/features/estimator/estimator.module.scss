@@ -418,3 +418,11 @@
     @include text-muted;
   }
 }
+
+.where-to-buy {
+  &__cheapest {
+    @include text-small;
+
+    display: block;
+  }
+}

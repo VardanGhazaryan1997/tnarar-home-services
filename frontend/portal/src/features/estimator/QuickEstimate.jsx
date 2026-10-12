@@ -10,6 +10,7 @@ import { useLocalizedPath } from '@/i18n/hooks'
 import { formatMoney } from '@/shared/format'
 import { MAX_AREA, parseArea, ROOM_TYPES, useQuickEstimateMutation } from './estimatorApi'
 import { MATERIAL_GRADES, grandTotal, hasMaterials } from './materials'
+import WhereToBuy from './WhereToBuy'
 import styles from './estimator.module.scss'
 
 /**
@@ -147,6 +148,7 @@ export default function QuickEstimate() {
                   </ul>
                 </details>
               )}
+              {withMaterials && <WhereToBuy measurement={data} />}
             </>
           ) : (
             <p>{t('estimator.quick.noPrices')}</p>

@@ -51,4 +51,18 @@ public sealed class StoresController : ControllerBase
         [FromServices] IQueryHandler<GetPublicMaterial, PublicMaterialDetailDto> handler,
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new GetPublicMaterial(slug, region, grade, inStock), cancellationToken);
+
+    public sealed record WhereToBuyRequest(MaterialGrade Grade, IReadOnlyList<WhereToBuyNeed> Materials, string? Region = null);
+
+    /// <summary>
+    /// Where to buy the materials of an estimate: send the grade and each material's quantity (as the estimate counted
+    /// it). Returns, for each material a store sells in that grade, the cheapest offer rounded up to whole packs, and each
+    /// store's total for the materials it has (most covered first, then cheapest). <c>region</c> (optional): a region slug.
+    /// </summary>
+    [HttpPost("materials/where-to-buy")]
+    public Task<WhereToBuyDto> WhereToBuy(
+        WhereToBuyRequest request,
+        [FromServices] IQueryHandler<WhereToBuy, WhereToBuyDto> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new WhereToBuy(request.Grade, request.Materials, request.Region), cancellationToken);
 }

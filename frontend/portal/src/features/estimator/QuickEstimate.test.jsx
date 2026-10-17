@@ -60,6 +60,9 @@ describe('QuickEstimate', () => {
     expect(within(section).getByText(/77[\s,.]?500 ֏ – 107[\s,.]?500 ֏/)).toBeInTheDocument()
     expect(within(section).getByText('Interior paint')).toBeInTheDocument()
     expect(within(section).getByText(/9\.5 l/)).toBeInTheDocument()
+    // The price includes materials, so the note must not say "labour only".
+    expect(within(section).getByText(en.estimator.quick.finalPrice)).toBeInTheDocument()
+    expect(within(section).queryByText(en.estimator.quick.note)).not.toBeInTheDocument()
   })
 
   it('prices a room from its type and floor area', async () => {
@@ -86,6 +89,7 @@ describe('QuickEstimate', () => {
     expect(within(section).getByText(/Socket installation/)).toHaveTextContent('4 pcs')
     expect(within(section).queryByText(/Unpriced/)).not.toBeInTheDocument()
     expect(within(section).getByText(en.estimator.quick.included.replace('{{count}}', '2'))).toBeInTheDocument()
+    expect(within(section).getByText(en.estimator.quick.note)).toBeInTheDocument()
     expect(within(section).getByRole('link', { name: en.estimator.quick.cta })).toHaveAttribute('href', '/en/requests/new')
   })
 

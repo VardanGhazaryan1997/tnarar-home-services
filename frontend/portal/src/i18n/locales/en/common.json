@@ -1445,6 +1445,7 @@
       "resultLabel": "Labour, approximately",
       "usually": "Usually about {{amount}}",
       "note": "Labour only, without materials. Specialists give the final price after seeing the place.",
+      "finalPrice": "Specialists give the final price after seeing the place.",
       "included": "What's included ({{count}})",
       "noPrices": "There aren't enough prices for this room yet. Describe the job and get offers from specialists.",
       "cta": "Get exact offers",

@@ -58,12 +58,14 @@ export default function QuickEstimate() {
 
       <form className={styles['quick-estimate__form']} onSubmit={submit} noValidate>
         <SelectField
+          className={styles['quick-estimate__field']}
           label={t('estimator.roomType')}
           value={roomType}
           onChange={(event) => setRoomType(event.target.value)}
           options={ROOM_TYPES.map((type) => ({ value: type, label: t(`estimator.roomTypes.${type}`) }))}
         />
         <TextField
+          className={styles['quick-estimate__field']}
           label={t('estimator.area')}
           inputMode="decimal"
           autoComplete="off"
@@ -72,6 +74,7 @@ export default function QuickEstimate() {
           onChange={(event) => setArea(event.target.value)}
         />
         <SelectField
+          className={styles['quick-estimate__field']}
           label={t('estimator.materials.label')}
           value={materials}
           onChange={(event) => setMaterials(event.target.value)}
@@ -86,7 +89,13 @@ export default function QuickEstimate() {
           checked={oldBuilding}
           onChange={(event) => setOldBuilding(event.target.checked)}
         />
-        <Button type="submit" variant="accent" icon={<Icon name="money" />} loading={result.isLoading}>
+        <Button
+          type="submit"
+          variant="accent"
+          icon={<Icon name="money" />}
+          loading={result.isLoading}
+          className={styles['quick-estimate__submit']}
+        >
           {t('estimator.quick.calculate')}
         </Button>
       </form>
@@ -109,7 +118,7 @@ export default function QuickEstimate() {
                   {t('estimator.materials.total', { amount: formatMoney(data.materialsTotal, lng) })}
                 </p>
               )}
-              <p className={styles['quick-estimate__note']}>{t('estimator.quick.note')}</p>
+              <p className={styles['quick-estimate__note']}>{t(withMaterials ? 'estimator.quick.finalPrice' : 'estimator.quick.note')}</p>
               <details className={styles['quick-estimate__details']}>
                 <summary>{t('estimator.quick.included', { count: lines.length })}</summary>
                 <ul className={styles['quick-estimate__lines']}>

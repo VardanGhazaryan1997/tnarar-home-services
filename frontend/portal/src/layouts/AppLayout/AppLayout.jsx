@@ -8,6 +8,9 @@ import Button from '@/components/ui/Button/Button'
 import Icon from '@/components/ui/Icon/Icon'
 import { bootstrapSession } from '@/features/auth/authApi'
 import { useGetUnreadQuery } from '@/features/chat/chatApi'
+import MessageAlerts from '@/features/chat/alerts/MessageAlerts'
+import SoundToggle from '@/features/chat/alerts/SoundToggle'
+import { unlockSoundOnFirstGesture } from '@/features/chat/alerts/sound'
 import { useChatConnection } from '@/features/chat/useChatConnection'
 import NotificationBell from '@/features/notifications/NotificationBell'
 import { selectAuthStatus, selectUser } from '@/features/auth/authSlice'
@@ -44,6 +47,9 @@ export default function AppLayout() {
     dispatch(bootstrapSession())
   }, [dispatch])
 
+  // Browsers allow sound only after the user has interacted with the page.
+  useEffect(() => (signedIn ? unlockSoundOnFirstGesture() : undefined), [signedIn])
+
   const linkClass = (block) => ({ isActive }) => b(block, { active: isActive })
 
   return (
@@ -73,6 +79,7 @@ export default function AppLayout() {
           </nav>
           <div className={styles['app-layout__tools']}>
             <LanguageSwitcher />
+            {status === 'authenticated' && <SoundToggle />}
             {status === 'authenticated' && <NotificationBell />}
             {status === 'authenticated' && (
               <NavLink to={path('/account')} className={linkClass('app-layout__account')}>
@@ -94,6 +101,8 @@ export default function AppLayout() {
       </main>
 
       <SiteFooter />
+
+      {signedIn && <MessageAlerts />}
 
       <nav className={styles['app-layout__tabs']} aria-label={t('layout.tabNavigation')}>
         {mobileItems(user).map((item) => (

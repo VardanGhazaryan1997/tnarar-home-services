@@ -1,0 +1,26 @@
+@use 'styles/mixins' as *;
+
+// The header switch for the new-message sound, the same size as the bell next to it.
+.sound-toggle {
+  @include reset-button;
+  @include focus-ring;
+
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: $color-text-muted;
+  border-radius: 50%;
+  transition:
+    background $transition,
+    color $transition;
+
+  &:hover {
+    color: $color-text;
+    background: $color-surface-sunken;
+  }
+
+  &--muted {
+    color: $color-text-faint;
+  }
+}

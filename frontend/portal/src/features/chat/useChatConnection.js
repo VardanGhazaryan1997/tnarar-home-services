@@ -4,6 +4,7 @@ import { useDispatch, useStore } from 'react-redux'
 import { API_BASE_URL, resolveBaseUrl } from '@/api/config'
 import { offerUpdated, requestUpdated } from '@/features/live/liveSlice'
 import { NOTIFICATION_TAGS } from '@/features/notifications/notificationsApi'
+import { alertForMessage } from './alerts/alertsSlice'
 import { addMessage, chatApi } from './chatApi'
 
 /** What a request or offer status change may have changed on screen. */
@@ -34,6 +35,7 @@ export function useChatConnection(enabled) {
     connection.on('messageReceived', (message) => {
       dispatch(addMessage(message))
       dispatch(chatApi.util.invalidateTags(['Conversations']))
+      dispatch(alertForMessage(message))
     })
     connection.on('conversationRead', ({ conversationId }) => {
       dispatch(chatApi.util.invalidateTags([{ type: 'Conversations', id: conversationId }]))

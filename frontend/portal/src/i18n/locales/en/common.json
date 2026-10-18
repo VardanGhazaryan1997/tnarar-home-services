@@ -922,7 +922,18 @@
     "placeholder": "Write a message",
     "send": "Send",
     "ask": "Ask a question",
-    "askCustomer": "Ask the customer"
+    "askCustomer": "Ask the customer",
+    "alerts": {
+      "region": "New messages",
+      "title": "New message from {{name}}",
+      "open": "Open",
+      "dismiss": "Close notification",
+      "tabTitle": "({{n}}) New message"
+    },
+    "sound": {
+      "on": "Message sounds are on. Turn them off",
+      "off": "Message sounds are off. Turn them on"
+    }
   },
   "public": {
     "partnerType": {

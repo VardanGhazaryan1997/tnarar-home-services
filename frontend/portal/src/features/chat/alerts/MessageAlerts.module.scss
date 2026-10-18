@@ -1,0 +1,117 @@
+@use 'styles/mixins' as *;
+
+// New-message alerts: below the header, full width on phones, a column at the end on wider screens.
+.message-alerts {
+  position: fixed;
+  inset-block-start: calc(#{$header-height} + #{space(2)});
+  inset-inline: space(3);
+  z-index: $z-modal;
+  pointer-events: none;
+
+  @include up(sm) {
+    inset-inline: auto space(4);
+    width: 360px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  &__item {
+    @include surface;
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: space(1) space(3);
+    align-items: center;
+    padding: space(3);
+    pointer-events: auto;
+    border-inline-start: 4px solid $color-info;
+    box-shadow: $shadow-lg;
+    animation: message-alert-in 200ms ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__avatar {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-white;
+    background: $color-night;
+    border-radius: 50%;
+  }
+
+  &__text {
+    min-width: 0;
+  }
+
+  &__title {
+    display: flex;
+    gap: space(1);
+    align-items: center;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-night;
+  }
+
+  &__preview {
+    @include text-small;
+    @include text-muted;
+    @include line-clamp(2);
+
+    overflow-wrap: anywhere;
+  }
+
+  &__open {
+    @include focus-ring;
+
+    grid-column: 2;
+    justify-self: start;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-info;
+    border-radius: $radius-sm;
+  }
+
+  &__close {
+    @include reset-button;
+    @include focus-ring;
+
+    display: grid;
+    grid-row: 1;
+    grid-column: 3;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: $color-text-muted;
+    border-radius: 50%;
+
+    &:hover {
+      color: $color-text;
+      background: $color-surface-sunken;
+    }
+  }
+}
+
+@keyframes message-alert-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

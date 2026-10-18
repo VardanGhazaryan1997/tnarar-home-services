@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router'
 import { errorMessage } from '@/api/errors'
 import QueryState from '@/components/QueryState/QueryState'
@@ -11,6 +12,8 @@ import { placeText } from '@/features/requests/place'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
 import { formatDate } from '@/shared/format'
+import { conversationAlertsCleared } from './alerts/alertsSlice'
+import { watchOpenConversation } from './alerts/focus'
 import { useGetConversationQuery, useGetMessagesQuery, useGetOlderMessagesMutation, useMarkReadMutation } from './chatApi'
 import Composer from './Composer'
 import { initials } from './initials'
@@ -70,6 +73,13 @@ export default function Thread({ id }) {
   const all = [...older.items, ...latest]
   const hasMore = older.hasMore ?? messages.data?.hasMore ?? false
   const unread = conversation.data?.unreadCount ?? 0
+  const dispatch = useDispatch()
+
+  // While this conversation is on screen, its new messages need no alert; the ones already shown are done.
+  useEffect(() => {
+    dispatch(conversationAlertsCleared(id))
+    return watchOpenConversation(id)
+  }, [id, dispatch])
 
   useEffect(() => {
     if (unread > 0) markRead(id)

@@ -197,6 +197,47 @@ describe('Material comparison', () => {
   }, SLOW)
 })
 
+describe('Product photos', () => {
+  it('opens a photo large from the comparison page, and a product without a photo has nothing to open', async () => {
+    const user = userEvent.setup()
+    renderRoute('/en/material-prices/finishing-putty')
+
+    const withPhoto = await screen.findByRole('article', { name: 'Putty 5 kg — Demo Home' })
+    await user.click(within(withPhoto).getByRole('button', { name: m.photo.open.replace('{{name}}', 'Putty 5 kg') }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByRole('img', { name: 'Putty 5 kg' })).toHaveAttribute('src', 'https://storage.test/p-large.jpg')
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+    const without = screen.getByRole('article', { name: 'Putty 25 kg — Demo Market' })
+    expect(within(without).queryByRole('button', { name: /photo/i })).not.toBeInTheDocument()
+  }, SLOW)
+
+  it('shows photos on the store page too', async () => {
+    server.use(
+      http.get('*/api/v1/stores/demo-market', () =>
+        HttpResponse.json(
+          storeDetail({
+            materials: [
+              {
+                slug: 'finishing-putty',
+                name: 'Finishing putty',
+                unit: 'Kilogram',
+                products: [offerProduct({ photoUrl: 'https://storage.test/t.jpg', photoLargeUrl: 'https://storage.test/t-large.jpg' })],
+              },
+            ],
+          }),
+        ),
+      ),
+    )
+    const user = userEvent.setup()
+    renderRoute('/en/stores/demo-market')
+
+    await user.click(await screen.findByRole('button', { name: m.photo.open.replace('{{name}}', 'Putty 25 kg') }))
+    expect(within(await screen.findByRole('dialog')).getByRole('img', { name: 'Putty 25 kg' })).toHaveAttribute('src', 'https://storage.test/t-large.jpg')
+  }, SLOW)
+})
+
 describe('Store page', () => {
   it('shows the store, its branches and its prices by material', async () => {
     renderRoute('/en/stores/demo-market')

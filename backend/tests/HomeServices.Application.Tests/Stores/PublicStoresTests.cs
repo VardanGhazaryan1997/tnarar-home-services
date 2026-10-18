@@ -4,6 +4,7 @@ using HomeServices.Application.Files;
 using HomeServices.Application.Stores;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Files;
 using HomeServices.Domain.Localization;
 using HomeServices.Domain.Stores;
 using Microsoft.Extensions.Options;
@@ -295,5 +296,35 @@ public class PublicStoresTests
 
         var inStore = (await StoreAsync("alpha")).Materials!.Single().Products.Single();
         inStore.PriceBefore.ShouldBe(4500);
+    }
+
+    [Fact]
+    public async Task A_product_photo_has_a_thumbnail_link_and_a_full_size_link()
+    {
+        var withThumbnail = StoredFile.Begin(FileOwnerType.Staff, "staff-1", "a.png", "image/png", 1000, Now);
+        withThumbnail.MarkReady(1000, Now, "thumbs/a.jpg", 800, 800);
+        var noThumbnail = StoredFile.Begin(FileOwnerType.Staff, "staff-1", "b.png", "image/png", 1000, Now);
+        noThumbnail.MarkReady(1000, Now);
+        _db.Files.AddRange(withThumbnail, noThumbnail);
+        _db.StoreProducts.AddRange(
+            Photo("With thumbnail", withThumbnail.Id),
+            Photo("No thumbnail", noThumbnail.Id),
+            Photo("No photo", null));
+        _db.SaveChanges();
+
+        var products = (await StoreAsync("alpha")).Materials!.Single().Products.ToDictionary(p => p.Name);
+
+        products["With thumbnail"].PhotoUrl.ShouldContain("thumbs/a.jpg");
+        products["With thumbnail"].PhotoLargeUrl.ShouldNotBeNull().ShouldNotContain("thumbs/a.jpg");
+        products["No thumbnail"].PhotoUrl.ShouldNotBeNull();
+        products["No thumbnail"].PhotoLargeUrl.ShouldBe(products["No thumbnail"].PhotoUrl);
+        (products["No photo"].PhotoUrl, products["No photo"].PhotoLargeUrl).ShouldBe((null, null));
+    }
+
+    private StoreProduct Photo(string name, Guid? photoFileId)
+    {
+        var product = StoreProduct.Create(_alpha.Id, name, null, null, 25m, null, 5000, null, null, true, photoFileId, Now);
+        product.LinkTo(_putty.Id, MaterialGrade.Standard);
+        return product;
     }
 }

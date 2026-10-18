@@ -482,6 +482,7 @@ export const offerProduct = (overrides = {}) => ({
   unitPrice: 220,
   inStock: true,
   photoUrl: null,
+  photoLargeUrl: null,
   priceUpdatedAt: '2026-10-05T09:00:00Z',
   priceBefore: null,
   ...overrides,
@@ -506,7 +507,7 @@ export const materialDetail = (overrides = {}) => ({
     { store: offerStore(), product: offerProduct({ id: 'p-cheap', unitPrice: 210, price: 5250, currentPrice: 5250 }) },
     {
       store: offerStore({ slug: 'demo-home', name: 'Demo Home', branches: [] }),
-      product: offerProduct({ id: 'p-sale', name: 'Putty 5 kg', packLabel: null, brand: null, packSize: 5, price: 1500, salePrice: 1000, saleEndsOn: '2026-11-01', currentPrice: 1000, unitPrice: 200, inStock: false, photoUrl: 'https://storage.test/p.jpg' }),
+      product: offerProduct({ id: 'p-sale', name: 'Putty 5 kg', packLabel: null, brand: null, packSize: 5, price: 1500, salePrice: 1000, saleEndsOn: '2026-11-01', currentPrice: 1000, unitPrice: 200, inStock: false, photoUrl: 'https://storage.test/p.jpg', photoLargeUrl: 'https://storage.test/p-large.jpg' }),
     },
   ],
   ...overrides,

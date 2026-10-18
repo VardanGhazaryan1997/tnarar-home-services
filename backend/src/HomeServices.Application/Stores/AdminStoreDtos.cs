@@ -70,6 +70,9 @@ public sealed record AdminMaterialOfferDto(Guid StoreId, string StoreName, bool 
 internal sealed record StoreCounts(int Branches, int Products, int Linked, int Stale);
 
 /// <summary>Loading and mapping shared by the store handlers.</summary>
+/// <summary>The thumbnail and the full-size link of an image.</summary>
+internal readonly record struct PictureLink(string Thumbnail, string Full);
+
 internal static class StoreData
 {
     public static async Task<Store> LoadAsync(IAppDbContext db, Guid id, bool withBranches, CancellationToken cancellationToken)
@@ -140,27 +143,33 @@ internal static class StoreData
 
     /// <summary>Thumbnail links (full-size when there is no thumbnail) for the ready files among <paramref name="fileIds"/>.</summary>
     public static async Task<Dictionary<Guid, string>> PictureUrlsAsync(
+        IAppDbContext db, FileDtoFactory files, IEnumerable<Guid?> fileIds, CancellationToken cancellationToken) =>
+        (await PictureLinksAsync(db, files, fileIds, cancellationToken)).ToDictionary(p => p.Key, p => p.Value.Thumbnail);
+
+    /// <summary>Thumbnail and full-size links for the ready files among <paramref name="fileIds"/> (each falls back to the other).</summary>
+    public static async Task<Dictionary<Guid, PictureLink>> PictureLinksAsync(
         IAppDbContext db, FileDtoFactory files, IEnumerable<Guid?> fileIds, CancellationToken cancellationToken)
     {
         var ids = fileIds.OfType<Guid>().Distinct().ToList();
-        var urls = new Dictionary<Guid, string>();
+        var links = new Dictionary<Guid, PictureLink>();
         if (ids.Count == 0)
         {
-            return urls;
+            return links;
         }
 
         var stored = await db.Files.AsNoTracking().Where(f => ids.Contains(f.Id) && f.Status == FileStatus.Ready).ToListAsync(cancellationToken);
         foreach (var file in stored)
         {
             var dto = await files.CreateAsync(file, cancellationToken);
-            var link = dto.ThumbnailUrl ?? dto.Url;
-            if (link is not null)
+            var thumbnail = dto.ThumbnailUrl ?? dto.Url;
+            var full = dto.Url ?? dto.ThumbnailUrl;
+            if (thumbnail is not null && full is not null)
             {
-                urls[file.Id] = link;
+                links[file.Id] = new PictureLink(thumbnail, full);
             }
         }
 
-        return urls;
+        return links;
     }
 
     /// <summary>

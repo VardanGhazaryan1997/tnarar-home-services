@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import Icon from '@/components/ui/Icon/Icon'
 import Tag from '@/components/ui/Tag/Tag'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate, formatMoney, formatUnitPrice } from '@/shared/format'
 import { branchPlaces } from './materialPrices'
+import PhotoViewer from './PhotoViewer'
 import styles from './MaterialPrices.module.scss'
 
 /**
@@ -49,13 +49,7 @@ export default function OfferCard({ offer, unit, lowest }) {
 
   return (
     <article className={styles['offer']} aria-label={`${product.name} — ${store.name}`}>
-      {product.photoUrl ? (
-        <img className={styles['offer__photo']} src={product.photoUrl} alt="" loading="lazy" width="72" height="72" />
-      ) : (
-        <span className={styles['offer__photo']} aria-hidden="true">
-          <Icon name="image" size={28} />
-        </span>
-      )}
+      <PhotoViewer product={product} />
       <div className={styles['offer__body']}>
         <h3 className={styles['offer__name']}>{product.name}</h3>
         <p className={styles['material-prices__muted']}>

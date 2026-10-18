@@ -8,6 +8,7 @@ import Icon from '@/components/ui/Icon/Icon'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate } from '@/shared/format'
 import { ProductPrice } from './OfferCard'
+import PhotoViewer from './PhotoViewer'
 import { useStore } from './storesApi'
 import styles from './MaterialPrices.module.scss'
 
@@ -84,6 +85,7 @@ export default function StorePage() {
                 <ul className={styles['material-prices__list']}>
                   {material.products.map((product) => (
                     <li key={product.id} className={styles['offer']}>
+                      <PhotoViewer product={product} />
                       <div className={styles['offer__body']}>
                         <h3 className={styles['offer__name']}>{product.name}</h3>
                         <p className={styles['material-prices__muted']}>

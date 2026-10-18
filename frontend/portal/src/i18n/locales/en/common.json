@@ -1634,6 +1634,9 @@
       "noOffersText": "Try another quality or region, or turn off “in stock only”.",
       "disclaimer": "Prices are entered by our team from the stores and can change. Check the price and stock with the store before you buy."
     },
+    "photo": {
+      "open": "Open the photo of {{name}}"
+    },
     "offer": {
       "perUnit": "{{amount}} per {{unit}}",
       "lowest": "Lowest price",

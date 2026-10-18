@@ -968,7 +968,10 @@
       "after": "Sent after the request was cancelled",
       "openUntil": "The request was cancelled. You can still write to each other until {{date}}.",
       "closed": "This conversation closed 7 days after the request was cancelled."
-    }
+    },
+    "newMessages": "New messages",
+    "latest": "Latest",
+    "latestCount": "Latest · {{n}} new"
   },
   "public": {
     "partnerType": {

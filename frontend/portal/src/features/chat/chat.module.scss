@@ -230,6 +230,40 @@
     margin-bottom: space(3);
   }
 
+  // "Latest" while the user reads older messages: stays at the bottom of the thread as it scrolls.
+  &__latest {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding-block-start: space(2);
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+      box-shadow: $shadow;
+    }
+  }
+
+  // "New messages": a line before the first one the user hasn't seen.
+  &__new-divider {
+    @include text-small;
+
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    font-weight: $font-weight-semibold;
+    color: $color-tuff-deep;
+
+    &::before,
+    &::after {
+      flex: 1;
+      height: 0;
+      content: '';
+      border-top: 1px solid $color-tuff;
+    }
+  }
+
   &__hint {
     @include text-small;
     @include text-muted;

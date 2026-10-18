@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router'
@@ -16,6 +16,7 @@ import { conversationAlertsCleared } from './alerts/alertsSlice'
 import { watchOpenConversation } from './alerts/focus'
 import { useGetConversationQuery, useGetMessagesQuery, useGetOlderMessagesMutation, useMarkReadMutation } from './chatApi'
 import Composer from './Composer'
+import { useThreadScroll } from './useThreadScroll'
 import OfferPanel from './offer/OfferPanel'
 import { offerEvents, useNow } from './offer/offerTimeline'
 import { initials } from './initials'
@@ -31,7 +32,7 @@ const dayOf = (iso) => iso.slice(0, 10)
 function Bubble({ message, mine, seen, afterCancel = false, firstAfterCancel = false }) {
   const { t, i18n } = useTranslation()
   return (
-    <li className={b('thread__message', { mine, 'after-cancel': afterCancel })}>
+    <li id={`message-${message.id}`} className={b('thread__message', { mine, 'after-cancel': afterCancel })}>
       {firstAfterCancel && <span className={styles['thread__after-label']}>{t('chat.cancel.after')}</span>}
       <div className={b('thread__bubble', { mine, 'after-cancel': afterCancel })}>
         {message.body && <p className={styles['thread__body']}>{message.body}</p>}
@@ -74,7 +75,7 @@ export default function Thread({ id }) {
   const [loadOlder, loadingOlder] = useGetOlderMessagesMutation()
   const [markRead] = useMarkReadMutation()
   const [older, setOlder] = useState({ items: [], hasMore: null })
-  const endRef = useRef(null)
+  const [unreadAtOpen, setUnreadAtOpen] = useState(null)
   const latest = messages.data?.items ?? []
   const all = [...older.items, ...latest]
   const hasMore = older.hasMore ?? messages.data?.hasMore ?? false
@@ -92,9 +93,11 @@ export default function Thread({ id }) {
     if (unread > 0) markRead(id)
   }, [unread, id, markRead])
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView?.({ block: 'end' })
-  }, [latest.length])
+  // How many were unread when the conversation opened (marking it read sets the count to 0 right after).
+  const loadedUnread = conversation.data?.unreadCount
+  if (unreadAtOpen === null && loadedUnread !== undefined) setUnreadAtOpen(loadedUnread)
+
+  const scroll = useThreadScroll(latest, conversation.data?.myRole, unreadAtOpen)
 
   const showOlder = async () => {
     const result = await loadOlder({ id, before: all[0].sentAt })
@@ -143,7 +146,7 @@ export default function Thread({ id }) {
 
             <OfferPanel conversation={chat} />
 
-            <div className={styles['thread__scroll']}>
+            <div className={styles['thread__scroll']} ref={scroll.scrollRef} onScroll={scroll.onScroll}>
               {hasMore && (
                 <div className={styles['thread__older']}>
                   <Button variant="ghost" size="sm" loading={loadingOlder.isLoading} onClick={showOlder}>
@@ -156,6 +159,11 @@ export default function Thread({ id }) {
               <ol className={styles['thread__messages']} aria-label={t('chat.messagesLabel')}>
                 {timeline.map((item, index) => (
                   <ItemWithDay key={item.key} at={item.at} newDay={index === 0 || dayOf(timeline[index - 1].at) !== dayOf(item.at)} lng={i18n.language}>
+                    {item.message?.id === scroll.dividerId && (
+                      <li className={styles['thread__new-divider']}>
+                        <span>{t('chat.newMessages')}</span>
+                      </li>
+                    )}
                     {item.message && (
                       <Bubble
                         message={item.message}
@@ -170,7 +178,14 @@ export default function Thread({ id }) {
                   </ItemWithDay>
                 ))}
               </ol>
-              <div ref={endRef} />
+              <div ref={scroll.endRef} />
+              {scroll.showLatest && (
+                <div className={styles['thread__latest']}>
+                  <Button variant="primary" size="sm" icon={<Icon name="chevronDown" size={16} />} onClick={scroll.scrollToEnd}>
+                    {scroll.missed > 0 ? t('chat.latestCount', { n: scroll.missed }) : t('chat.latest')}
+                  </Button>
+                </div>
+              )}
             </div>
 
             {chat.canSend && chat.canSendUntil && (

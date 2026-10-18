@@ -26,6 +26,9 @@ public sealed class RequestTestData
 
     public ICurrentLanguage Language { get; } = new FakeCurrentLanguage("hy");
 
+    /// <summary>The live updates handlers pushed.</summary>
+    public FakeLiveUpdates Live { get; } = new();
+
     public FileDtoFactory Files => new(Partners.Storage, Options.Create(new FileSettings()), Clock);
 
     /// <summary>The signed-in customer (<see cref="PartnerTestData.User"/>).</summary>

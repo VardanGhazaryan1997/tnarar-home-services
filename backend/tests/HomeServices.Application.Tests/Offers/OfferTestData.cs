@@ -39,16 +39,16 @@ public sealed class OfferTestData
         requestId, OfferKind.Visit, "I'll come and measure the bathroom.", null, fee, false, null, null, null, Now.AddDays(1), null, null);
 
     public Task<OfferDto> SendAsync(PartnerProfile partner, SendOffer command) =>
-        new SendOfferHandler(Requests.Db, As(partner), Requests.Clock).HandleAsync(command, CancellationToken.None);
+        new SendOfferHandler(Requests.Db, As(partner), Requests.Live, Requests.Clock).HandleAsync(command, CancellationToken.None);
 
     public Task<OfferDto> WithdrawAsync(PartnerProfile partner, Guid offerId) =>
-        new WithdrawOfferHandler(Requests.Db, As(partner), Requests.Clock).HandleAsync(new WithdrawOffer(offerId), CancellationToken.None);
+        new WithdrawOfferHandler(Requests.Db, As(partner), Requests.Live, Requests.Clock).HandleAsync(new WithdrawOffer(offerId), CancellationToken.None);
 
     public Task<OrderDto> AcceptAsync(Guid offerId, ICurrentUser? user = null) =>
-        new AcceptOfferHandler(Requests.Db, user ?? Customer, Requests.Language, Requests.Clock).HandleAsync(new AcceptOffer(offerId), CancellationToken.None);
+        new AcceptOfferHandler(Requests.Db, user ?? Customer, Requests.Language, Requests.Live, Requests.Clock).HandleAsync(new AcceptOffer(offerId), CancellationToken.None);
 
     public Task<OfferDto> RejectAsync(Guid offerId, string? reason = null, ICurrentUser? user = null) =>
-        new RejectOfferHandler(Requests.Db, user ?? Customer, Requests.Clock).HandleAsync(new RejectOffer(offerId, reason), CancellationToken.None);
+        new RejectOfferHandler(Requests.Db, user ?? Customer, Requests.Live, Requests.Clock).HandleAsync(new RejectOffer(offerId, reason), CancellationToken.None);
 
     public Task<IReadOnlyList<OfferDto>> OffersAsync(Guid requestId, ICurrentUser? user = null) =>
         new GetRequestOffersHandler(Requests.Db, user ?? Customer, Requests.Clock).HandleAsync(new GetRequestOffers(requestId), CancellationToken.None);

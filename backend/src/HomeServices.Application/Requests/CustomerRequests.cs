@@ -8,6 +8,7 @@ using HomeServices.Application.Messaging;
 using HomeServices.Application.Notifications;
 using HomeServices.Application.Offers;
 using HomeServices.Application.Partners;
+using HomeServices.Application.Realtime;
 using HomeServices.Domain;
 using HomeServices.Domain.Files;
 using HomeServices.Domain.Notifications;
@@ -225,6 +226,7 @@ public sealed class GetMyRequestsHandler(IAppDbContext db, ICurrentUser currentU
             .ToListAsync(cancellationToken);
 
         var lookup = await RequestLookup.LoadAsync(db, language, page, cancellationToken);
+        var accepted = await AcceptedOrders.ForAsync(db, page.Select(r => r.Id).ToList(), cancellationToken);
         var items = page
             .Select(r => new MyRequestListItemDto(
                 r.Id,
@@ -236,7 +238,8 @@ public sealed class GetMyRequestsHandler(IAppDbContext db, ICurrentUser currentU
                 r.Recipients.Count,
                 r.Recipients.Count(x => x.Status == RecipientStatus.Responded),
                 r.NeedsAttention,
-                r.CreatedAt))
+                r.CreatedAt,
+                accepted.TryGetValue(r.Id, out var orderId) ? orderId : null))
             .ToList();
         return new PagedResult<MyRequestListItemDto>(items, query.Page, query.PageSize, total);
     }
@@ -252,7 +255,7 @@ public sealed class GetMyRequestHandler(IAppDbContext db, ICurrentUser currentUs
     }
 }
 
-public sealed class CancelMyRequestHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, FileDtoFactory files, TimeProvider clock)
+public sealed class CancelMyRequestHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, FileDtoFactory files, ILiveUpdates live, TimeProvider clock)
     : ICommandHandler<CancelMyRequest, MyRequestDto>
 {
     public async Task<MyRequestDto> HandleAsync(CancelMyRequest command, CancellationToken cancellationToken)
@@ -262,6 +265,7 @@ public sealed class CancelMyRequestHandler(IAppDbContext db, ICurrentUser curren
         request.Cancel(command.Reason, now);
         await WaitingOffers.CloseAsync(db, request.Id, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+        await LiveUpdate.RequestAsync(db, live, request, null, now, cancellationToken);
         return await MyRequests.ToDtoAsync(db, language, files, request, cancellationToken);
     }
 }
@@ -320,7 +324,8 @@ internal static class MyRequests
             request.EstimateId,
             await RequestLookup.LinesAsync(db, language, request, withEstimate: true, cancellationToken),
             request.MaterialGrade,
-            await RequestLookup.MaterialsAsync(db, language, request, withEstimate: true, cancellationToken));
+            await RequestLookup.MaterialsAsync(db, language, request, withEstimate: true, cancellationToken),
+            (await AcceptedOrders.ForAsync(db, [request.Id], cancellationToken)).TryGetValue(request.Id, out var orderId) ? orderId : null);
     }
 }
 

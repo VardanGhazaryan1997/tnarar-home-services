@@ -3,6 +3,7 @@ using HomeServices.Application.Abstractions;
 using HomeServices.Application.Messaging;
 using HomeServices.Application.Notifications;
 using HomeServices.Application.Orders;
+using HomeServices.Application.Realtime;
 using HomeServices.Application.Requests;
 using HomeServices.Domain;
 using HomeServices.Domain.Notifications;
@@ -91,7 +92,7 @@ public sealed class GetOfferHandler(IAppDbContext db, ICurrentUser currentUser, 
     }
 }
 
-public sealed class AcceptOfferHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
+public sealed class AcceptOfferHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, ILiveUpdates live, TimeProvider clock)
     : ICommandHandler<AcceptOffer, OrderDto>
 {
     public async Task<OrderDto> HandleAsync(AcceptOffer command, CancellationToken cancellationToken)
@@ -149,19 +150,27 @@ public sealed class AcceptOfferHandler(IAppDbContext db, ICurrentUser currentUse
             now,
             cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+
+        await LiveUpdate.OfferAsync(db, live, offer, request.CustomerId, now, cancellationToken);
+        if (offer.Kind == OfferKind.Work)
+        {
+            await LiveUpdate.RequestAsync(db, live, request, order.Id, now, cancellationToken);
+        }
+
         return await OrderViews.ToDtoAsync(db, language, order, userId, cancellationToken);
     }
 }
 
-public sealed class RejectOfferHandler(IAppDbContext db, ICurrentUser currentUser, TimeProvider clock) : ICommandHandler<RejectOffer, OfferDto>
+public sealed class RejectOfferHandler(IAppDbContext db, ICurrentUser currentUser, ILiveUpdates live, TimeProvider clock) : ICommandHandler<RejectOffer, OfferDto>
 {
     public async Task<OfferDto> HandleAsync(RejectOffer command, CancellationToken cancellationToken)
     {
-        var (offer, _, _) = await CustomerOffer.LoadAsync(db, currentUser, command.Id, cancellationToken);
+        var (offer, request, _) = await CustomerOffer.LoadAsync(db, currentUser, command.Id, cancellationToken);
         var now = clock.GetUtcNow();
         offer.Reject(command.Reason, now);
         await Notifier.ToPartnersAsync(db, [offer.PartnerProfileId], NotificationType.OfferRejected, _ => "/offers", null, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+        await LiveUpdate.OfferAsync(db, live, offer, request.CustomerId, now, cancellationToken);
         return await OfferViews.ToDtoAsync(db, offer, now, cancellationToken);
     }
 }

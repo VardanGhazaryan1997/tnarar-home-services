@@ -59,7 +59,7 @@ public class ChatStorageTests(PostgresFixture db)
         ConversationDto conversation;
         await using (var context = db.CreateContext())
         {
-            conversation = await new OpenConversationHandler(context, partnerUser, new FakeCurrentLanguage())
+            conversation = await new OpenConversationHandler(context, partnerUser, new FakeCurrentLanguage(), db.Clock)
                 .HandleAsync(new OpenConversation(request.Id, null), CancellationToken.None);
             await new SendMessageHandler(context, partnerUser, Files, new NoNotifier(), db.Clock)
                 .HandleAsync(new SendMessage(conversation.Id, "When can I come?", null), CancellationToken.None);
@@ -68,7 +68,7 @@ public class ChatStorageTests(PostgresFixture db)
         await using (var context = db.CreateContext())
         {
             (await new GetUnreadSummaryHandler(context, customerUser).HandleAsync(new GetUnreadSummary(), CancellationToken.None)).ShouldBe(new UnreadSummaryDto(1, 1));
-            var list = await new GetConversationsHandler(context, customerUser, new FakeCurrentLanguage()).HandleAsync(new GetConversations(), CancellationToken.None);
+            var list = await new GetConversationsHandler(context, customerUser, new FakeCurrentLanguage(), db.Clock).HandleAsync(new GetConversations(), CancellationToken.None);
             var item = list.Items.ShouldHaveSingleItem();
             item.UnreadCount.ShouldBe(1);
             item.OtherParty.Name.ShouldBe("Aram");

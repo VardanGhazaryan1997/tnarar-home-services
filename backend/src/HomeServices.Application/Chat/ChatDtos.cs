@@ -14,7 +14,9 @@ public sealed record MessageSummaryDto(string SenderRole, string? Excerpt, int A
 
 /// <summary>
 /// A conversation as one of its sides sees it. <see cref="OtherReadAt"/>: how far the other side has read (read receipts).
-/// <see cref="CanSend"/>: false once the request ended without an order between them. <see cref="OrderId"/>: their order, if any.
+/// <see cref="CanSend"/>: false once the request ended without an order between them (a cancelled request's
+/// conversations stay open until <see cref="CanSendUntil"/>). <see cref="OrderId"/>: their order, if any.
+/// <see cref="RequestCancelledAt"/>: when the request was cancelled; later messages came after the cancellation.
 /// </summary>
 public sealed record ConversationDto(
     Guid Id,
@@ -27,7 +29,9 @@ public sealed record ConversationDto(
     MessageSummaryDto? LastMessage,
     DateTimeOffset? OtherReadAt,
     bool CanSend,
-    Guid? OrderId);
+    Guid? OrderId,
+    DateTimeOffset? RequestCancelledAt = null,
+    DateTimeOffset? CanSendUntil = null);
 
 /// <summary>Messages oldest to newest. <see cref="HasMore"/>: older messages exist (ask again with before = the first item's sentAt).</summary>
 public sealed record MessagePageDto(IReadOnlyList<MessageDto> Items, bool HasMore);

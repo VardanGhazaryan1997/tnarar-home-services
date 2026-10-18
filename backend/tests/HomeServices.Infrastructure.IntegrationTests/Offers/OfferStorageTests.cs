@@ -86,13 +86,13 @@ public class OfferStorageTests(PostgresFixture db)
         OfferDto chosen;
         await using (var context = db.CreateContext())
         {
-            chosen = await new SendOfferHandler(context, new FakeCurrentUser { UserId = aram.UserId.ToString() }, db.Clock)
+            chosen = await new SendOfferHandler(context, new FakeCurrentUser { UserId = aram.UserId.ToString() }, NoLiveUpdates.Instance, db.Clock)
                 .HandleAsync(WorkOffer(request.Id, 100_000), CancellationToken.None);
         }
 
         await using (var context = db.CreateContext())
         {
-            await new SendOfferHandler(context, new FakeCurrentUser { UserId = gor.UserId.ToString() }, db.Clock)
+            await new SendOfferHandler(context, new FakeCurrentUser { UserId = gor.UserId.ToString() }, NoLiveUpdates.Instance, db.Clock)
                 .HandleAsync(WorkOffer(request.Id, 80_000), CancellationToken.None);
         }
 
@@ -108,7 +108,7 @@ public class OfferStorageTests(PostgresFixture db)
         OrderDto order;
         await using (var context = db.CreateContext())
         {
-            order = await new AcceptOfferHandler(context, customerUser, new FakeCurrentLanguage(), db.Clock)
+            order = await new AcceptOfferHandler(context, customerUser, new FakeCurrentLanguage(), NoLiveUpdates.Instance, db.Clock)
                 .HandleAsync(new AcceptOffer(chosen.Id), CancellationToken.None);
         }
 

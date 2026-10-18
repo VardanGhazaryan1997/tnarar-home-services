@@ -72,7 +72,7 @@ public sealed class SendMessageValidator : AbstractValidator<SendMessage>
     }
 }
 
-public sealed class OpenConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class OpenConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
     : ICommandHandler<OpenConversation, ConversationDto>
 {
     public async Task<ConversationDto> HandleAsync(OpenConversation command, CancellationToken cancellationToken)
@@ -116,11 +116,11 @@ public sealed class OpenConversationHandler(IAppDbContext db, ICurrentUser curre
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        return await ChatAccess.ToDtoAsync(db, language, conversation, role, cancellationToken);
+        return await ChatAccess.ToDtoAsync(db, language, conversation, role, clock.GetUtcNow(), cancellationToken);
     }
 }
 
-public sealed class GetConversationsHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class GetConversationsHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
     : IQueryHandler<GetConversations, PagedResult<ConversationDto>>
 {
     public async Task<PagedResult<ConversationDto>> HandleAsync(GetConversations query, CancellationToken cancellationToken)
@@ -134,24 +134,25 @@ public sealed class GetConversationsHandler(IAppDbContext db, ICurrentUser curre
             .Take(query.PageSize)
             .ToListAsync(cancellationToken);
 
+        var now = clock.GetUtcNow();
         var items = new List<ConversationDto>();
         foreach (var conversation in page)
         {
             var role = conversation.CustomerId == userId ? ChatRole.Customer : ChatRole.Partner;
-            items.Add(await ChatAccess.ToDtoAsync(db, language, conversation, role, cancellationToken));
+            items.Add(await ChatAccess.ToDtoAsync(db, language, conversation, role, now, cancellationToken));
         }
 
         return new PagedResult<ConversationDto>(items, query.Page, query.PageSize, total);
     }
 }
 
-public sealed class GetConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class GetConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
     : IQueryHandler<GetConversation, ConversationDto>
 {
     public async Task<ConversationDto> HandleAsync(GetConversation query, CancellationToken cancellationToken)
     {
         var (conversation, role, _) = await ChatAccess.LoadAsync(db, currentUser, query.Id, cancellationToken);
-        return await ChatAccess.ToDtoAsync(db, language, conversation, role, cancellationToken);
+        return await ChatAccess.ToDtoAsync(db, language, conversation, role, clock.GetUtcNow(), cancellationToken);
     }
 }
 
@@ -182,7 +183,8 @@ public sealed class SendMessageHandler(IAppDbContext db, ICurrentUser currentUse
     public async Task<MessageDto> HandleAsync(SendMessage command, CancellationToken cancellationToken)
     {
         var (conversation, role, userId) = await ChatAccess.LoadAsync(db, currentUser, command.ConversationId, cancellationToken);
-        if (!await ChatAccess.CanSendAsync(db, conversation, cancellationToken))
+        var now = clock.GetUtcNow();
+        if (!await ChatAccess.CanSendAsync(db, conversation, now, cancellationToken))
         {
             throw new DomainException("conversation.closed", "This conversation is closed: the request ended without an order.");
         }
@@ -197,7 +199,6 @@ public sealed class SendMessageHandler(IAppDbContext db, ICurrentUser currentUse
             throw new DomainException("message.files_invalid", "Some files can't be sent: upload them first.");
         }
 
-        var now = clock.GetUtcNow();
         var message = conversation.Post(userId, role, command.Body, fileIds, now);
         db.Messages.Add(message);
 

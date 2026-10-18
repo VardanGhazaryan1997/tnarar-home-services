@@ -23,7 +23,7 @@ public class AdminRequestsTests
         new AssignRequestHandler(_data.Db, _data.Language, _data.Files, _data.Clock).HandleAsync(new AssignRequest(id, partnerIds), CancellationToken.None);
 
     private Task<AdminRequestDto> CancelAsync(Guid id, string reason) =>
-        new CancelRequestByStaffHandler(_data.Db, _data.Language, _data.Files, _data.Clock).HandleAsync(new CancelRequestByStaff(id, reason), CancellationToken.None);
+        new CancelRequestByStaffHandler(_data.Db, _data.Language, _data.Files, _data.Live, _data.Clock).HandleAsync(new CancelRequestByStaff(id, reason), CancellationToken.None);
 
     private Task<int> FollowUpAsync() =>
         new FlagUnansweredRequestsHandler(_data.Db, Options.Create(_data.Settings), _data.Clock).HandleAsync(new FlagUnansweredRequests(), CancellationToken.None);

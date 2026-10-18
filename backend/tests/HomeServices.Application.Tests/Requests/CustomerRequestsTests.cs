@@ -22,7 +22,7 @@ public class CustomerRequestsTests
         new GetMyRequestHandler(_data.Db, _data.Customer, _data.Language, _data.Files).HandleAsync(new GetMyRequest(id), CancellationToken.None);
 
     private Task<MyRequestDto> CancelAsync(Guid id, string? reason = null) =>
-        new CancelMyRequestHandler(_data.Db, _data.Customer, _data.Language, _data.Files, _data.Clock).HandleAsync(new CancelMyRequest(id, reason), CancellationToken.None);
+        new CancelMyRequestHandler(_data.Db, _data.Customer, _data.Language, _data.Files, _data.Live, _data.Clock).HandleAsync(new CancelMyRequest(id, reason), CancellationToken.None);
 
     [Fact]
     public async Task An_open_request_reaches_approved_partners_who_offer_the_category_in_the_area()

@@ -17,6 +17,7 @@ using HomeServices.Application;
 using HomeServices.Application.Abstractions;
 using HomeServices.Application.Chat;
 using HomeServices.Application.Notifications;
+using HomeServices.Application.Realtime;
 using HomeServices.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using HomeServices.Infrastructure;
@@ -61,6 +62,7 @@ builder.Services.AddSignalR()
     .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddSingleton<IChatNotifier, SignalRChatNotifier>();
 builder.Services.AddSingleton<INotificationPusher, SignalRNotificationPusher>();
+builder.Services.AddSingleton<ILiveUpdates, SignalRLiveUpdates>();
 builder.Services.PostConfigure<JwtBearerOptions>(AuthSchemes.Portal, options => options.Events = new JwtBearerEvents
 {
     OnMessageReceived = context =>

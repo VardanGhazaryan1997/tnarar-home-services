@@ -200,7 +200,7 @@ public class AcceptOfferTests
         var request = _data.Requests.GivenRequest(partners: [aram]);
         var offer = await _data.SendAsync(aram, _data.Work(request.Id));
 
-        await new CancelMyRequestHandler(_data.Requests.Db, _data.Customer, _data.Requests.Language, _data.Requests.Files, _data.Requests.Clock)
+        await new CancelMyRequestHandler(_data.Requests.Db, _data.Customer, _data.Requests.Language, _data.Requests.Files, _data.Requests.Live, _data.Requests.Clock)
             .HandleAsync(new CancelMyRequest(request.Id, null), CancellationToken.None);
 
         _data.StoredOffer(offer.Id).Status.ShouldBe(OfferStatus.Closed);
@@ -213,7 +213,7 @@ public class AcceptOfferTests
         var request = _data.Requests.GivenRequest(partners: [aram]);
         var offer = await _data.SendAsync(aram, _data.Visit(request.Id));
 
-        await new CancelRequestByStaffHandler(_data.Requests.Db, _data.Requests.Language, _data.Requests.Files, _data.Requests.Clock)
+        await new CancelRequestByStaffHandler(_data.Requests.Db, _data.Requests.Language, _data.Requests.Files, _data.Requests.Live, _data.Requests.Clock)
             .HandleAsync(new CancelRequestByStaff(request.Id, "Duplicate"), CancellationToken.None);
 
         _data.StoredOffer(offer.Id).Status.ShouldBe(OfferStatus.Closed);

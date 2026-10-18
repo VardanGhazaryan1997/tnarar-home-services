@@ -44,15 +44,18 @@ public sealed class Conversation : AuditableEntity
 
     public DateTimeOffset? ReadAtOf(ChatRole role) => role == ChatRole.Customer ? CustomerReadAt : PartnerReadAt;
 
-    /// <summary>A new message from <paramref name="role"/>. Writing it also means having read everything before it.</summary>
-    public Message Post(Guid senderUserId, ChatRole role, string? body, IReadOnlyList<Guid> fileIds, DateTimeOffset now)
+    /// <summary>
+    /// A new message from <paramref name="role"/>. Writing it also means having read everything before it.
+    /// <paramref name="clientId"/>: the sender's own id for it, so sending it again (a retry) doesn't post it twice.
+    /// </summary>
+    public Message Post(Guid senderUserId, ChatRole role, string? body, IReadOnlyList<Guid> fileIds, DateTimeOffset now, Guid? clientId = null)
     {
         if (!Enum.IsDefined(role))
         {
             throw new DomainException("conversation.role_invalid", "Unknown conversation role.");
         }
 
-        var message = new Message(Id, senderUserId, role, body, fileIds, now);
+        var message = new Message(Id, senderUserId, role, body, fileIds, now, clientId);
         LastMessageAt = now;
         MarkRead(role, now);
         return message;
@@ -84,7 +87,7 @@ public sealed class Message : Entity
     {
     }
 
-    internal Message(Guid conversationId, Guid senderUserId, ChatRole senderRole, string? body, IReadOnlyList<Guid> fileIds, DateTimeOffset sentAt)
+    internal Message(Guid conversationId, Guid senderUserId, ChatRole senderRole, string? body, IReadOnlyList<Guid> fileIds, DateTimeOffset sentAt, Guid? clientId = null)
     {
         if (senderUserId == Guid.Empty)
         {
@@ -113,6 +116,7 @@ public sealed class Message : Entity
         SenderRole = senderRole;
         Body = clean;
         SentAt = sentAt;
+        ClientId = clientId;
         for (var i = 0; i < files.Count; i++)
         {
             _attachments.Add(new MessageAttachment(Id, files[i], i + 1));
@@ -128,6 +132,9 @@ public sealed class Message : Entity
     public string? Body { get; private set; }
 
     public DateTimeOffset SentAt { get; private set; }
+
+    /// <summary>The sender's own id for the message, so a retried send isn't posted twice.</summary>
+    public Guid? ClientId { get; private set; }
 
     public IReadOnlyCollection<MessageAttachment> Attachments => _attachments.AsReadOnly();
 }

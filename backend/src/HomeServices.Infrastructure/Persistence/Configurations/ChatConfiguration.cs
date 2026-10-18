@@ -37,6 +37,9 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
         // A conversation's messages page backwards from the newest.
         builder.HasIndex(m => new { m.ConversationId, m.SentAt });
 
+        // A retried send (same client id) can't post the same message twice.
+        builder.HasIndex(m => new { m.ConversationId, m.ClientId }).IsUnique().HasFilter("client_id IS NOT NULL");
+
         builder.HasOne<Conversation>().WithMany().HasForeignKey(m => m.ConversationId).OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<User>().WithMany().HasForeignKey(m => m.SenderUserId).OnDelete(DeleteBehavior.Restrict);
         builder.HasMany(m => m.Attachments).WithOne().HasForeignKey(a => a.MessageId).OnDelete(DeleteBehavior.Cascade);

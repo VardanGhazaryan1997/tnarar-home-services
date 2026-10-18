@@ -6,8 +6,11 @@ namespace HomeServices.Application.Chat;
 /// <summary>The other side of a conversation: the partner (name, slug) for a customer; the customer (name) for a partner.</summary>
 public sealed record ChatPartyDto(string? Name, Guid? PartnerId, string? Slug);
 
-/// <summary><see cref="SenderRole"/>: Customer or Partner (compare with the conversation's MyRole to tell your own messages).</summary>
-public sealed record MessageDto(Guid Id, Guid ConversationId, string SenderRole, string? Body, IReadOnlyList<FileDto> Attachments, DateTimeOffset SentAt);
+/// <summary>
+/// <see cref="SenderRole"/>: Customer or Partner (compare with the conversation's MyRole to tell your own messages).
+/// <see cref="ClientId"/>: the id the sender's app gave it, if any (to match a message it is still showing as sending).
+/// </summary>
+public sealed record MessageDto(Guid Id, Guid ConversationId, string SenderRole, string? Body, IReadOnlyList<FileDto> Attachments, DateTimeOffset SentAt, Guid? ClientId = null);
 
 /// <summary>The newest message, shortened, for conversation lists.</summary>
 public sealed record MessageSummaryDto(string SenderRole, string? Excerpt, int AttachmentCount, DateTimeOffset SentAt);

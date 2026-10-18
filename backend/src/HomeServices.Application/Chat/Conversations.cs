@@ -36,8 +36,12 @@ public sealed record GetMessages(Guid ConversationId, DateTimeOffset? Before = n
     public const int MaxLimit = 100;
 }
 
-/// <summary>Sends a message: text, files (uploaded with /api/v1/files first), or both.</summary>
-public sealed record SendMessage(Guid ConversationId, string? Body, IReadOnlyList<Guid>? FileIds) : ICommand<MessageDto>;
+/// <summary>
+/// Sends a message: text, files (uploaded with /api/v1/files first), or both. <see cref="ClientId"/>: an id the app
+/// makes for the message; sending again with the same one (a retry after a lost answer) returns the message already
+/// sent instead of posting it twice.
+/// </summary>
+public sealed record SendMessage(Guid ConversationId, string? Body, IReadOnlyList<Guid>? FileIds, Guid? ClientId = null) : ICommand<MessageDto>;
 
 /// <summary>Marks the conversation read up to now (the other side sees it as a read receipt). Returns the time.</summary>
 public sealed record MarkConversationRead(Guid ConversationId) : ICommand<DateTimeOffset>;
@@ -183,6 +187,18 @@ public sealed class SendMessageHandler(IAppDbContext db, ICurrentUser currentUse
     public async Task<MessageDto> HandleAsync(SendMessage command, CancellationToken cancellationToken)
     {
         var (conversation, role, userId) = await ChatAccess.LoadAsync(db, currentUser, command.ConversationId, cancellationToken);
+
+        // Sent already (the answer got lost and the app tried again): the same message, not a second one.
+        if (command.ClientId is { } clientId)
+        {
+            var sent = await db.Messages.AsNoTracking().Include(m => m.Attachments)
+                .SingleOrDefaultAsync(m => m.ConversationId == conversation.Id && m.ClientId == clientId && m.SenderUserId == userId, cancellationToken);
+            if (sent is not null)
+            {
+                return (await ChatAccess.MessageDtosAsync(db, files, [sent], cancellationToken))[0];
+            }
+        }
+
         var now = clock.GetUtcNow();
         if (!await ChatAccess.CanSendAsync(db, conversation, now, cancellationToken))
         {
@@ -199,7 +215,7 @@ public sealed class SendMessageHandler(IAppDbContext db, ICurrentUser currentUse
             throw new DomainException("message.files_invalid", "Some files can't be sent: upload them first.");
         }
 
-        var message = conversation.Post(userId, role, command.Body, fileIds, now);
+        var message = conversation.Post(userId, role, command.Body, fileIds, now, command.ClientId);
         db.Messages.Add(message);
 
         // A partner asking a question has responded to the request: nobody needs to chase it.

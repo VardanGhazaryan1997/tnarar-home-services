@@ -95,7 +95,7 @@ internal static class ChatAccess
                 attachments.Add(await files.CreateAsync(stored[attachment.FileId], cancellationToken));
             }
 
-            result.Add(new MessageDto(message.Id, message.ConversationId, message.SenderRole.ToString(), message.Body, attachments, message.SentAt));
+            result.Add(new MessageDto(message.Id, message.ConversationId, message.SenderRole.ToString(), message.Body, attachments, message.SentAt, message.ClientId));
         }
 
         return result;

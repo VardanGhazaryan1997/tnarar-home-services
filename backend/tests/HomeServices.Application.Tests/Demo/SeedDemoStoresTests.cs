@@ -2,7 +2,9 @@ using HomeServices.Application.Demo;
 using HomeServices.Application.Stores;
 using HomeServices.Application.Tests.Support;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Files;
 using HomeServices.Domain.Localization;
+using HomeServices.Domain.Stores;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -12,6 +14,7 @@ public class SeedDemoStoresTests
 {
     private static readonly DateTimeOffset Now = new(2026, 10, 12, 9, 0, 0, TimeSpan.Zero);
     private readonly InMemoryAppDbContext _db = InMemoryAppDbContext.Create();
+    private readonly FakeFileStorage _storage = new();
 
     public SeedDemoStoresTests()
     {
@@ -35,7 +38,7 @@ public class SeedDemoStoresTests
     ];
 
     private Task<int> SeedAsync() =>
-        new SeedDemoStoresHandler(_db, Options.Create(new StorePricingSettings()), new FakeClock(Now))
+        new SeedDemoStoresHandler(_db, Options.Create(new StorePricingSettings()), _storage, new FakeClock(Now))
             .HandleAsync(new SeedDemoStores(), CancellationToken.None);
 
     [Fact]
@@ -108,5 +111,61 @@ public class SeedDemoStoresTests
         var older = rows.Where(r => r.RecordedAt < Now.AddDays(-90)).ToList();
         older.Count.ShouldBeGreaterThan(0);
         older.ShouldAllBe(r => r.Price != products.Single(p => p.Id == r.StoreProductId).Price);
+    }
+
+    [Fact]
+    public async Task Gives_every_demo_product_a_stored_placeholder_photo()
+    {
+        await SeedAsync();
+
+        var products = await _db.StoreProducts.ToListAsync();
+        products.ShouldAllBe(p => p.PhotoFileId != null);
+        var files = await _db.Files.ToListAsync();
+        files.Count.ShouldBe(products.Count);
+        files.ShouldAllBe(f => f.OwnerType == FileOwnerType.Staff && f.ContentType == "image/png" && _storage.Objects.ContainsKey(f.Key));
+        products.Select(p => p.PhotoFileId).Distinct().Count().ShouldBe(products.Count);
+    }
+
+    [Fact]
+    public async Task Does_not_create_more_files_on_a_second_run()
+    {
+        await SeedAsync();
+        var files = await _db.Files.CountAsync();
+
+        await SeedAsync();
+
+        (await _db.Files.CountAsync()).ShouldBe(files);
+    }
+
+    [Fact]
+    public async Task Gives_a_demo_product_without_a_photo_one_again()
+    {
+        await SeedAsync();
+        var product = await _db.StoreProducts.FirstAsync();
+        product.SetPhoto(null);
+        await _db.SaveChangesAsync();
+        var files = await _db.Files.CountAsync();
+
+        (await SeedAsync()).ShouldBe(0);
+
+        (await _db.StoreProducts.SingleAsync(p => p.Id == product.Id)).PhotoFileId.ShouldNotBeNull();
+        (await _db.Files.CountAsync()).ShouldBe(files + 1);
+    }
+
+    [Fact]
+    public async Task Leaves_products_of_other_stores_alone()
+    {
+        await SeedAsync();
+        var material = await _db.Materials.FirstAsync();
+        var other = Store.Create("other-shop", "Other Shop", LocalizedText.Empty.With("hy", "x"), null, null, null, 9);
+        _db.Stores.Add(other);
+        var item = StoreProduct.Create(other.Id, "Finishing putty 25 kg", "Brand", "X-1", 25m, "bag", 5000, null, null, true, null, Now);
+        item.LinkTo(material.Id, MaterialGrade.Standard);
+        _db.StoreProducts.Add(item);
+        await _db.SaveChangesAsync();
+
+        await SeedAsync();
+
+        (await _db.StoreProducts.SingleAsync(p => p.Id == item.Id)).PhotoFileId.ShouldBeNull();
     }
 }

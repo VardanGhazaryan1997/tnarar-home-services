@@ -1,8 +1,10 @@
 using HomeServices.Application.Abstractions;
 using HomeServices.Application.Catalog;
+using HomeServices.Application.Files;
 using HomeServices.Application.Messaging;
 using HomeServices.Application.Stores;
 using HomeServices.Domain.Catalog;
+using HomeServices.Domain.Files;
 using HomeServices.Domain.Localization;
 using HomeServices.Domain.Stores;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,11 @@ namespace HomeServices.Application.Demo;
 /// Adds three clearly fictional building-materials stores with branches and products linked to the catalog materials
 /// (staging and local development only), so material prices, the comparison pages and "where to buy" have something to
 /// show. Prices are the material's usual price times the pack size, nudged up or down per store. Does nothing when any
-/// demo store already exists. Some products also get an older price, so the price history has something to show. Returns how many stores were created.
+/// demo store already exists (it then only gives demo products without a picture a placeholder one). Each product gets a placeholder picture. Some products also get an older price, so the price history has something to show. Returns how many stores were created.
 /// </summary>
 public sealed record SeedDemoStores : ICommand<int>;
 
-public sealed class SeedDemoStoresHandler(IAppDbContext db, IOptions<StorePricingSettings> settings, TimeProvider clock)
+public sealed class SeedDemoStoresHandler(IAppDbContext db, IOptions<StorePricingSettings> settings, IFileStorage storage, TimeProvider clock)
     : ICommandHandler<SeedDemoStores, int>
 {
     public async Task<int> HandleAsync(SeedDemoStores command, CancellationToken cancellationToken)
@@ -26,6 +28,7 @@ public sealed class SeedDemoStoresHandler(IAppDbContext db, IOptions<StorePricin
         var slugs = DemoStores.All.Select(s => s.Slug).ToList();
         if (await db.Stores.AnyAsync(s => slugs.Contains(s.Slug), cancellationToken))
         {
+            await AddMissingPhotosAsync(slugs, cancellationToken);
             return 0;
         }
 
@@ -68,6 +71,7 @@ public sealed class SeedDemoStoresHandler(IAppDbContext db, IOptions<StorePricin
                     inStock: !(storeIndex == 2 && productIndex == 6),
                     photoFileId: null,
                     now);
+                await AddPhotoAsync(item, store.Id, product, now, cancellationToken);
                 item.LinkTo(material.Id, product.Grade);
                 db.StoreProducts.Add(item);
                 StorePriceHistory.Record(db, item, now);
@@ -88,6 +92,46 @@ public sealed class SeedDemoStoresHandler(IAppDbContext db, IOptions<StorePricin
         await MaterialMarketPrices.RecalculateAsync(db, settings.Value, clock, touched, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return created;
+    }
+
+    // Demo products that have no picture yet (stores seeded before pictures existed, or a removed picture) get one.
+    private async Task AddMissingPhotosAsync(List<string> slugs, CancellationToken cancellationToken)
+    {
+        var products = await db.StoreProducts
+            .Where(p => p.PhotoFileId == null && db.Stores.Any(s => s.Id == p.StoreId && slugs.Contains(s.Slug)))
+            .ToListAsync(cancellationToken);
+        var now = clock.GetUtcNow();
+        var changed = false;
+        foreach (var item in products)
+        {
+            if (DemoStores.Products.FirstOrDefault(p => p.Name == item.Name) is { } product)
+            {
+                await AddPhotoAsync(item, item.StoreId, product, now, cancellationToken);
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    // The same material gets the same picture in every store.
+    private async Task AddPhotoAsync(StoreProduct item, Guid storeId, DemoStores.Product product, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var file = await DemoFiles.StoreImageAsync(
+            storage,
+            FileOwnerType.Staff,
+            storeId.ToString(),
+            $"demo-product-{product.MaterialSlug}.png",
+            DemoFiles.StableSeed(product.MaterialSlug),
+            480,
+            480,
+            now,
+            cancellationToken);
+        db.Files.Add(file);
+        item.SetPhoto(file.Id);
     }
 }
 

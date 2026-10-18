@@ -74,20 +74,8 @@ public sealed class SeedDemoPartnersHandler(IAppDbContext db, IFileStorage stora
         return created;
     }
 
-    private async Task<StoredFile> StoreImageAsync(Guid ownerId, int seed, DateTimeOffset now, CancellationToken cancellationToken)
-    {
-        const int width = 640;
-        const int height = 480;
-        var bytes = DemoImage.Png(seed, width, height);
-        var file = StoredFile.Begin(FileOwnerType.User, ownerId.ToString(), $"demo-{seed}.png", "image/png", bytes.Length, now);
-        using (var content = new MemoryStream(bytes))
-        {
-            await storage.PutAsync(file.Key, content, file.ContentType, cancellationToken);
-        }
-
-        file.MarkReady(bytes.Length, now, thumbnailKey: null, width, height);
-        return file;
-    }
+    private Task<StoredFile> StoreImageAsync(Guid ownerId, int seed, DateTimeOffset now, CancellationToken cancellationToken) =>
+        DemoFiles.StoreImageAsync(storage, FileOwnerType.User, ownerId.ToString(), $"demo-{seed}.png", seed, 640, 480, now, cancellationToken);
 
     // "region:ararat", "city:gyumri" or "district:yerevan/kentron"; null when the place no longer exists.
     private static AreaChoice? ToChoice(string area, IReadOnlyDictionary<string, Guid> regions, IReadOnlyList<City> cities)

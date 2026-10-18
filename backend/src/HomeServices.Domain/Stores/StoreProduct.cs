@@ -132,6 +132,9 @@ public sealed class StoreProduct : AuditableEntity, IAudited
         PhotoFileId = photoFileId;
     }
 
+    /// <summary>Sets or clears the product picture (a file already stored).</summary>
+    public void SetPhoto(Guid? photoFileId) => PhotoFileId = photoFileId;
+
     /// <summary>Compares the product under a material, as a budget, standard or premium product. The caller checks the material exists.</summary>
     public void LinkTo(Guid materialId, MaterialGrade? grade)
     {

@@ -971,7 +971,15 @@
     },
     "newMessages": "رسائل جديدة",
     "latest": "الأحدث",
-    "latestCount": "الأحدث · {{n}} جديدة"
+    "latestCount": "الأحدث · {{n}} جديدة",
+    "outbox": {
+      "label": "رسائل قيد الإرسال",
+      "sending": "جارٍ الإرسال…",
+      "failed": "لم تُرسل.",
+      "failedHint": "تحقق من الاتصال وحاول مرة أخرى.",
+      "retry": "إعادة المحاولة",
+      "discard": "تجاهل"
+    }
   },
   "public": {
     "partnerType": {

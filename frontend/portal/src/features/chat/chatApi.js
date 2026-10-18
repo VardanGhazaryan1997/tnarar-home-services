@@ -29,7 +29,8 @@ export const chatApi = baseApi.injectEndpoints({
       query: ({ id, before }) => ({ url: `/conversations/${id}/messages`, params: { before, limit: 50 } }),
     }),
     sendMessage: build.mutation({
-      query: ({ id, body, fileIds }) => ({ url: `/conversations/${id}/messages`, method: 'POST', body: { body: body || null, fileIds } }),
+      // clientId: the app's id for the message, so sending it again after a failure never posts it twice.
+      query: ({ id, body, fileIds, clientId }) => ({ url: `/conversations/${id}/messages`, method: 'POST', body: { body: body || null, fileIds, clientId } }),
       // The new message goes into the thread at once (the live event may arrive before or after).
       onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
         try {

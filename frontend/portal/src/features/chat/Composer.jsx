@@ -1,33 +1,35 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { errorMessage } from '@/api/errors'
 import Button from '@/components/ui/Button/Button'
 import Icon from '@/components/ui/Icon/Icon'
 import Spinner from '@/components/ui/Spinner/Spinner'
 import { CHAT_TYPES, useFileUploads } from '@/features/files/useFileUploads'
 import { bem } from '@/shared/bem'
-import { useSendMessageMutation } from './chatApi'
+import { newClientId, useOutboxSender } from './outbox'
 import styles from './chat.module.scss'
 
 const b = bem(styles)
 
-/** Writing a message: text (Enter sends, Shift+Enter starts a new line) and up to 5 photos, videos or PDFs. */
-export default function Composer({ conversationId }) {
+/**
+ * Writing a message: text (Enter sends, Shift+Enter starts a new line) and up to 5 photos, videos or PDFs. A sent
+ * message shows in the thread at once as sending; if it fails it stays there, with its text, to try again.
+ */
+export default function Composer({ conversationId, onSent }) {
   const { t } = useTranslation()
   const [text, setText] = useState('')
-  const [send, sending] = useSendMessageMutation()
+  const outbox = useOutboxSender(conversationId)
   const uploads = useFileUploads({ max: 5, types: CHAT_TYPES })
   const fileInput = useRef(null)
-  const canSend = (text.trim() || uploads.fileIds.length > 0) && !uploads.busy && !sending.isLoading
+  const canSend = (text.trim() || uploads.fileIds.length > 0) && !uploads.busy
 
-  const submit = async (event) => {
+  const submit = (event) => {
     event?.preventDefault()
     if (!canSend) return
-    const result = await send({ id: conversationId, body: text.trim(), fileIds: uploads.fileIds })
-    if (result.data) {
-      setText('')
-      uploads.clear()
-    }
+    const files = uploads.items.filter((item) => item.fileId).map((item) => ({ name: item.name }))
+    outbox.send({ clientId: newClientId(), body: text.trim(), fileIds: uploads.fileIds, files, at: new Date().toISOString() })
+    setText('')
+    uploads.clear()
+    onSent?.()
   }
 
   const onKeyDown = (event) => {
@@ -49,7 +51,6 @@ export default function Composer({ conversationId }) {
           ))}
         </ul>
       )}
-      {sending.error && <p className={styles['composer__error']} role="alert">{errorMessage(t, sending.error)}</p>}
       <div className={styles['composer__row']}>
         <Button variant="ghost" icon={<Icon name="plus" />} aria-label={t('chat.attach')} disabled={uploads.full} onClick={() => fileInput.current.click()} />
         <input
@@ -75,7 +76,7 @@ export default function Composer({ conversationId }) {
           onChange={(event) => setText(event.target.value)}
           onKeyDown={onKeyDown}
         />
-        <Button type="submit" variant="accent" icon={<Icon name="send" />} aria-label={t('chat.send')} disabled={!canSend} loading={sending.isLoading} />
+        <Button type="submit" variant="accent" icon={<Icon name="send" />} aria-label={t('chat.send')} disabled={!canSend} />
       </div>
     </form>
   )

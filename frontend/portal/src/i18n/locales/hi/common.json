@@ -971,7 +971,15 @@
     },
     "newMessages": "नए संदेश",
     "latest": "नवीनतम",
-    "latestCount": "नवीनतम · {{n}} नए"
+    "latestCount": "नवीनतम · {{n}} नए",
+    "outbox": {
+      "label": "भेजे जा रहे संदेश",
+      "sending": "भेजा जा रहा है…",
+      "failed": "नहीं भेजा गया।",
+      "failedHint": "अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+      "retry": "फिर कोशिश करें",
+      "discard": "हटाएँ"
+    }
   },
   "public": {
     "partnerType": {

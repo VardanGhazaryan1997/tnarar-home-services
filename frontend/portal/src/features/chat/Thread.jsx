@@ -16,6 +16,7 @@ import { conversationAlertsCleared } from './alerts/alertsSlice'
 import { watchOpenConversation } from './alerts/focus'
 import { useGetConversationQuery, useGetMessagesQuery, useGetOlderMessagesMutation, useMarkReadMutation } from './chatApi'
 import Composer from './Composer'
+import { useOutbox, useOutboxSender } from './outbox'
 import { useThreadScroll } from './useThreadScroll'
 import OfferPanel from './offer/OfferPanel'
 import { offerEvents, useNow } from './offer/offerTimeline'
@@ -98,6 +99,10 @@ export default function Thread({ id }) {
   if (unreadAtOpen === null && loadedUnread !== undefined) setUnreadAtOpen(loadedUnread)
 
   const scroll = useThreadScroll(latest, conversation.data?.myRole, unreadAtOpen)
+  // Messages on their way: the ones the server already has (same client id) show as normal messages.
+  const sentIds = new Set(all.map((message) => message.clientId).filter(Boolean))
+  const pending = useOutbox(id).filter((item) => !sentIds.has(item.clientId))
+  const sender = useOutboxSender(id)
 
   const showOlder = async () => {
     const result = await loadOlder({ id, before: all[0].sentAt })
@@ -178,6 +183,13 @@ export default function Thread({ id }) {
                   </ItemWithDay>
                 ))}
               </ol>
+              {pending.length > 0 && (
+                <ol className={styles['thread__messages']} aria-label={t('chat.outbox.label')}>
+                  {pending.map((item) => (
+                    <PendingBubble key={item.clientId} item={item} onRetry={() => sender.retry(item)} onDiscard={() => sender.discard(item)} />
+                  ))}
+                </ol>
+              )}
               <div ref={scroll.endRef} />
               {scroll.showLatest && (
                 <div className={styles['thread__latest']}>
@@ -195,7 +207,7 @@ export default function Thread({ id }) {
               </p>
             )}
             {chat.canSend ? (
-              <Composer conversationId={chat.id} />
+              <Composer conversationId={chat.id} onSent={() => requestAnimationFrame(scroll.scrollToEnd)} />
             ) : (
               <Alert tone="info" title={chat.canSendUntil ? t('chat.cancel.closed') : t('chat.closed')} />
             )}
@@ -216,6 +228,41 @@ function ItemWithDay({ at, newDay, lng, children }) {
       )}
       {children}
     </>
+  )
+}
+
+/** A message of mine on its way: "Sending…", or "Not sent" with the reason, Retry and Discard (its text is kept). */
+function PendingBubble({ item, onRetry, onDiscard }) {
+  const { t } = useTranslation()
+  const failed = item.status === 'failed'
+  return (
+    <li className={b('thread__message', { mine: true })}>
+      <div className={b('thread__bubble', { mine: true, failed })}>
+        {item.body && <p className={styles['thread__body']}>{item.body}</p>}
+        {item.files?.length > 0 && <p className={styles['thread__pending-files']}>{t('chat.files', { n: item.files.length })}</p>}
+        {failed ? (
+          <div className={styles['thread__failed']} role="alert">
+            <span className={styles['thread__failed-text']}>
+              <Icon name="info" size={16} />
+              {t('chat.outbox.failed')} {t(item.error ? `errors.${item.error}` : 'chat.outbox.failedHint', { defaultValue: t('chat.outbox.failedHint') })}
+            </span>
+            <span className={styles['thread__failed-actions']}>
+              <Button variant="secondary" size="sm" onClick={onRetry}>
+                {t('chat.outbox.retry')}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={onDiscard}>
+                {t('chat.outbox.discard')}
+              </Button>
+            </span>
+          </div>
+        ) : (
+          <span className={styles['thread__meta']}>
+            <Icon name="clock" size={14} />
+            {t('chat.outbox.sending')}
+          </span>
+        )}
+      </div>
+    </li>
   )
 }
 

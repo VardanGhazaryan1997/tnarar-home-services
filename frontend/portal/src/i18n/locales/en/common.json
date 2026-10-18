@@ -971,7 +971,15 @@
     },
     "newMessages": "New messages",
     "latest": "Latest",
-    "latestCount": "Latest · {{n}} new"
+    "latestCount": "Latest · {{n}} new",
+    "outbox": {
+      "label": "Messages being sent",
+      "sending": "Sending…",
+      "failed": "Not sent.",
+      "failedHint": "Check your connection and try again.",
+      "retry": "Retry",
+      "discard": "Discard"
+    }
   },
   "public": {
     "partnerType": {

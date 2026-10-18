@@ -16,7 +16,8 @@ public sealed record MessageSummaryDto(string SenderRole, string? Excerpt, int A
 /// A conversation as one of its sides sees it. <see cref="OtherReadAt"/>: how far the other side has read (read receipts).
 /// <see cref="CanSend"/>: false once the request ended without an order between them (a cancelled request's
 /// conversations stay open until <see cref="CanSendUntil"/>). <see cref="OrderId"/>: their order, if any.
-/// <see cref="RequestCancelledAt"/>: when the request was cancelled; later messages came after the cancellation.
+/// <see cref="RequestCancelledAt"/>: when the request was cancelled (and <see cref="RequestCancelReason"/>, why); later
+/// messages came after the cancellation.
 /// <see cref="Offers"/>: the partner's offers on the request, oldest first (the customer doesn't see withdrawn ones).
 /// </summary>
 public sealed record ConversationDto(
@@ -33,7 +34,8 @@ public sealed record ConversationDto(
     Guid? OrderId,
     DateTimeOffset? RequestCancelledAt = null,
     DateTimeOffset? CanSendUntil = null,
-    IReadOnlyList<ChatOfferDto>? Offers = null);
+    IReadOnlyList<ChatOfferDto>? Offers = null,
+    string? RequestCancelReason = null);
 
 /// <summary>
 /// An offer between the two sides of a conversation, for the offer panel and the timeline. <see cref="Status"/> is as

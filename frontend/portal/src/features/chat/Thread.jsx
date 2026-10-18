@@ -24,12 +24,16 @@ import styles from './chat.module.scss'
 const b = bem(styles)
 const dayOf = (iso) => iso.slice(0, 10)
 
-/** One message bubble with its files and time. */
-function Bubble({ message, mine, seen }) {
+/**
+ * One message bubble with its files and time. `afterCancel`: sent after the request was cancelled (shown lighter);
+ * the first such message also says so in words.
+ */
+function Bubble({ message, mine, seen, afterCancel = false, firstAfterCancel = false }) {
   const { t, i18n } = useTranslation()
   return (
-    <li className={b('thread__message', { mine })}>
-      <div className={b('thread__bubble', { mine })}>
+    <li className={b('thread__message', { mine, 'after-cancel': afterCancel })}>
+      {firstAfterCancel && <span className={styles['thread__after-label']}>{t('chat.cancel.after')}</span>}
+      <div className={b('thread__bubble', { mine, 'after-cancel': afterCancel })}>
         {message.body && <p className={styles['thread__body']}>{message.body}</p>}
         {message.attachments.length > 0 && (
           <ul className={styles['thread__files']}>
@@ -105,10 +109,16 @@ export default function Thread({ id }) {
         const lastMine = [...all].reverse().find((message) => message.senderRole === chat.myRole)
         // Offer events between the messages, in time order (none before the oldest loaded message).
         const events = offerEvents(chat.offers, now, hasMore ? all[0]?.sentAt : null)
+        // The cancellation, where it happened in the conversation (unless that part isn't loaded yet).
+        const cancelledAt = chat.requestCancelledAt
+        const showCancel = cancelledAt && !(hasMore && all[0] && new Date(cancelledAt) < new Date(all[0].sentAt))
         const timeline = [
           ...all.map((message) => ({ key: message.id, at: message.sentAt, message })),
           ...events.map((event) => ({ key: event.id, at: event.at, event })),
+          ...(showCancel ? [{ key: 'cancelled', at: cancelledAt, cancelled: true }] : []),
         ].sort((a, b) => new Date(a.at) - new Date(b.at))
+        const isAfterCancel = (message) => Boolean(cancelledAt) && new Date(message.sentAt) > new Date(cancelledAt)
+        const firstAfterCancel = all.find(isAfterCancel)
         return (
           <div className={styles.thread}>
             <header className={styles['thread__header']}>
@@ -146,22 +156,34 @@ export default function Thread({ id }) {
               <ol className={styles['thread__messages']} aria-label={t('chat.messagesLabel')}>
                 {timeline.map((item, index) => (
                   <ItemWithDay key={item.key} at={item.at} newDay={index === 0 || dayOf(timeline[index - 1].at) !== dayOf(item.at)} lng={i18n.language}>
-                    {item.message ? (
+                    {item.message && (
                       <Bubble
                         message={item.message}
                         mine={item.message.senderRole === chat.myRole}
                         seen={item.message === lastMine && chat.otherReadAt != null && new Date(chat.otherReadAt) >= new Date(item.message.sentAt)}
+                        afterCancel={isAfterCancel(item.message)}
+                        firstAfterCancel={item.message === firstAfterCancel}
                       />
-                    ) : (
-                      <OfferEvent event={item.event} lng={i18n.language} />
                     )}
+                    {item.event && <OfferEvent event={item.event} lng={i18n.language} />}
+                    {item.cancelled && <CancelMarker at={item.at} reason={chat.requestCancelReason} lng={i18n.language} />}
                   </ItemWithDay>
                 ))}
               </ol>
               <div ref={endRef} />
             </div>
 
-            {chat.canSend ? <Composer conversationId={chat.id} /> : <Alert tone="info" title={t('chat.closed')} />}
+            {chat.canSend && chat.canSendUntil && (
+              <p className={styles['thread__cancel-note']}>
+                <Icon name="info" size={16} />
+                {t('chat.cancel.openUntil', { date: formatDate(chat.canSendUntil, i18n.language, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) })}
+              </p>
+            )}
+            {chat.canSend ? (
+              <Composer conversationId={chat.id} />
+            ) : (
+              <Alert tone="info" title={chat.canSendUntil ? t('chat.cancel.closed') : t('chat.closed')} />
+            )}
           </div>
         )
       }}
@@ -179,6 +201,37 @@ function ItemWithDay({ at, newDay, lng, children }) {
       )}
       {children}
     </>
+  )
+}
+
+/**
+ * Where the request was cancelled in the conversation: a pill across the thread with the date, opening the
+ * customer's reason. The messages after it are shown lighter.
+ */
+function CancelMarker({ at, reason, lng }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const id = `cancel-reason-${at}`
+  return (
+    <li className={styles['thread__cancelled']}>
+      <button
+        type="button"
+        className={styles['thread__cancelled-pill']}
+        aria-expanded={open}
+        aria-controls={id}
+        title={open ? t('chat.cancel.hideReason') : t('chat.cancel.showReason')}
+        onClick={() => setOpen(!open)}
+      >
+        <Icon name="close" size={16} />
+        {t('chat.cancel.marker', { date: formatDate(at, lng, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}
+        <Icon name={open ? 'chevronUp' : 'chevronDown'} size={14} />
+      </button>
+      {open && (
+        <p id={id} className={styles['thread__cancelled-reason']}>
+          {reason ? t('chat.cancel.reason', { reason }) : t('chat.cancel.noReason')}
+        </p>
+      )}
+    </li>
   )
 }
 

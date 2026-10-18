@@ -47,6 +47,7 @@ public class ChatAfterCancellationTests
         conversation.CanSend.ShouldBeTrue();
         conversation.RequestCancelledAt.ShouldBeNull();
         conversation.CanSendUntil.ShouldBeNull();
+        conversation.RequestCancelReason.ShouldBeNull();
     }
 
     [Fact]
@@ -64,6 +65,7 @@ public class ChatAfterCancellationTests
         view.RequestStatus.ShouldBe("Cancelled");
         view.CanSend.ShouldBeTrue();
         view.RequestCancelledAt.ShouldBe(Now.AddHours(2));
+        view.RequestCancelReason.ShouldBe("Found someone");
         view.CanSendUntil.ShouldBe(Now.AddHours(2).AddDays(7));
         late.SentAt.ShouldBeGreaterThan(view.RequestCancelledAt!.Value);
     }

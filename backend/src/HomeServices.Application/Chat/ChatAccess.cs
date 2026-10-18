@@ -143,7 +143,8 @@ internal static class ChatAccess
             orderId,
             request.CancelledAt,
             request.CancelledAt is { } cancelledAt && orderId is null ? cancelledAt + OpenAfterCancellation : null,
-            await OffersAsync(db, conversation, role, now, cancellationToken));
+            await OffersAsync(db, conversation, role, now, cancellationToken),
+            request.CancelReason);
     }
 
     /// <summary>The partner's offers on the request, oldest first; the customer, like on the request page, not withdrawn ones.</summary>

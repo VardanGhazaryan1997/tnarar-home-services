@@ -958,6 +958,16 @@
         "withdrawn": "Offer withdrawn",
         "expired": "Offer expired"
       }
+    },
+    "cancel": {
+      "marker": "Request cancelled · {{date}}",
+      "showReason": "Show why the request was cancelled",
+      "hideReason": "Hide the reason",
+      "reason": "Reason: {{reason}}",
+      "noReason": "No reason given.",
+      "after": "Sent after the request was cancelled",
+      "openUntil": "The request was cancelled. You can still write to each other until {{date}}.",
+      "closed": "This conversation closed 7 days after the request was cancelled."
     }
   },
   "public": {

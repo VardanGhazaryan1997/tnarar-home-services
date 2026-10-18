@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { baseApi } from '@/api/baseApi'
 import { authReducer } from '@/features/auth/authSlice'
+import { liveReducer } from '@/features/live/liveSlice'
 
 export function makeStore(preloadedState) {
   return configureStore({
     reducer: {
       auth: authReducer,
+      live: liveReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
     // The development-only state checks warn when they take over 32 ms, which large API caches (and slow test

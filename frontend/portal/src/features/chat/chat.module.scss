@@ -257,6 +257,45 @@
     border-radius: $radius-pill;
   }
 
+  // An offer event between the messages: icon, words and time, in the offer's tone.
+  &__event {
+    @include text-small;
+
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: space(1) space(2);
+    align-items: center;
+    align-self: center;
+    max-width: 100%;
+    padding: space(1) space(3);
+    margin: space(1) 0;
+    font-weight: $font-weight-medium;
+    color: $color-info;
+    background: $color-info-soft;
+    border-radius: $radius-pill;
+
+    &--accepted {
+      color: $color-success;
+      background: $color-success-soft;
+    }
+
+    &--rejected {
+      color: $color-danger;
+      background: $color-danger-soft;
+    }
+
+    &--withdrawn,
+    &--expired {
+      color: $color-text-muted;
+      background: $color-surface-sunken;
+    }
+  }
+
+  &__event-time {
+    font-weight: $font-weight-regular;
+    color: $color-text-muted;
+  }
+
   &__message {
     display: flex;
 

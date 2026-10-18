@@ -11,11 +11,13 @@ import Icon from '@/components/ui/Icon/Icon'
 import { placeText } from '@/features/requests/place'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
-import { formatDate } from '@/shared/format'
+import { formatDate, formatMoney } from '@/shared/format'
 import { conversationAlertsCleared } from './alerts/alertsSlice'
 import { watchOpenConversation } from './alerts/focus'
 import { useGetConversationQuery, useGetMessagesQuery, useGetOlderMessagesMutation, useMarkReadMutation } from './chatApi'
 import Composer from './Composer'
+import OfferPanel from './offer/OfferPanel'
+import { offerEvents, useNow } from './offer/offerTimeline'
 import { initials } from './initials'
 import styles from './chat.module.scss'
 
@@ -74,6 +76,7 @@ export default function Thread({ id }) {
   const hasMore = older.hasMore ?? messages.data?.hasMore ?? false
   const unread = conversation.data?.unreadCount ?? 0
   const dispatch = useDispatch()
+  const now = useNow()
 
   // While this conversation is on screen, its new messages need no alert; the ones already shown are done.
   useEffect(() => {
@@ -100,6 +103,12 @@ export default function Thread({ id }) {
         const name = chat.otherParty.name ?? t(`chat.role.${chat.myRole === 'Customer' ? 'Partner' : 'Customer'}`)
         const requestLink = chat.myRole === 'Customer' ? path(`/requests/${chat.requestId}`) : path(`/inbox/${chat.requestId}`)
         const lastMine = [...all].reverse().find((message) => message.senderRole === chat.myRole)
+        // Offer events between the messages, in time order (none before the oldest loaded message).
+        const events = offerEvents(chat.offers, now, hasMore ? all[0]?.sentAt : null)
+        const timeline = [
+          ...all.map((message) => ({ key: message.id, at: message.sentAt, message })),
+          ...events.map((event) => ({ key: event.id, at: event.at, event })),
+        ].sort((a, b) => new Date(a.at) - new Date(b.at))
         return (
           <div className={styles.thread}>
             <header className={styles['thread__header']}>
@@ -122,6 +131,8 @@ export default function Thread({ id }) {
               )}
             </header>
 
+            <OfferPanel conversation={chat} />
+
             <div className={styles['thread__scroll']}>
               {hasMore && (
                 <div className={styles['thread__older']}>
@@ -131,17 +142,20 @@ export default function Thread({ id }) {
                 </div>
               )}
               {messages.isError && <Alert tone="danger" title={errorMessage(t, messages.error)} />}
-              {messages.isSuccess && all.length === 0 && <p className={styles['thread__hint']}>{t('chat.startHint')}</p>}
+              {messages.isSuccess && timeline.length === 0 && <p className={styles['thread__hint']}>{t('chat.startHint')}</p>}
               <ol className={styles['thread__messages']} aria-label={t('chat.messagesLabel')}>
-                {all.map((message, index) => (
-                  <MessageWithDay
-                    key={message.id}
-                    message={message}
-                    newDay={index === 0 || dayOf(all[index - 1].sentAt) !== dayOf(message.sentAt)}
-                    lng={i18n.language}
-                    mine={message.senderRole === chat.myRole}
-                    seen={message === lastMine && chat.otherReadAt != null && new Date(chat.otherReadAt) >= new Date(message.sentAt)}
-                  />
+                {timeline.map((item, index) => (
+                  <ItemWithDay key={item.key} at={item.at} newDay={index === 0 || dayOf(timeline[index - 1].at) !== dayOf(item.at)} lng={i18n.language}>
+                    {item.message ? (
+                      <Bubble
+                        message={item.message}
+                        mine={item.message.senderRole === chat.myRole}
+                        seen={item.message === lastMine && chat.otherReadAt != null && new Date(chat.otherReadAt) >= new Date(item.message.sentAt)}
+                      />
+                    ) : (
+                      <OfferEvent event={item.event} lng={i18n.language} />
+                    )}
+                  </ItemWithDay>
                 ))}
               </ol>
               <div ref={endRef} />
@@ -155,15 +169,33 @@ export default function Thread({ id }) {
   )
 }
 
-function MessageWithDay({ message, newDay, lng, mine, seen }) {
+function ItemWithDay({ at, newDay, lng, children }) {
   return (
     <>
       {newDay && (
         <li className={styles['thread__day']} aria-hidden="true">
-          {formatDate(message.sentAt, lng, { weekday: 'short', day: 'numeric', month: 'long' })}
+          {formatDate(at, lng, { weekday: 'short', day: 'numeric', month: 'long' })}
         </li>
       )}
-      <Bubble message={message} mine={mine} seen={seen} />
+      {children}
     </>
+  )
+}
+
+const EVENT_ICONS = { sent: 'send', accepted: 'check', rejected: 'close', withdrawn: 'info', expired: 'clock' }
+
+/** "Offer sent · 450 000 ֏", "Offer accepted"…: what happened to an offer, between the messages. */
+function OfferEvent({ event, lng }) {
+  const { t } = useTranslation()
+  const { offer } = event
+  const price = offer.kind === 'Visit' && offer.price === 0 ? t('offers.free') : formatMoney(offer.price, lng)
+  return (
+    <li className={b('thread__event', { [event.kind]: true })}>
+      <Icon name={EVENT_ICONS[event.kind]} size={16} />
+      <span>{t(`chat.offer.events.${event.kind}`, { price })}</span>
+      <time dateTime={event.at} className={styles['thread__event-time']}>
+        {formatDate(event.at, lng, { hour: '2-digit', minute: '2-digit' })}
+      </time>
+    </li>
   )
 }

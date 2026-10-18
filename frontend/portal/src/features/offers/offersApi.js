@@ -19,11 +19,11 @@ export const offersApi = baseApi.injectEndpoints({
     /** Creates the order; accepting a work offer closes the request. Returns the order. */
     acceptOffer: build.mutation({
       query: (id) => ({ url: `/offers/${id}/accept`, method: 'POST' }),
-      invalidatesTags: ['Offers', 'MyRequests', 'Orders'],
+      invalidatesTags: ['Offers', 'MyRequests', 'Orders', 'Conversations'],
     }),
     rejectOffer: build.mutation({
       query: ({ id, reason }) => ({ url: `/offers/${id}/reject`, method: 'POST', body: { reason: reason || null } }),
-      invalidatesTags: ['Offers'],
+      invalidatesTags: ['Offers', 'Conversations'],
     }),
     withdrawOffer: build.mutation({
       query: (id) => ({ url: `/offers/${id}/withdraw`, method: 'POST' }),

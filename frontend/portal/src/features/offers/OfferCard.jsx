@@ -104,7 +104,11 @@ export default function OfferCard({ offer, showPartner = true, actions, footer }
   const free = offer.kind === 'Visit' && offer.price === 0
 
   return (
-    <article className={b('offer-card', { open: offer.status === 'Sent', accepted: offer.status === 'Accepted' })} aria-label={offer.partner.displayName}>
+    <article
+      id={`offer-${offer.id}`}
+      className={b('offer-card', { open: offer.status === 'Sent', accepted: offer.status === 'Accepted' })}
+      aria-label={offer.partner.displayName}
+    >
       <header className={styles['offer-card__header']}>
         <div className={styles['offer-card__who']}>
           {showPartner && <h3 className={styles['offer-card__partner']}>{offer.partner.displayName}</h3>}

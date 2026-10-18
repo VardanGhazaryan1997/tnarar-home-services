@@ -935,6 +935,29 @@
     "sound": {
       "on": "Message sounds are on. Turn them off",
       "off": "Message sounds are off. Turn them on"
+    },
+    "offer": {
+      "label": "Offer from {{name}}",
+      "mine": "Your offer",
+      "details": "Request details",
+      "showMore": "Show offer details",
+      "showLess": "Hide offer details",
+      "expiresIn": "Expires {{when}}",
+      "expiredText": "This offer has expired, so it can no longer be accepted. Ask for a new one.",
+      "accepted": "Order created",
+      "rejected": "You declined this offer.",
+      "closed": "This offer closed when the request ended.",
+      "withdrawn": "This offer was withdrawn.",
+      "waiting": "Waiting for the customer",
+      "partnerAccepted": "The customer accepted · order created",
+      "partnerRejected": "The customer declined this offer.",
+      "events": {
+        "sent": "Offer sent · {{price}}",
+        "accepted": "Offer accepted",
+        "rejected": "Offer declined",
+        "withdrawn": "Offer withdrawn",
+        "expired": "Offer expired"
+      }
     }
   },
   "public": {

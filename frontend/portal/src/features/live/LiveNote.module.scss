@@ -1,0 +1,57 @@
+@use 'styles/mixins' as *;
+
+// A fresh change on a request: icon and words on a soft tint of its tone.
+.live-note {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: space(1) space(2);
+  align-items: center;
+  padding: space(1) space(3);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  border-radius: $radius-pill;
+  animation: live-note-in 250ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  &--danger {
+    color: $color-danger;
+    background: $color-danger-soft;
+  }
+
+  &--success {
+    color: $color-success;
+    background: $color-success-soft;
+  }
+
+  &--info {
+    color: $color-info;
+    background: $color-info-soft;
+  }
+
+  &--neutral {
+    color: $color-text-muted;
+    background: $color-surface-sunken;
+  }
+
+  &__link {
+    @include focus-ring;
+
+    color: inherit;
+    border-radius: $radius-sm;
+  }
+}
+
+@keyframes live-note-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

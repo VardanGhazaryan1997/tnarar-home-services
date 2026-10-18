@@ -447,7 +447,9 @@
     "status": {
       "Open": "Open",
       "Closed": "Agreed",
-      "Cancelled": "Cancelled"
+      "Cancelled": "Cancelled",
+      "Accepted": "Accepted",
+      "Ended": "Closed"
     },
     "emptyTitle": "No requests here yet",
     "emptyText": "Describe a job and specialists nearby will send you offers.",
@@ -1678,5 +1680,21 @@
     "hasSome": "has {{covered}} of {{count}} materials",
     "note": "Totals are for the materials a store has in stock, rounded up to whole packs, at the grade you chose.",
     "compare": "Compare all material prices"
+  },
+  "live": {
+    "customer": {
+      "cancelled": "Cancelled just now",
+      "accepted": "Accepted · order created",
+      "closed": "Closed just now",
+      "offer": "New offer received",
+      "offerWithdrawn": "An offer was withdrawn"
+    },
+    "partner": {
+      "cancelled": "The customer cancelled this request",
+      "offerAccepted": "Your offer was accepted",
+      "closedOther": "The customer chose another offer",
+      "offerRejected": "Your offer was declined"
+    },
+    "openOrder": "Open order"
   }
 }

@@ -69,10 +69,10 @@ public sealed record AdminMaterialOfferDto(Guid StoreId, string StoreName, bool 
 
 internal sealed record StoreCounts(int Branches, int Products, int Linked, int Stale);
 
-/// <summary>Loading and mapping shared by the store handlers.</summary>
 /// <summary>The thumbnail and the full-size link of an image.</summary>
 internal readonly record struct PictureLink(string Thumbnail, string Full);
 
+/// <summary>Loading and mapping shared by the store handlers.</summary>
 internal static class StoreData
 {
     public static async Task<Store> LoadAsync(IAppDbContext db, Guid id, bool withBranches, CancellationToken cancellationToken)

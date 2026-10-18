@@ -314,7 +314,7 @@ public class PublicStoresTests
 
         var products = (await StoreAsync("alpha")).Materials!.Single().Products.ToDictionary(p => p.Name);
 
-        products["With thumbnail"].PhotoUrl.ShouldContain("thumbs/a.jpg");
+        products["With thumbnail"].PhotoUrl.ShouldNotBeNull().ShouldContain("thumbs/a.jpg");
         products["With thumbnail"].PhotoLargeUrl.ShouldNotBeNull().ShouldNotContain("thumbs/a.jpg");
         products["No thumbnail"].PhotoUrl.ShouldNotBeNull();
         products["No thumbnail"].PhotoLargeUrl.ShouldBe(products["No thumbnail"].PhotoUrl);

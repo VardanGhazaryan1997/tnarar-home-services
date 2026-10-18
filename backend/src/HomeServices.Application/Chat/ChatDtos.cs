@@ -17,6 +17,7 @@ public sealed record MessageSummaryDto(string SenderRole, string? Excerpt, int A
 /// <see cref="CanSend"/>: false once the request ended without an order between them (a cancelled request's
 /// conversations stay open until <see cref="CanSendUntil"/>). <see cref="OrderId"/>: their order, if any.
 /// <see cref="RequestCancelledAt"/>: when the request was cancelled; later messages came after the cancellation.
+/// <see cref="Offers"/>: the partner's offers on the request, oldest first (the customer doesn't see withdrawn ones).
 /// </summary>
 public sealed record ConversationDto(
     Guid Id,
@@ -31,7 +32,24 @@ public sealed record ConversationDto(
     bool CanSend,
     Guid? OrderId,
     DateTimeOffset? RequestCancelledAt = null,
-    DateTimeOffset? CanSendUntil = null);
+    DateTimeOffset? CanSendUntil = null,
+    IReadOnlyList<ChatOfferDto>? Offers = null);
+
+/// <summary>
+/// An offer between the two sides of a conversation, for the offer panel and the timeline. <see cref="Status"/> is as
+/// people see it: an offer past its expiry is Expired. <see cref="SentAt"/>: when it was sent.
+/// </summary>
+public sealed record ChatOfferDto(
+    Guid Id,
+    string Kind,
+    string Status,
+    int Price,
+    string Summary,
+    DateTimeOffset? VisitAt,
+    DateTimeOffset ExpiresAt,
+    DateTimeOffset SentAt,
+    DateTimeOffset? DecidedAt,
+    Guid? OrderId);
 
 /// <summary>Messages oldest to newest. <see cref="HasMore"/>: older messages exist (ask again with before = the first item's sentAt).</summary>
 public sealed record MessagePageDto(IReadOnlyList<MessageDto> Items, bool HasMore);

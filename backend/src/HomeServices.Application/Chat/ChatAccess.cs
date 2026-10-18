@@ -5,6 +5,7 @@ using HomeServices.Application.Orders;
 using HomeServices.Application.Requests;
 using HomeServices.Domain.Chat;
 using HomeServices.Domain.Files;
+using HomeServices.Domain.Offers;
 using HomeServices.Domain.Orders;
 using HomeServices.Domain.Requests;
 using Microsoft.EntityFrameworkCore;
@@ -141,7 +142,23 @@ internal static class ChatAccess
             await CanSendAsync(db, conversation, now, cancellationToken),
             orderId,
             request.CancelledAt,
-            request.CancelledAt is { } cancelledAt && orderId is null ? cancelledAt + OpenAfterCancellation : null);
+            request.CancelledAt is { } cancelledAt && orderId is null ? cancelledAt + OpenAfterCancellation : null,
+            await OffersAsync(db, conversation, role, now, cancellationToken));
+    }
+
+    /// <summary>The partner's offers on the request, oldest first; the customer, like on the request page, not withdrawn ones.</summary>
+    private static async Task<IReadOnlyList<ChatOfferDto>> OffersAsync(
+        IAppDbContext db, Conversation conversation, ChatRole role, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var offers = db.Offers.AsNoTracking().Where(o => o.RequestId == conversation.RequestId && o.PartnerProfileId == conversation.PartnerProfileId);
+        if (role == ChatRole.Customer)
+        {
+            offers = offers.Where(o => o.Status != OfferStatus.Withdrawn);
+        }
+
+        return (await offers.OrderBy(o => o.CreatedAt).ThenBy(o => o.Id).ToListAsync(cancellationToken))
+            .Select(o => new ChatOfferDto(o.Id, o.Kind.ToString(), o.StatusAt(now).ToString(), o.Price, o.Summary, o.VisitAt, o.ExpiresAt, o.CreatedAt, o.DecidedAt, o.OrderId))
+            .ToList();
     }
 
     private static string? CustomerName(string? fullName, bool agreed)

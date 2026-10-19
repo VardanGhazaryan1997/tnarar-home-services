@@ -1,4 +1,4 @@
-import { formatBudget, formatDate, formatDateTime, formatMoney, todayIso } from './format'
+import { formatBudget, formatDate, formatDateTime, formatMoney, formatTimeLeft, todayIso } from './format'
 
 const t = (key, values) => `${key}:${values.amount}`
 
@@ -29,5 +29,14 @@ describe('formatUnitPrice', () => {
     expect(formatUnitPrice(12.5, 'en')).toBe('12.5 ֏')
     expect(formatUnitPrice(12, 'en')).toBe('12 ֏')
     expect(formatUnitPrice(1250.4, 'en')).toBe('1,250 ֏')
+  })
+  it('says how long is left in the UI language, rounded down, and nothing once it has passed', () => {
+    const now = new Date('2026-10-05T12:00:00Z')
+    expect(formatTimeLeft('2026-10-08T13:00:00Z', 'en', now)).toBe('in 3 days')
+    expect(formatTimeLeft('2026-10-05T17:30:00Z', 'en', now)).toBe('in 5 hours')
+    expect(formatTimeLeft('2026-10-05T12:20:30Z', 'en', now)).toBe('in 20 minutes')
+    expect(formatTimeLeft('2026-10-05T12:00:10Z', 'en', now)).toBe('in 1 minute')
+    expect(formatTimeLeft('2026-10-08T13:00:00Z', 'ru', now)).toBe('через 3 дня')
+    expect(formatTimeLeft('2026-10-05T12:00:00Z', 'en', now)).toBeNull()
   })
 })

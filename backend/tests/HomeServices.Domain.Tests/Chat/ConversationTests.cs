@@ -41,6 +41,16 @@ public class ConversationTests
     }
 
     [Fact]
+    public void A_message_keeps_the_senders_own_id_for_it()
+    {
+        var conversation = Conversation.Start(Guid.NewGuid(), Customer, Guid.NewGuid());
+        var clientId = Guid.NewGuid();
+
+        conversation.Post(Customer, ChatRole.Customer, "Hi", [], Now, clientId).ClientId.ShouldBe(clientId);
+        conversation.Post(Customer, ChatRole.Customer, "Hi again", [], Now).ClientId.ShouldBeNull();
+    }
+
+    [Fact]
     public void A_message_has_text_or_files_within_limits()
     {
         var conversation = NewConversation();

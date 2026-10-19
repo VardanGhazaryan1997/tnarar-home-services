@@ -5,6 +5,7 @@ using HomeServices.Application.Files;
 using HomeServices.Application.Messaging;
 using HomeServices.Application.Notifications;
 using HomeServices.Application.Offers;
+using HomeServices.Application.Realtime;
 using HomeServices.Domain;
 using HomeServices.Domain.Identity;
 using HomeServices.Domain.Notifications;
@@ -213,7 +214,7 @@ public sealed class AssignRequestHandler(IAppDbContext db, ICurrentLanguage lang
     }
 }
 
-public sealed class CancelRequestByStaffHandler(IAppDbContext db, ICurrentLanguage language, FileDtoFactory files, TimeProvider clock)
+public sealed class CancelRequestByStaffHandler(IAppDbContext db, ICurrentLanguage language, FileDtoFactory files, ILiveUpdates live, TimeProvider clock)
     : ICommandHandler<CancelRequestByStaff, AdminRequestDto>
 {
     public async Task<AdminRequestDto> HandleAsync(CancelRequestByStaff command, CancellationToken cancellationToken)
@@ -223,6 +224,7 @@ public sealed class CancelRequestByStaffHandler(IAppDbContext db, ICurrentLangua
         request.Cancel(command.Reason, now);
         await WaitingOffers.CloseAsync(db, request.Id, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+        await LiveUpdate.RequestAsync(db, live, request, null, now, cancellationToken);
         return await AdminRequestLoader.ToDtoAsync(db, language, files, request, cancellationToken);
     }
 }

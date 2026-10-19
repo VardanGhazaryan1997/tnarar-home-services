@@ -5,6 +5,7 @@ using HomeServices.Application.Orders;
 using HomeServices.Application.Requests;
 using HomeServices.Domain.Chat;
 using HomeServices.Domain.Files;
+using HomeServices.Domain.Offers;
 using HomeServices.Domain.Orders;
 using HomeServices.Domain.Requests;
 using Microsoft.EntityFrameworkCore;
@@ -45,18 +46,24 @@ internal static class ChatAccess
             .Select(o => (Guid?)o.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
+    /// <summary>After a request is cancelled, its conversations stay open this long, so the two sides can wrap up.</summary>
+    public static readonly TimeSpan OpenAfterCancellation = TimeSpan.FromDays(7);
+
     /// <summary>
-    /// Writing is open while the request is open and the partner hasn't declined it, or while the two have an order.
+    /// Writing is open while the two have an order, or while the request is open (or cancelled less than
+    /// <see cref="OpenAfterCancellation"/> ago) and the partner hasn't declined it.
     /// </summary>
-    public static async Task<bool> CanSendAsync(IAppDbContext db, Conversation conversation, CancellationToken cancellationToken)
+    public static async Task<bool> CanSendAsync(IAppDbContext db, Conversation conversation, DateTimeOffset now, CancellationToken cancellationToken)
     {
         if (await OrderIdAsync(db, conversation, cancellationToken) is not null)
         {
             return true;
         }
 
+        var since = now - OpenAfterCancellation;
         return await db.ServiceRequests.AsNoTracking().AnyAsync(
-            r => r.Id == conversation.RequestId && r.Status == RequestStatus.Open
+            r => r.Id == conversation.RequestId
+                && (r.Status == RequestStatus.Open || (r.Status == RequestStatus.Cancelled && r.CancelledAt > since))
                 && r.Recipients.Any(x => x.PartnerProfileId == conversation.PartnerProfileId && x.Status != RecipientStatus.Declined),
             cancellationToken);
     }
@@ -88,7 +95,7 @@ internal static class ChatAccess
                 attachments.Add(await files.CreateAsync(stored[attachment.FileId], cancellationToken));
             }
 
-            result.Add(new MessageDto(message.Id, message.ConversationId, message.SenderRole.ToString(), message.Body, attachments, message.SentAt));
+            result.Add(new MessageDto(message.Id, message.ConversationId, message.SenderRole.ToString(), message.Body, attachments, message.SentAt, message.ClientId));
         }
 
         return result;
@@ -99,7 +106,7 @@ internal static class ChatAccess
     /// customer's first name (as in the inbox).
     /// </summary>
     public static async Task<ConversationDto> ToDtoAsync(
-        IAppDbContext db, ICurrentLanguage language, Conversation conversation, ChatRole role, CancellationToken cancellationToken)
+        IAppDbContext db, ICurrentLanguage language, Conversation conversation, ChatRole role, DateTimeOffset now, CancellationToken cancellationToken)
     {
         var request = await db.ServiceRequests.AsNoTracking().SingleAsync(r => r.Id == conversation.RequestId, cancellationToken);
         var lookup = await RequestLookup.LoadAsync(db, language, [request], cancellationToken);
@@ -132,8 +139,27 @@ internal static class ChatAccess
             unread,
             last is null ? null : new MessageSummaryDto(last.SenderRole.ToString(), Excerpt(last.Body), last.Files, last.SentAt),
             conversation.ReadAtOf(otherRole),
-            await CanSendAsync(db, conversation, cancellationToken),
-            orderId);
+            await CanSendAsync(db, conversation, now, cancellationToken),
+            orderId,
+            request.CancelledAt,
+            request.CancelledAt is { } cancelledAt && orderId is null ? cancelledAt + OpenAfterCancellation : null,
+            await OffersAsync(db, conversation, role, now, cancellationToken),
+            request.CancelReason);
+    }
+
+    /// <summary>The partner's offers on the request, oldest first; the customer, like on the request page, not withdrawn ones.</summary>
+    private static async Task<IReadOnlyList<ChatOfferDto>> OffersAsync(
+        IAppDbContext db, Conversation conversation, ChatRole role, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var offers = db.Offers.AsNoTracking().Where(o => o.RequestId == conversation.RequestId && o.PartnerProfileId == conversation.PartnerProfileId);
+        if (role == ChatRole.Customer)
+        {
+            offers = offers.Where(o => o.Status != OfferStatus.Withdrawn);
+        }
+
+        return (await offers.OrderBy(o => o.CreatedAt).ThenBy(o => o.Id).ToListAsync(cancellationToken))
+            .Select(o => new ChatOfferDto(o.Id, o.Kind.ToString(), o.StatusAt(now).ToString(), o.Price, o.Summary, o.VisitAt, o.ExpiresAt, o.CreatedAt, o.DecidedAt, o.OrderId))
+            .ToList();
     }
 
     private static string? CustomerName(string? fullName, bool agreed)

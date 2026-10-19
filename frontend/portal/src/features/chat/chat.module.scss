@@ -230,6 +230,40 @@
     margin-bottom: space(3);
   }
 
+  // "Latest" while the user reads older messages: stays at the bottom of the thread as it scrolls.
+  &__latest {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding-block-start: space(2);
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+      box-shadow: $shadow;
+    }
+  }
+
+  // "New messages": a line before the first one the user hasn't seen.
+  &__new-divider {
+    @include text-small;
+
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    font-weight: $font-weight-semibold;
+    color: $color-tuff-deep;
+
+    &::before,
+    &::after {
+      flex: 1;
+      height: 0;
+      content: '';
+      border-top: 1px solid $color-tuff;
+    }
+  }
+
   &__hint {
     @include text-small;
     @include text-muted;
@@ -257,11 +291,61 @@
     border-radius: $radius-pill;
   }
 
+  // An offer event between the messages: icon, words and time, in the offer's tone.
+  &__event {
+    @include text-small;
+
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: space(1) space(2);
+    align-items: center;
+    align-self: center;
+    max-width: 100%;
+    padding: space(1) space(3);
+    margin: space(1) 0;
+    font-weight: $font-weight-medium;
+    color: $color-info;
+    background: $color-info-soft;
+    border-radius: $radius-pill;
+
+    &--accepted {
+      color: $color-success;
+      background: $color-success-soft;
+    }
+
+    &--rejected {
+      color: $color-danger;
+      background: $color-danger-soft;
+    }
+
+    &--withdrawn,
+    &--expired {
+      color: $color-text-muted;
+      background: $color-surface-sunken;
+    }
+  }
+
+  &__event-time {
+    font-weight: $font-weight-regular;
+    color: $color-text-muted;
+  }
+
   &__message {
     display: flex;
 
     &--mine {
       justify-content: flex-end;
+    }
+
+    // After the request was cancelled: the label (on the first one) sits above the bubble.
+    &--after-cancel {
+      flex-direction: column;
+      gap: space(1);
+      align-items: flex-start;
+    }
+
+    &--after-cancel#{&}--mine {
+      align-items: flex-end;
     }
   }
 
@@ -280,6 +364,118 @@
       background: $color-night;
       border-radius: $radius-lg $radius-lg $radius-sm;
     }
+
+    // Sent after the cancellation: lighter, with a dashed edge, so it reads as "afterwards" at a glance.
+    &--after-cancel {
+      color: $color-text;
+      background: $color-surface-sunken;
+      border: 1px dashed $color-border-strong;
+      box-shadow: none;
+    }
+
+    &--after-cancel#{&}--mine {
+      color: $color-text;
+      background: $color-white;
+    }
+  }
+
+  // A message of mine that didn't go: kept with a red dashed edge, the reason and Retry.
+  &__bubble--failed#{&}__bubble--mine {
+    color: $color-text;
+    background: $color-white;
+    border: 1px dashed $color-danger;
+  }
+
+  &__pending-files {
+    @include text-small;
+  }
+
+  &__failed {
+    display: flex;
+    flex-direction: column;
+    gap: space(2);
+  }
+
+  &__failed-text {
+    @include text-small;
+
+    display: inline-flex;
+    gap: space(1);
+    align-items: center;
+    font-weight: $font-weight-medium;
+    color: $color-danger;
+  }
+
+  &__failed-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+  }
+
+  &__after-label {
+    @include text-small;
+
+    display: inline-flex;
+    gap: space(1);
+    align-items: center;
+    font-weight: $font-weight-medium;
+    color: $color-danger;
+  }
+
+  // The cancellation across the thread: muted red lines on both sides of a pill with the date.
+  &__cancelled {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    align-items: center;
+    margin: space(3) 0;
+  }
+
+  &__cancelled-pill {
+    @include reset-button;
+    @include focus-ring;
+    @include text-small;
+
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    width: 100%;
+    font-weight: $font-weight-semibold;
+    color: $color-danger;
+    text-align: center;
+
+    &::before,
+    &::after {
+      flex: 1;
+      height: 1px;
+      content: '';
+      background: $color-danger-soft;
+      border-top: 1px solid rgb(180 35 24 / 25%);
+    }
+  }
+
+  &__cancelled-reason {
+    @include text-small;
+
+    max-width: 520px;
+    padding: space(2) space(3);
+    color: $color-text-muted;
+    text-align: center;
+    overflow-wrap: anywhere;
+    background: $color-white;
+    border-radius: $radius;
+  }
+
+  &__cancel-note {
+    @include text-small;
+
+    display: flex;
+    gap: space(2);
+    align-items: center;
+    padding: space(2) space(4);
+    color: $color-text-muted;
+    background: $color-surface-sunken;
+    border-top: 1px solid $color-border;
   }
 
   &__body {

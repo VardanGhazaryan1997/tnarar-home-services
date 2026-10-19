@@ -87,7 +87,7 @@ describe('Messages', () => {
 
     await user.type(screen.getByLabelText(en.chat.placeholder), 'Tomorrow at 10{Enter}')
     expect(await within(thread).findByText('Tomorrow at 10')).toBeInTheDocument()
-    expect(calls.sent).toEqual([{ body: 'Tomorrow at 10', fileIds: [] }])
+    expect(calls.sent).toEqual([{ body: 'Tomorrow at 10', fileIds: [], clientId: expect.any(String) }])
     expect(screen.getByLabelText(en.chat.placeholder)).toHaveValue('')
 
     await user.type(screen.getByLabelText(en.chat.placeholder), 'line one{Shift>}{Enter}{/Shift}line two')
@@ -154,7 +154,7 @@ describe('Messages', () => {
     expect(await screen.findByText('plan.pdf')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByRole('button', { name: en.chat.send })).toBeEnabled())
     await user.click(screen.getByRole('button', { name: en.chat.send }))
-    await waitFor(() => expect(calls.sent).toEqual([{ body: null, fileIds: ['f1'] }]))
+    await waitFor(() => expect(calls.sent).toEqual([{ body: null, fileIds: ['f1'], clientId: expect.any(String) }]))
     await waitFor(() => expect(screen.queryByText('plan.pdf')).not.toBeInTheDocument())
 
     await user.upload(screen.getByLabelText(en.chat.attach, { selector: 'input' }), new File(['x'], 'notes.txt', { type: 'text/plain' }))
@@ -169,7 +169,10 @@ describe('Messages', () => {
     const { unmount } = renderRoute('/en/messages/conv-1')
 
     await user.type(await screen.findByLabelText(en.chat.placeholder), 'Hello{Enter}')
-    expect(await screen.findByText(en.errors.conversation.closed)).toBeInTheDocument()
+    // The message stays, marked as not sent, with the reason and a way to try again.
+    expect(await screen.findByRole('alert')).toHaveTextContent(en.errors.conversation.closed)
+    expect(screen.getByText('Hello')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: en.chat.outbox.retry })).toBeInTheDocument()
     unmount()
 
     chatApi({ detail: conversation({ canSend: false }), messages: [] })

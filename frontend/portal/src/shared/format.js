@@ -34,3 +34,19 @@ export function todayIso(now = new Date()) {
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
   return local.toISOString().slice(0, 10)
 }
+
+/**
+ * How long until a moment, in the UI language: "in 2 days", "in 5 hours", "in 20 minutes" (rounded down; days
+ * once a day or more is left). Null once it has passed.
+ */
+export function formatTimeLeft(until, lng, now = new Date()) {
+  const ms = new Date(until).getTime() - now.getTime()
+  if (ms <= 0) return null
+  const minutes = Math.floor(ms / 60_000)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  const format = new Intl.RelativeTimeFormat(intlLocale(lng), { numeric: 'always' })
+  if (days >= 1) return format.format(days, 'day')
+  if (hours >= 1) return format.format(hours, 'hour')
+  return format.format(Math.max(1, minutes), 'minute')
+}

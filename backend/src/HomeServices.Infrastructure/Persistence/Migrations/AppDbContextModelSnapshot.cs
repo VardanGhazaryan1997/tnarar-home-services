@@ -12948,6 +12948,10 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(4000)")
                         .HasColumnName("body");
 
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("client_id");
+
                     b.Property<Guid>("ConversationId")
                         .HasColumnType("uuid")
                         .HasColumnName("conversation_id");
@@ -12971,6 +12975,11 @@ namespace HomeServices.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("SenderUserId")
                         .HasDatabaseName("ix_messages_sender_user_id");
+
+                    b.HasIndex("ConversationId", "ClientId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_messages_conversation_id_client_id")
+                        .HasFilter("client_id IS NOT NULL");
 
                     b.HasIndex("ConversationId", "SentAt")
                         .HasDatabaseName("ix_messages_conversation_id_sent_at");

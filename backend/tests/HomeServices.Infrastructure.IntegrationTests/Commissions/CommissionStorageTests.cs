@@ -70,7 +70,7 @@ public class CommissionStorageTests(PostgresFixture db)
         Guid orderId;
         await using (var context = db.CreateContext())
         {
-            var offer = await new SendOfferHandler(context, partnerUser, db.Clock).HandleAsync(
+            var offer = await new SendOfferHandler(context, partnerUser, NoLiveUpdates.Instance, db.Clock).HandleAsync(
                 new SendOffer(
                     request.Id,
                     OfferKind.Work,
@@ -85,7 +85,7 @@ public class CommissionStorageTests(PostgresFixture db)
                     [new OfferStageTerms("Deposit", PaymentPurpose.Deposit, 50_000), new OfferStageTerms(null, PaymentPurpose.Final, 150_000)],
                     null),
                 CancellationToken.None);
-            orderId = (await new AcceptOfferHandler(context, customerUser, language, db.Clock).HandleAsync(new AcceptOffer(offer.Id), CancellationToken.None)).Id;
+            orderId = (await new AcceptOfferHandler(context, customerUser, language, NoLiveUpdates.Instance, db.Clock).HandleAsync(new AcceptOffer(offer.Id), CancellationToken.None)).Id;
         }
 
         await using (var context = db.CreateContext())

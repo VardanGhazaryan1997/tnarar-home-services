@@ -1,5 +1,6 @@
 using HomeServices.Application.Abstractions;
 using HomeServices.Application.Files;
+using HomeServices.Application.Realtime;
 using HomeServices.Domain.Common;
 using HomeServices.Domain.Localization;
 using HomeServices.Infrastructure.Persistence;
@@ -12,6 +13,16 @@ public sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
     public DateTimeOffset Now { get; set; } = now;
 
     public override DateTimeOffset GetUtcNow() => Now;
+}
+
+/// <summary>Live updates nobody listens to.</summary>
+public sealed class NoLiveUpdates : ILiveUpdates
+{
+    public static readonly NoLiveUpdates Instance = new();
+
+    public Task RequestUpdatedAsync(IReadOnlyCollection<Guid> userIds, RequestUpdateDto update, CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task OfferUpdatedAsync(IReadOnlyCollection<Guid> userIds, OfferUpdateDto update, CancellationToken cancellationToken) => Task.CompletedTask;
 }
 
 public sealed class FakeCurrentLanguage(string code = "hy") : ICurrentLanguage

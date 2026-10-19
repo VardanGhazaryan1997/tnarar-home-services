@@ -59,7 +59,7 @@ public class ChatStorageTests(PostgresFixture db)
         ConversationDto conversation;
         await using (var context = db.CreateContext())
         {
-            conversation = await new OpenConversationHandler(context, partnerUser, new FakeCurrentLanguage())
+            conversation = await new OpenConversationHandler(context, partnerUser, new FakeCurrentLanguage(), db.Clock)
                 .HandleAsync(new OpenConversation(request.Id, null), CancellationToken.None);
             await new SendMessageHandler(context, partnerUser, Files, new NoNotifier(), db.Clock)
                 .HandleAsync(new SendMessage(conversation.Id, "When can I come?", null), CancellationToken.None);
@@ -68,7 +68,7 @@ public class ChatStorageTests(PostgresFixture db)
         await using (var context = db.CreateContext())
         {
             (await new GetUnreadSummaryHandler(context, customerUser).HandleAsync(new GetUnreadSummary(), CancellationToken.None)).ShouldBe(new UnreadSummaryDto(1, 1));
-            var list = await new GetConversationsHandler(context, customerUser, new FakeCurrentLanguage()).HandleAsync(new GetConversations(), CancellationToken.None);
+            var list = await new GetConversationsHandler(context, customerUser, new FakeCurrentLanguage(), db.Clock).HandleAsync(new GetConversations(), CancellationToken.None);
             var item = list.Items.ShouldHaveSingleItem();
             item.UnreadCount.ShouldBe(1);
             item.OtherParty.Name.ShouldBe("Aram");
@@ -84,6 +84,26 @@ public class ChatStorageTests(PostgresFixture db)
             (await new GetUnreadSummaryHandler(context, customerUser).HandleAsync(new GetUnreadSummary(), CancellationToken.None)).ShouldBe(new UnreadSummaryDto(0, 0));
             (await context.Conversations.SingleAsync(c => c.Id == conversation.Id)).CustomerReadAt.ShouldBe(db.Clock.Now);
             (await context.Messages.CountAsync(m => m.ConversationId == conversation.Id && m.SenderRole == ChatRole.Partner)).ShouldBe(1);
+        }
+
+        // A retried send (same client id) returns the message already sent; the database refuses a second copy.
+        var clientId = Guid.NewGuid();
+        await using (var context = db.CreateContext())
+        {
+            var first = await new SendMessageHandler(context, customerUser, Files, new NoNotifier(), db.Clock)
+                .HandleAsync(new SendMessage(conversation.Id, "Tomorrow at 10?", null, clientId), CancellationToken.None);
+            var again = await new SendMessageHandler(context, customerUser, Files, new NoNotifier(), db.Clock)
+                .HandleAsync(new SendMessage(conversation.Id, "Tomorrow at 10?", null, clientId), CancellationToken.None);
+            again.Id.ShouldBe(first.Id);
+            again.ClientId.ShouldBe(clientId);
+        }
+
+        await using (var context = db.CreateContext())
+        {
+            (await context.Messages.CountAsync(m => m.ConversationId == conversation.Id && m.ClientId == clientId)).ShouldBe(1);
+            var stored = await context.Conversations.SingleAsync(c => c.Id == conversation.Id);
+            context.Messages.Add(stored.Post(customer.Id, ChatRole.Customer, "Twice", [], db.Clock.Now, clientId));
+            await Should.ThrowAsync<DbUpdateException>(() => context.SaveChangesAsync());
         }
     }
 }

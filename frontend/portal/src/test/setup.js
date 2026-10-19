@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, configure } from '@testing-library/react'
+import { outbox } from '@/features/chat/outbox'
 import i18n from '@/i18n'
 import { server } from './server'
 import { hub } from './signalr'
@@ -24,6 +25,8 @@ afterEach(async () => {
   await i18n.changeLanguage('hy')
   // changeLanguage remembers the choice; start every test without one.
   localStorage.clear()
+  // Messages left on their way by a test (the chat outbox keeps them in memory too).
+  outbox.reset()
 })
 
 afterAll(() => server.close())

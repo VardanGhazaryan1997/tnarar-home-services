@@ -38,7 +38,8 @@ public sealed record MyRequestListItemDto(
     int SentTo,
     int Responded,
     bool FindingPartners,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    Guid? OrderId = null);
 
 /// <summary>A partner as the customer sees them on a request: the chosen partner of a direct request, or one who responded.</summary>
 public sealed record MyRequestPartnerDto(Guid PartnerId, string DisplayName, string? Slug, string Status);
@@ -63,7 +64,8 @@ public sealed record MyRequestDto(
     Guid? EstimateId,
     IReadOnlyList<RequestLineDto> Lines,
     MaterialGrade? MaterialGrade = null,
-    IReadOnlyList<RequestMaterialDto>? Materials = null);
+    IReadOnlyList<RequestMaterialDto>? Materials = null,
+    Guid? OrderId = null);
 
 /// <summary>A request in a partner's inbox. <see cref="MyStatus"/>: New, Viewed, Declined or Responded.</summary>
 public sealed record InboxItemDto(

@@ -12,6 +12,8 @@ import { TextField } from '@/components/ui/Field/Field'
 import Modal from '@/components/ui/Modal/Modal'
 import Tag from '@/components/ui/Tag/Tag'
 import StartChatButton from '@/features/chat/StartChatButton'
+import LiveNote from '@/features/live/LiveNote'
+import { useLiveChange } from '@/features/live/useLiveChange'
 import RequestOffers from '@/features/offers/RequestOffers'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDate, formatDateTime } from '@/shared/format'
@@ -28,6 +30,7 @@ export default function MyRequestPage() {
   const location = useLocation()
   const path = useLocalizedPath()
   const query = useGetMyRequestQuery(id, { refetchOnMountOrArgChange: true })
+  const liveChange = useLiveChange(id, 'customer')
   const [cancelOpen, setCancelOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [cancelRequest, cancelling] = useCancelMyRequestMutation()
@@ -57,12 +60,13 @@ export default function MyRequestPage() {
             actions={
               <>
                 {request.kind === 'Direct' && <Tag tone="info">{t('requests.kind.Direct')}</Tag>}
-                <RequestStatusTag status={request.status} />
+                <RequestStatusTag status={request.status} orderId={request.orderId} />
               </>
             }
           />
           <div className={styles['request-page']}>
             <div className={styles['request-page__main']}>
+              {liveChange && <LiveNote change={liveChange} side="customer" />}
               {location.state?.created && <Alert tone="success" title={t('requests.created')} />}
               {request.findingPartners && request.status === 'Open' && <Alert tone="info" title={t('requests.findingPartnersLong')} />}
               {request.status === 'Cancelled' && (

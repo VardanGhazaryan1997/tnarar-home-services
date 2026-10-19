@@ -447,7 +447,9 @@
     "status": {
       "Open": "Open",
       "Closed": "Agreed",
-      "Cancelled": "Cancelled"
+      "Cancelled": "Cancelled",
+      "Accepted": "Accepted",
+      "Ended": "Closed"
     },
     "emptyTitle": "No requests here yet",
     "emptyText": "Describe a job and specialists nearby will send you offers.",
@@ -922,7 +924,62 @@
     "placeholder": "Write a message",
     "send": "Send",
     "ask": "Ask a question",
-    "askCustomer": "Ask the customer"
+    "askCustomer": "Ask the customer",
+    "alerts": {
+      "region": "New messages",
+      "title": "New message from {{name}}",
+      "open": "Open",
+      "dismiss": "Close notification",
+      "tabTitle": "({{n}}) New message"
+    },
+    "sound": {
+      "on": "Message sounds are on. Turn them off",
+      "off": "Message sounds are off. Turn them on"
+    },
+    "offer": {
+      "label": "Offer from {{name}}",
+      "mine": "Your offer",
+      "details": "Request details",
+      "showMore": "Show offer details",
+      "showLess": "Hide offer details",
+      "expiresIn": "Expires {{when}}",
+      "expiredText": "This offer has expired, so it can no longer be accepted. Ask for a new one.",
+      "accepted": "Order created",
+      "rejected": "You declined this offer.",
+      "closed": "This offer closed when the request ended.",
+      "withdrawn": "This offer was withdrawn.",
+      "waiting": "Waiting for the customer",
+      "partnerAccepted": "The customer accepted · order created",
+      "partnerRejected": "The customer declined this offer.",
+      "events": {
+        "sent": "Offer sent · {{price}}",
+        "accepted": "Offer accepted",
+        "rejected": "Offer declined",
+        "withdrawn": "Offer withdrawn",
+        "expired": "Offer expired"
+      }
+    },
+    "cancel": {
+      "marker": "Request cancelled · {{date}}",
+      "showReason": "Show why the request was cancelled",
+      "hideReason": "Hide the reason",
+      "reason": "Reason: {{reason}}",
+      "noReason": "No reason given.",
+      "after": "Sent after the request was cancelled",
+      "openUntil": "The request was cancelled. You can still write to each other until {{date}}.",
+      "closed": "This conversation closed 7 days after the request was cancelled."
+    },
+    "newMessages": "New messages",
+    "latest": "Latest",
+    "latestCount": "Latest · {{n}} new",
+    "outbox": {
+      "label": "Messages being sent",
+      "sending": "Sending…",
+      "failed": "Not sent.",
+      "failedHint": "Check your connection and try again.",
+      "retry": "Retry",
+      "discard": "Discard"
+    }
   },
   "public": {
     "partnerType": {
@@ -1667,5 +1724,21 @@
     "hasSome": "has {{covered}} of {{count}} materials",
     "note": "Totals are for the materials a store has in stock, rounded up to whole packs, at the grade you chose.",
     "compare": "Compare all material prices"
+  },
+  "live": {
+    "customer": {
+      "cancelled": "Cancelled just now",
+      "accepted": "Accepted · order created",
+      "closed": "Closed just now",
+      "offer": "New offer received",
+      "offerWithdrawn": "An offer was withdrawn"
+    },
+    "partner": {
+      "cancelled": "The customer cancelled this request",
+      "offerAccepted": "Your offer was accepted",
+      "closedOther": "The customer chose another offer",
+      "offerRejected": "Your offer was declined"
+    },
+    "openOrder": "Open order"
   }
 }

@@ -82,7 +82,7 @@ public class PaymentReviewNotificationStorageTests(PostgresFixture db)
         OfferDto offer;
         await using (var context = db.CreateContext())
         {
-            offer = await new SendOfferHandler(context, partnerUser, db.Clock).HandleAsync(
+            offer = await new SendOfferHandler(context, partnerUser, NoLiveUpdates.Instance, db.Clock).HandleAsync(
                 new SendOffer(
                     request.Id,
                     OfferKind.Work,
@@ -101,7 +101,7 @@ public class PaymentReviewNotificationStorageTests(PostgresFixture db)
 
         await using (var context = db.CreateContext())
         {
-            var order = await new AcceptOfferHandler(context, customerUser, new FakeCurrentLanguage(), db.Clock).HandleAsync(new AcceptOffer(offer.Id), CancellationToken.None);
+            var order = await new AcceptOfferHandler(context, customerUser, new FakeCurrentLanguage(), NoLiveUpdates.Instance, db.Clock).HandleAsync(new AcceptOffer(offer.Id), CancellationToken.None);
             return (order.Id, customerUser, partnerUser, name, partner.Slug!);
         }
     }

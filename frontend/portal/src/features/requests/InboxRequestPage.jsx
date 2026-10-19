@@ -13,6 +13,8 @@ import Icon from '@/components/ui/Icon/Icon'
 import Modal from '@/components/ui/Modal/Modal'
 import Tag from '@/components/ui/Tag/Tag'
 import StartChatButton from '@/features/chat/StartChatButton'
+import LiveNote from '@/features/live/LiveNote'
+import { useLiveChange } from '@/features/live/useLiveChange'
 import MyOffersOnRequest from '@/features/offers/MyOffersOnRequest'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatDateTime } from '@/shared/format'
@@ -26,6 +28,7 @@ import styles from './requests.module.scss'
 export default function InboxRequestPage() {
   const { t, i18n } = useTranslation()
   const { id } = useParams()
+  const liveChange = useLiveChange(id, 'partner')
   const location = useLocation()
   const path = useLocalizedPath()
   const query = useGetInboxRequestQuery(id, { refetchOnMountOrArgChange: true })
@@ -66,6 +69,7 @@ export default function InboxRequestPage() {
             />
             <div className={styles['request-page']}>
               <div className={styles['request-page__main']}>
+                {liveChange && <LiveNote change={liveChange} side="partner" />}
                 {location.state?.offerSent && <Alert tone="success" title={t('offers.sent')} />}
                 {request.requestStatus !== 'Open' && <Alert tone="warning" title={t(`inbox.requestEnded.${request.requestStatus}`)} />}
                 {request.myStatus === 'Declined' && <Alert tone="info" title={t('inbox.youDeclined')} />}

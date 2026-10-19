@@ -6,8 +6,8 @@ namespace HomeServices.Api.Chat;
 
 /// <summary>
 /// Live chat events for signed-in Portal users at /hubs/chat. Clients only listen: messages are sent with the REST API.
-/// Events: "messageReceived" (MessageDto), "conversationRead" ({ conversationId, readerRole, readAt }) and
-/// "notificationReceived" (NotificationDto).
+/// Events: "messageReceived" (MessageDto), "conversationRead" ({ conversationId, readerRole, readAt }),
+/// "notificationReceived" (NotificationDto), "requestUpdated" (RequestUpdateDto) and "offerUpdated" (OfferUpdateDto).
 /// Browsers pass the access token as ?access_token=… (WebSockets can't send headers).
 /// </summary>
 [Authorize(AuthenticationSchemes = AuthSchemes.Portal)]

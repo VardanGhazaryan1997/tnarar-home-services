@@ -3,6 +3,7 @@ using HomeServices.Application.Abstractions;
 using HomeServices.Application.Common;
 using HomeServices.Application.Messaging;
 using HomeServices.Application.Notifications;
+using HomeServices.Application.Realtime;
 using HomeServices.Application.Requests;
 using HomeServices.Domain;
 using HomeServices.Domain.Notifications;
@@ -121,7 +122,7 @@ public sealed class GetMyOffersValidator : AbstractValidator<GetMyOffers>
     }
 }
 
-public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser, TimeProvider clock)
+public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser, ILiveUpdates live, TimeProvider clock)
     : ICommandHandler<SendOffer, OfferDto>
 {
     public async Task<OfferDto> HandleAsync(SendOffer command, CancellationToken cancellationToken)
@@ -185,11 +186,12 @@ public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser,
             },
             now);
         await db.SaveChangesAsync(cancellationToken);
+        await LiveUpdate.OfferAsync(db, live, offer, request.CustomerId, now, cancellationToken);
         return await OfferViews.ToDtoAsync(db, offer, now, cancellationToken);
     }
 }
 
-public sealed class WithdrawOfferHandler(IAppDbContext db, ICurrentUser currentUser, TimeProvider clock)
+public sealed class WithdrawOfferHandler(IAppDbContext db, ICurrentUser currentUser, ILiveUpdates live, TimeProvider clock)
     : ICommandHandler<WithdrawOffer, OfferDto>
 {
     public async Task<OfferDto> HandleAsync(WithdrawOffer command, CancellationToken cancellationToken)
@@ -204,6 +206,8 @@ public sealed class WithdrawOfferHandler(IAppDbContext db, ICurrentUser currentU
         var now = clock.GetUtcNow();
         offer.Withdraw(now);
         await db.SaveChangesAsync(cancellationToken);
+        var customerId = await db.ServiceRequests.AsNoTracking().Where(r => r.Id == offer.RequestId).Select(r => r.CustomerId).SingleAsync(cancellationToken);
+        await LiveUpdate.OfferAsync(db, live, offer, customerId, now, cancellationToken);
         return await OfferViews.ToDtoAsync(db, offer, now, cancellationToken);
     }
 }

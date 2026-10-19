@@ -65,7 +65,7 @@ public class SendOfferTests
 
         (await Should.ThrowAsync<NotFoundException>(() => _data.SendAsync(aram, _data.Work(request.Id)))).Code.ShouldBe("request.not_found");
         (await Should.ThrowAsync<NotFoundException>(() =>
-                new SendOfferHandler(_data.Requests.Db, _data.Customer, _data.Requests.Clock).HandleAsync(_data.Work(request.Id), CancellationToken.None)))
+                new SendOfferHandler(_data.Requests.Db, _data.Customer, _data.Requests.Live, _data.Requests.Clock).HandleAsync(_data.Work(request.Id), CancellationToken.None)))
             .Code.ShouldBe("partner.not_found");
     }
 

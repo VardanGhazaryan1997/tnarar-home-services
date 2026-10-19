@@ -15,7 +15,8 @@ namespace HomeServices.Api.Controllers;
 [Route("api/v1/conversations")]
 public sealed class ConversationsController : ControllerBase
 {
-    public sealed record MessageBody(string? Body, IReadOnlyList<Guid>? FileIds);
+    /// <summary><see cref="ClientId"/>: the app's own id for the message; sending again with it returns the message already sent.</summary>
+    public sealed record MessageBody(string? Body, IReadOnlyList<Guid>? FileIds, Guid? ClientId = null);
 
     public sealed record ReadResponse(DateTimeOffset ReadAt);
 
@@ -53,14 +54,17 @@ public sealed class ConversationsController : ControllerBase
         CancellationToken cancellationToken) =>
         handler.HandleAsync(new GetMessages(id, before, limit ?? GetMessages.DefaultLimit), cancellationToken);
 
-    /// <summary>Sends a message (text and/or up to 5 uploaded files). 422 "conversation.closed" once the request ended without an order.</summary>
+    /// <summary>
+    /// Sends a message (text and/or up to 5 uploaded files). 422 "conversation.closed" once the request ended without an
+    /// order. With a clientId already used in this conversation, returns that message instead of sending it twice.
+    /// </summary>
     [HttpPost("{id:guid}/messages")]
     public async Task<ActionResult<MessageDto>> SendAsync(
         Guid id,
         MessageBody body,
         [FromServices] ICommandHandler<SendMessage, MessageDto> handler,
         CancellationToken cancellationToken) =>
-        StatusCode(StatusCodes.Status201Created, await handler.HandleAsync(new SendMessage(id, body.Body, body.FileIds), cancellationToken));
+        StatusCode(StatusCodes.Status201Created, await handler.HandleAsync(new SendMessage(id, body.Body, body.FileIds, body.ClientId), cancellationToken));
 
     /// <summary>Marks the conversation read up to now.</summary>
     [HttpPost("{id:guid}/read")]

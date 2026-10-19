@@ -25,6 +25,46 @@
     border-inline-start: 4px solid $color-tuff;
   }
 
+  // A change that just happened: an edge in its tone and a tint that fades (the note says what changed).
+  &--live-danger,
+  &--live-success,
+  &--live-info,
+  &--live-neutral {
+    animation: request-card-live 5s ease-out both;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &--live-danger {
+    --live-tint: #{$color-danger-soft};
+
+    border-inline-start: 4px solid $color-danger;
+  }
+
+  &--live-success {
+    --live-tint: #{$color-success-soft};
+
+    border-inline-start: 4px solid $color-success;
+  }
+
+  &--live-info {
+    --live-tint: #{$color-info-soft};
+
+    border-inline-start: 4px solid $color-info;
+  }
+
+  &--live-neutral {
+    --live-tint: #{$color-surface-sunken};
+
+    border-inline-start: 4px solid $color-border-strong;
+  }
+
+  &__live {
+    margin: 0 space(4) space(4);
+  }
+
   &__link {
     @include focus-ring;
 
@@ -133,4 +173,14 @@
 
 .request-text {
   white-space: pre-line;
+}
+
+@keyframes request-card-live {
+  from {
+    background: var(--live-tint);
+  }
+
+  to {
+    background: $color-surface;
+  }
 }

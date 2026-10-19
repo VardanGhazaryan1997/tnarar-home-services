@@ -63,10 +63,11 @@ export default function MyRequestsPage() {
                     title={placeText(item.place, t)}
                     excerpt={item.excerpt}
                     highlight={item.status === 'Open' && item.responded > 0}
+                    liveFor={{ id: item.id, side: 'customer' }}
                     tags={
                       <>
                         {item.kind === 'Direct' && <Tag tone="info">{t('requests.kind.Direct')}</Tag>}
-                        <RequestStatusTag status={item.status} />
+                        <RequestStatusTag status={item.status} orderId={item.orderId} />
                       </>
                     }
                     meta={[

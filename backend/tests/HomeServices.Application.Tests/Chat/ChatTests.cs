@@ -37,7 +37,7 @@ public class ChatTests
     private static DateTimeOffset Now => OfferTestData.Now;
 
     private Task<ConversationDto> OpenAsync(ICurrentUser user, Guid requestId, Guid? partnerId = null) =>
-        new OpenConversationHandler(_data.Requests.Db, user, _data.Requests.Language).HandleAsync(new OpenConversation(requestId, partnerId), CancellationToken.None);
+        new OpenConversationHandler(_data.Requests.Db, user, _data.Requests.Language, _data.Requests.Clock).HandleAsync(new OpenConversation(requestId, partnerId), CancellationToken.None);
 
     private Task<MessageDto> SendAsync(ICurrentUser user, Guid conversationId, string? body, params Guid[] files) =>
         new SendMessageHandler(_data.Requests.Db, user, _data.Requests.Files, _notifier, _data.Requests.Clock)
@@ -47,7 +47,7 @@ public class ChatTests
         new GetMessagesHandler(_data.Requests.Db, user, _data.Requests.Files).HandleAsync(new GetMessages(conversationId, before, limit), CancellationToken.None);
 
     private Task<ConversationDto> GetAsync(ICurrentUser user, Guid id) =>
-        new GetConversationHandler(_data.Requests.Db, user, _data.Requests.Language).HandleAsync(new GetConversation(id), CancellationToken.None);
+        new GetConversationHandler(_data.Requests.Db, user, _data.Requests.Language, _data.Requests.Clock).HandleAsync(new GetConversation(id), CancellationToken.None);
 
     private Task<UnreadSummaryDto> UnreadAsync(ICurrentUser user) =>
         new GetUnreadSummaryHandler(_data.Requests.Db, user).HandleAsync(new GetUnreadSummary(), CancellationToken.None);
@@ -248,7 +248,7 @@ public class ChatTests
         var asCustomer = await OpenAsync(OfferTestData.As(aram), own.Id, gor.Id);
         await SendAsync(OfferTestData.As(gor), asCustomer.Id, new string('x', 150));
 
-        var list = await new GetConversationsHandler(_data.Requests.Db, OfferTestData.As(aram), _data.Requests.Language)
+        var list = await new GetConversationsHandler(_data.Requests.Db, OfferTestData.As(aram), _data.Requests.Language, _data.Requests.Clock)
             .HandleAsync(new GetConversations(), CancellationToken.None);
 
         list.Items.Select(c => (c.Id, c.MyRole)).ShouldBe(new[] { (asCustomer.Id, "Customer"), (asPartner.Id, "Partner") });

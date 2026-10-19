@@ -36,8 +36,12 @@ public sealed record GetMessages(Guid ConversationId, DateTimeOffset? Before = n
     public const int MaxLimit = 100;
 }
 
-/// <summary>Sends a message: text, files (uploaded with /api/v1/files first), or both.</summary>
-public sealed record SendMessage(Guid ConversationId, string? Body, IReadOnlyList<Guid>? FileIds) : ICommand<MessageDto>;
+/// <summary>
+/// Sends a message: text, files (uploaded with /api/v1/files first), or both. <see cref="ClientId"/>: an id the app
+/// makes for the message; sending again with the same one (a retry after a lost answer) returns the message already
+/// sent instead of posting it twice.
+/// </summary>
+public sealed record SendMessage(Guid ConversationId, string? Body, IReadOnlyList<Guid>? FileIds, Guid? ClientId = null) : ICommand<MessageDto>;
 
 /// <summary>Marks the conversation read up to now (the other side sees it as a read receipt). Returns the time.</summary>
 public sealed record MarkConversationRead(Guid ConversationId) : ICommand<DateTimeOffset>;
@@ -72,7 +76,7 @@ public sealed class SendMessageValidator : AbstractValidator<SendMessage>
     }
 }
 
-public sealed class OpenConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class OpenConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
     : ICommandHandler<OpenConversation, ConversationDto>
 {
     public async Task<ConversationDto> HandleAsync(OpenConversation command, CancellationToken cancellationToken)
@@ -116,11 +120,11 @@ public sealed class OpenConversationHandler(IAppDbContext db, ICurrentUser curre
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        return await ChatAccess.ToDtoAsync(db, language, conversation, role, cancellationToken);
+        return await ChatAccess.ToDtoAsync(db, language, conversation, role, clock.GetUtcNow(), cancellationToken);
     }
 }
 
-public sealed class GetConversationsHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class GetConversationsHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
     : IQueryHandler<GetConversations, PagedResult<ConversationDto>>
 {
     public async Task<PagedResult<ConversationDto>> HandleAsync(GetConversations query, CancellationToken cancellationToken)
@@ -134,24 +138,25 @@ public sealed class GetConversationsHandler(IAppDbContext db, ICurrentUser curre
             .Take(query.PageSize)
             .ToListAsync(cancellationToken);
 
+        var now = clock.GetUtcNow();
         var items = new List<ConversationDto>();
         foreach (var conversation in page)
         {
             var role = conversation.CustomerId == userId ? ChatRole.Customer : ChatRole.Partner;
-            items.Add(await ChatAccess.ToDtoAsync(db, language, conversation, role, cancellationToken));
+            items.Add(await ChatAccess.ToDtoAsync(db, language, conversation, role, now, cancellationToken));
         }
 
         return new PagedResult<ConversationDto>(items, query.Page, query.PageSize, total);
     }
 }
 
-public sealed class GetConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language)
+public sealed class GetConversationHandler(IAppDbContext db, ICurrentUser currentUser, ICurrentLanguage language, TimeProvider clock)
     : IQueryHandler<GetConversation, ConversationDto>
 {
     public async Task<ConversationDto> HandleAsync(GetConversation query, CancellationToken cancellationToken)
     {
         var (conversation, role, _) = await ChatAccess.LoadAsync(db, currentUser, query.Id, cancellationToken);
-        return await ChatAccess.ToDtoAsync(db, language, conversation, role, cancellationToken);
+        return await ChatAccess.ToDtoAsync(db, language, conversation, role, clock.GetUtcNow(), cancellationToken);
     }
 }
 
@@ -182,7 +187,20 @@ public sealed class SendMessageHandler(IAppDbContext db, ICurrentUser currentUse
     public async Task<MessageDto> HandleAsync(SendMessage command, CancellationToken cancellationToken)
     {
         var (conversation, role, userId) = await ChatAccess.LoadAsync(db, currentUser, command.ConversationId, cancellationToken);
-        if (!await ChatAccess.CanSendAsync(db, conversation, cancellationToken))
+
+        // Sent already (the answer got lost and the app tried again): the same message, not a second one.
+        if (command.ClientId is { } clientId)
+        {
+            var sent = await db.Messages.AsNoTracking().Include(m => m.Attachments)
+                .SingleOrDefaultAsync(m => m.ConversationId == conversation.Id && m.ClientId == clientId && m.SenderUserId == userId, cancellationToken);
+            if (sent is not null)
+            {
+                return (await ChatAccess.MessageDtosAsync(db, files, [sent], cancellationToken))[0];
+            }
+        }
+
+        var now = clock.GetUtcNow();
+        if (!await ChatAccess.CanSendAsync(db, conversation, now, cancellationToken))
         {
             throw new DomainException("conversation.closed", "This conversation is closed: the request ended without an order.");
         }
@@ -197,8 +215,7 @@ public sealed class SendMessageHandler(IAppDbContext db, ICurrentUser currentUse
             throw new DomainException("message.files_invalid", "Some files can't be sent: upload them first.");
         }
 
-        var now = clock.GetUtcNow();
-        var message = conversation.Post(userId, role, command.Body, fileIds, now);
+        var message = conversation.Post(userId, role, command.Body, fileIds, now, command.ClientId);
         db.Messages.Add(message);
 
         // A partner asking a question has responded to the request: nobody needs to chase it.

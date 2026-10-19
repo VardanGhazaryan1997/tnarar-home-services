@@ -57,6 +57,7 @@ export default function InboxPage() {
                     title={placeText(item.place, t)}
                     excerpt={item.excerpt}
                     highlight={item.myStatus === 'New'}
+                    liveFor={{ id: item.id, side: 'partner' }}
                     tags={
                       <>
                         {item.kind === 'Direct' && <Tag tone="info">{t('inbox.direct')}</Tag>}

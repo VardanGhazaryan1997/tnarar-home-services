@@ -16,6 +16,9 @@ namespace HomeServices.Application.Offers;
 /// The signed-in partner sends an offer on a request they received (and haven't declined). A work offer describes
 /// the job; a visit offer proposes an assessment visit (fee 0 = free). The offer is valid for
 /// <see cref="ValidDays"/> days (default 7). One waiting offer of each kind per partner and request.
+/// <see cref="ReplacesOfferId"/>: the partner's own waiting offer on this request that the new one replaces ("Change
+/// offer"); it is withdrawn in the same step, so the customer never sees both or neither. An already expired one is
+/// simply replaced.
 /// </summary>
 public sealed record SendOffer(
     Guid RequestId,
@@ -30,7 +33,8 @@ public sealed record SendOffer(
     DateTimeOffset? VisitAt,
     IReadOnlyList<OfferStageTerms>? Stages,
     int? ValidDays,
-    int? MaterialsAmount = null) : ICommand<OfferDto>
+    int? MaterialsAmount = null,
+    Guid? ReplacesOfferId = null) : ICommand<OfferDto>
 {
     public const int DefaultValidDays = 7;
     public const int MaxValidDays = 30;
@@ -142,6 +146,8 @@ public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser,
             stale.Expire(now);
         }
 
+        var replaced = await ReplacedAsync(request.Id, partnerId, command.ReplacesOfferId, now, cancellationToken);
+
         if (mine.Any(o => o.Status == OfferStatus.Sent))
         {
             throw new DomainException("offer.already_sent", "You already have a waiting offer of this kind; withdraw it to send a new one.");
@@ -173,11 +179,16 @@ public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser,
 
         db.Offers.Add(offer);
         var partnerName = await db.PartnerProfiles.AsNoTracking().Where(p => p.Id == partnerId).Select(p => p.DisplayName).SingleAsync(cancellationToken);
+        // When the two already talk, the notification opens their chat (the offer can be accepted there); else the request.
+        var conversationId = await db.Conversations.AsNoTracking()
+            .Where(c => c.RequestId == request.Id && c.PartnerProfileId == partnerId)
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync(cancellationToken);
         Notifier.Add(
             db,
             request.CustomerId,
             NotificationType.OfferReceived,
-            $"/requests/{request.Id}",
+            conversationId is { } chat ? $"/messages/{chat}" : $"/requests/{request.Id}",
             new Dictionary<string, string?>
             {
                 ["name"] = partnerName,
@@ -186,8 +197,33 @@ public sealed class SendOfferHandler(IAppDbContext db, ICurrentUser currentUser,
             },
             now);
         await db.SaveChangesAsync(cancellationToken);
+        if (replaced is not null)
+        {
+            await LiveUpdate.OfferAsync(db, live, replaced, request.CustomerId, now, cancellationToken);
+        }
+
         await LiveUpdate.OfferAsync(db, live, offer, request.CustomerId, now, cancellationToken);
         return await OfferViews.ToDtoAsync(db, offer, now, cancellationToken);
+    }
+
+    /// <summary>The offer being replaced, withdrawn (null when nothing is replaced). It must be the partner's own on this request.</summary>
+    private async Task<Offer?> ReplacedAsync(Guid requestId, Guid partnerId, Guid? offerId, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        if (offerId is not { } id)
+        {
+            return null;
+        }
+
+        var offer = await db.Offers.SingleOrDefaultAsync(o => o.Id == id && o.RequestId == requestId && o.PartnerProfileId == partnerId, cancellationToken)
+            ?? throw OfferViews.NotFound();
+        offer.Expire(now);
+        if (offer.Status == OfferStatus.Expired)
+        {
+            return null;
+        }
+
+        offer.Withdraw(now);
+        return offer;
     }
 }
 

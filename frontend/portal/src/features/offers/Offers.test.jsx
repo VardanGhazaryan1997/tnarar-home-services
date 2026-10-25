@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import en from '@/i18n/locales/en/common.json'
 import { PARTNER_USER, problem, signedInAs } from '@/test/auth'
-import { inboxRequest, myOfferItem, offer, page } from '@/test/fixtures'
+import { conversation, inboxRequest, message, myOfferItem, offer, page } from '@/test/fixtures'
 import { renderRoute } from '@/test/renderWithProviders'
 import { server } from '@/test/server'
 
@@ -136,6 +136,88 @@ describe('Offer builder', () => {
     expect(screen.getByText(en.errors.lines.invalid)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: en.offers.addStage }))
     await user.click(screen.getByRole('button', { name: 'Remove payment 1' }))
+  })
+})
+
+describe('Changing an offer', () => {
+  function changeApi(mine) {
+    const sent = []
+    server.use(
+      http.get('*/api/v1/requests/inbox/:id', () => HttpResponse.json(inboxRequest())),
+      http.get('*/api/v1/requests/:id/offers', () => HttpResponse.json([mine])),
+      http.post('*/api/v1/requests/:id/offers', async ({ request }) => {
+        sent.push(await request.json())
+        return HttpResponse.json(offer({ id: 'offer-2', price: 90000 }), { status: 201 })
+      }),
+      http.get('*/api/v1/conversations', () => HttpResponse.json(page([conversation({ myRole: 'Partner' })]))),
+      http.get('*/api/v1/conversations/:id', () => HttpResponse.json(conversation({ myRole: 'Partner' }))),
+      http.get('*/api/v1/conversations/:id/messages', () => HttpResponse.json({ items: [message()], hasMore: false })),
+      http.post('*/api/v1/conversations/:id/read', () => HttpResponse.json({ readAt: '2026-10-05T11:00:00Z' })),
+    )
+    return sent
+  }
+
+  it('starts from the waiting offer, replaces it when sent and goes back to the chat', async () => {
+    const user = userEvent.setup()
+    signedInAs(PARTNER_USER)
+    const sent = changeApi(offer({ startDate: null }))
+    const { router } = renderRoute('/en/inbox/req-1/offer?chat=conv-1&from=offer-1')
+
+    expect(await screen.findByRole('heading', { name: en.offers.changeTitle })).toBeInTheDocument()
+    expect(screen.getByText(en.offers.replaceNotice)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: en.offers.backToChat })).toHaveAttribute('href', '/en/messages/conv-1')
+    expect(screen.getByLabelText(en.offers.fields.summary)).toHaveValue('Replace the tap and the pipes under the sink.')
+    expect(screen.getByLabelText('Item 1')).toHaveValue('Remove the old tap')
+    expect(screen.getByLabelText('Item 2 is')).toHaveValue('out')
+    expect(screen.getByLabelText(en.offers.fields.price)).toHaveValue(100000)
+    expect(screen.getByLabelText('Payment 1 amount (֏)')).toHaveValue(30000)
+
+    await user.clear(screen.getByLabelText(en.offers.fields.price))
+    await user.type(screen.getByLabelText(en.offers.fields.price), '90000')
+    await user.clear(screen.getByLabelText('Payment 2 amount (֏)'))
+    await user.type(screen.getByLabelText('Payment 2 amount (֏)'), '60000')
+    await user.click(screen.getByRole('button', { name: en.offers.sendChanged }))
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/en/messages/conv-1'))
+    expect(sent).toEqual([
+      {
+        kind: 'Work',
+        summary: 'Replace the tap and the pipes under the sink.',
+        lines: [
+          { title: 'Remove the old tap', included: true },
+          { title: 'Tiling', included: false },
+        ],
+        price: 90000,
+        materialsIncluded: true,
+        materialsNote: 'Tap included',
+        startDate: null,
+        durationDays: 2,
+        visitAt: null,
+        stages: [
+          { title: 'Deposit', purpose: 'Deposit', amount: 30000 },
+          { title: null, purpose: 'Final', amount: 60000 },
+        ],
+        validDays: 7,
+        replacesOfferId: 'offer-1',
+      },
+    ])
+  })
+
+  it('starts a new offer from a declined one without replacing anything, leaving out the automatic single payment', async () => {
+    const user = userEvent.setup()
+    signedInAs(PARTNER_USER)
+    const sent = changeApi(offer({ status: 'Rejected', stages: [{ title: null, purpose: 'Final', amount: 100000 }] }))
+    renderRoute('/en/inbox/req-1/offer?from=offer-1')
+
+    expect(await screen.findByRole('heading', { name: en.offers.newTitle })).toBeInTheDocument()
+    expect(screen.queryByText(en.offers.replaceNotice)).not.toBeInTheDocument()
+    expect(screen.getByLabelText(en.offers.fields.summary)).toHaveValue('Replace the tap and the pipes under the sink.')
+    expect(screen.queryByLabelText('Payment 1 amount (֏)')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: en.offers.send }))
+
+    await waitFor(() => expect(sent).toHaveLength(1))
+    expect(sent[0]).toMatchObject({ price: 100000, stages: [] })
+    expect(sent[0]).not.toHaveProperty('replacesOfferId')
   })
 })
 

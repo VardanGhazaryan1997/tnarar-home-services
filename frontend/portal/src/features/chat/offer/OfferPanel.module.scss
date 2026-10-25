@@ -172,4 +172,19 @@
     @include text-small;
     @include text-muted;
   }
+
+  // The specialist hasn't sent an offer yet: a line and a button to make one.
+  &__empty {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2) space(3);
+    align-items: center;
+  }
+
+  &__empty-text {
+    flex: 1 1 12rem;
+    min-width: 0;
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
 }

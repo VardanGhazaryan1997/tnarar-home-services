@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { errorMessage, fieldErrors } from '@/api/errors'
 import PageHeader from '@/components/PageHeader/PageHeader'
 import QueryState from '@/components/QueryState/QueryState'
@@ -18,7 +18,8 @@ import { bem } from '@/shared/bem'
 import { formatMoney, todayIso } from '@/shared/format'
 import LinePricing from './LinePricing.jsx'
 import { allPriced, initialRows, toOfferLines, total } from './linePricing'
-import { useSendOfferMutation } from './offersApi'
+import { fromOffer } from './offerPrefill'
+import { useGetRequestOffersQuery, useSendOfferMutation } from './offersApi'
 import styles from './offers.module.scss'
 
 const b = bem(styles)
@@ -29,19 +30,24 @@ const VALID_DAYS = ['3', '7', '14', '30']
 let nextKey = 0
 const key = () => `row-${(nextKey += 1)}`
 const toInt = (value) => (value === '' || value == null ? null : Math.round(Number(value)))
-
 /**
  * The partner's offer on a received request. A work offer: what's included and excluded, the price,
  * materials, dates and an optional payment plan whose stages add up to the price. A visit offer: a time
  * and a fee (0 = free) for an assessment visit before the work offer. A request made from an estimate lists its work
  * line by line: the partner prices each line (prefilled from their price list) and the price is the sum.
+ * `?from=<offer id>`: start from that earlier offer; if it still waits, sending replaces it ("Change offer").
+ * `?chat=<conversation id>`: opened from the chat, so going back and sending return there.
  */
 export default function OfferBuilderPage() {
   const { t, i18n } = useTranslation()
   const { id } = useParams()
   const navigate = useNavigate()
   const path = useLocalizedPath()
+  const [params] = useSearchParams()
+  const chatId = params.get('chat')
+  const fromId = params.get('from')
   const request = useGetInboxRequestQuery(id)
+  const myOffers = useGetRequestOffersQuery(id, { skip: !fromId, refetchOnMountOrArgChange: true })
   const [sendOffer, sending] = useSendOfferMutation()
   const [kind, setKind] = useState('Work')
   const [form, setForm] = useState({ summary: '', price: '', materialsIncluded: false, materialsNote: '', materialsAmount: '', startDate: '', durationDays: '', visitAt: '', validDays: '7' })
@@ -55,6 +61,22 @@ export default function OfferBuilderPage() {
   const rows = editedRows ?? initialRows(requestLines, priceList.data?.items)
   const [byLineChoice, setByLine] = useState(true)
   const byLine = kind === 'Work' && requestLines.length > 0 && byLineChoice
+
+  // Starting from an earlier offer: fill the form in once, when both it and the request are here.
+  const source = fromId ? myOffers.data?.find((offer) => offer.id === fromId) : null
+  const replacing = source?.status === 'Sent' ? source : null
+  const [filledFrom, setFilledFrom] = useState(null)
+  if (source && request.data && filledFrom !== source.id) {
+    const start = fromOffer(source, requestLines, priceList.data?.items)
+    setFilledFrom(source.id)
+    setKind(start.kind)
+    setForm(start.form)
+    setByLine(start.byLine)
+    setRows(start.rows)
+    setLines(start.lines)
+    setStages(start.stages)
+  }
+  const back = chatId ? { to: path(`/messages/${chatId}`), label: t('offers.backToChat') } : { to: path(`/inbox/${id}`), label: t('offers.backToRequest') }
 
   const set = (field) => (event) =>
     setForm((current) => ({ ...current, [field]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }))
@@ -109,20 +131,24 @@ export default function OfferBuilderPage() {
       visitAt: work ? null : new Date(form.visitAt).toISOString(),
       stages: work ? stages.map((stage) => ({ title: stage.title.trim() || null, purpose: stage.purpose, amount: toInt(stage.amount) ?? 0 })) : [],
       validDays: Number(form.validDays),
+      ...(replacing ? { replacesOfferId: replacing.id } : {}),
     })
-    if (result.data) navigate(path(`/inbox/${id}`), { state: { offerSent: true } })
+    if (result.data) navigate(back.to, { state: { offerSent: true } })
     return undefined
   }
 
   const generalError = sending.error && !Object.keys(apiErrors).length ? errorMessage(t, sending.error) : null
+  // Wait for the offer to start from, so the form doesn't fill in under the partner's hands.
+  if (fromId && myOffers.isLoading) return <QueryState query={myOffers}>{() => null}</QueryState>
 
   return (
     <QueryState query={request}>
       {(data) => (
         <div>
-          <PageHeader title={t('offers.newTitle')} subtitle={placeText(data.place, t)} back={{ to: path(`/inbox/${id}`), label: t('offers.backToRequest') }} />
+          <PageHeader title={replacing ? t('offers.changeTitle') : t('offers.newTitle')} subtitle={placeText(data.place, t)} back={back} />
           <form className={styles['offer-builder']} onSubmit={submit} noValidate>
             <p className={styles['offer-builder__context']}>{data.description}</p>
+            {replacing && <Alert tone="info" title={t('offers.replaceNotice')} />}
             <Segmented
               label={t('offers.kindLabel')}
               options={['Work', 'Visit'].map((value) => ({ value, label: t(`offers.kindChoice.${value}`) }))}
@@ -346,7 +372,7 @@ export default function OfferBuilderPage() {
             {generalError && <Alert tone="danger" title={generalError} />}
             <div className={styles['offer-builder__actions']}>
               <Button type="submit" variant="accent" size="lg" loading={sending.isLoading} icon={<Icon name="send" />}>
-                {t('offers.send')}
+                {replacing ? t('offers.sendChanged') : t('offers.send')}
               </Button>
             </div>
           </form>

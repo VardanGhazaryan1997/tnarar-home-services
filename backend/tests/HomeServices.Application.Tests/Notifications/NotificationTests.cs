@@ -1,4 +1,5 @@
 using HomeServices.Application.Abstractions;
+using HomeServices.Application.Chat;
 using HomeServices.Application.Common;
 using HomeServices.Application.Notifications;
 using HomeServices.Application.Partners;
@@ -60,6 +61,19 @@ public class NotificationTests
         offer.Params["name"].ShouldBe("Aram");
         offer.Params["price"].ShouldBe("25000");
         offer.Params["kind"].ShouldBe("Work");
+    }
+
+    [Fact]
+    public async Task An_offer_from_a_partner_the_customer_already_chats_with_opens_that_chat()
+    {
+        var aram = _data.Requests.GivenPartner("Aram");
+        var request = await _data.Requests.CreateAsync(_data.Requests.OpenRequest());
+        var chat = await new OpenConversationHandler(Db, _data.Customer, _data.Requests.Language, Clock)
+            .HandleAsync(new OpenConversation(request.Id, aram.Id), CancellationToken.None);
+
+        await _data.SendAsync(aram, _data.Work(request.Id, price: 25_000));
+
+        (await ListAsync(_data.Customer)).Items.Single(n => n.Type == "OfferReceived").Link.ShouldBe($"/messages/{chat.Id}");
     }
 
     [Fact]

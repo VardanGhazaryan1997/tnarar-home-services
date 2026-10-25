@@ -2,7 +2,7 @@ import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Button from '@/components/ui/Button/Button'
 import Icon from '@/components/ui/Icon/Icon'
-import { AcceptOfferModal, RejectOfferModal } from '@/features/offers/OfferDecisions'
+import { AcceptOfferModal, RejectOfferModal, WithdrawOfferModal } from '@/features/offers/OfferDecisions'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { bem } from '@/shared/bem'
 import { formatDate, formatMoney, formatTimeLeft } from '@/shared/format'
@@ -25,7 +25,9 @@ const LOOKS = {
 /**
  * The specialist's offer, pinned under the chat's header (T3): price, status and expiry in one compact row, with
  * the summary behind a toggle. The customer accepts or declines it here (accepting keeps them in the chat and
- * links the new order); an expired offer can't be accepted. The partner sees where their offer stands.
+ * links the new order); an expired offer can't be accepted. The partner sees where their offer stands and, while the
+ * request is open, makes one from here, changes or withdraws a waiting one, or sends a new one: the offer page opens
+ * and brings them back to the chat.
  */
 export default function OfferPanel({ conversation }) {
   const { t, i18n } = useTranslation()
@@ -36,15 +38,39 @@ export default function OfferPanel({ conversation }) {
   const [accepting, setAccepting] = useState(null)
   const [rejecting, setRejecting] = useState(null)
   const [createdOrderId, setCreatedOrderId] = useState(null)
+  const [withdrawing, setWithdrawing] = useState(null)
   const offer = currentOffer(conversation.offers)
-  if (!offer) return null
+  const customer = conversation.myRole === 'Customer'
+  // The partner can offer while the request is open and they may still write (they haven't declined it).
+  const canOffer = !customer && conversation.requestStatus === 'Open' && conversation.canSend
+  // The offer page for this request, coming back to this chat; `from`: the offer to start from (and, if it waits, replace).
+  const offerLink = (from) => path(`/inbox/${conversation.requestId}/offer?chat=${conversation.id}${from ? `&from=${from}` : ''}`)
+
+  if (!offer) {
+    if (!canOffer) return null
+    return (
+      <section className={b('offer-panel', { neutral: true })} aria-label={t('chat.offer.mine')}>
+        <div className={styles['offer-panel__empty']}>
+          <span className={styles['offer-panel__icon']} aria-hidden="true">
+            <Icon name="money" size={20} />
+          </span>
+          <p className={styles['offer-panel__empty-text']}>{t('chat.offer.none')}</p>
+          <Button to={offerLink()} variant="accent" size="sm" icon={<Icon name="send" size={16} />}>
+            {t('chat.offer.make')}
+          </Button>
+        </div>
+      </section>
+    )
+  }
 
   const lng = i18n.language
-  const customer = conversation.myRole === 'Customer'
   const status = createdOrderId ? 'Accepted' : statusNow(offer, now)
   const orderId = createdOrderId ?? offer.orderId
   const look = LOOKS[status] ?? LOOKS.Closed
   const canDecide = customer && status === 'Sent' && conversation.requestStatus === 'Open'
+  const canChange = canOffer && status === 'Sent'
+  // A new offer starts from the last one, unless that was accepted (a visit: the work offer is a different thing).
+  const canOfferAgain = canOffer && status !== 'Sent' && !createdOrderId
   const expiringSoon = status === 'Sent' && new Date(offer.expiresAt) - now < DAY_MS
   const name = conversation.otherParty.name ?? t('chat.role.Partner')
   const title = customer ? t('chat.offer.label', { name }) : t('chat.offer.mine')
@@ -97,6 +123,21 @@ export default function OfferPanel({ conversation }) {
               {t('offers.accept')}
             </Button>
           )}
+          {canChange && (
+            <>
+              <Button to={offerLink(offer.id)} variant="accent" size="sm" icon={<Icon name="edit" size={16} />}>
+                {t('chat.offer.change')}
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setWithdrawing(offer)}>
+                {t('offers.withdraw')}
+              </Button>
+            </>
+          )}
+          {canOfferAgain && (
+            <Button to={offerLink(status === 'Accepted' ? null : offer.id)} variant="accent" size="sm" icon={<Icon name="send" size={16} />}>
+              {t('chat.offer.makeNew')}
+            </Button>
+          )}
           {orderId && (
             <Button to={path(`/orders/${orderId}`)} variant="primary" size="sm">
               {t('offers.openOrder')}
@@ -139,6 +180,7 @@ export default function OfferPanel({ conversation }) {
         }}
       />
       <RejectOfferModal offer={rejecting} onClose={() => setRejecting(null)} onRejected={() => setRejecting(null)} />
+      <WithdrawOfferModal offer={withdrawing} onClose={() => setWithdrawing(null)} onWithdrawn={() => setWithdrawing(null)} />
     </section>
   )
 }

@@ -3,9 +3,10 @@ import { baseApi } from '@/api/baseApi'
 /** Offers: partners send them on requests they received; customers compare and accept one. */
 export const offersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
+    /** `replacesOfferId`: the partner's waiting offer this one replaces ("Change offer"); it's withdrawn in the same step. */
     sendOffer: build.mutation({
       query: ({ requestId, ...body }) => ({ url: `/requests/${requestId}/offers`, method: 'POST', body }),
-      invalidatesTags: ['Offers', 'MyOffers', 'Inbox'],
+      invalidatesTags: ['Offers', 'MyOffers', 'Inbox', 'Conversations'],
     }),
     /** The customer: every offer but withdrawn ones; a partner: their own. */
     getRequestOffers: build.query({
@@ -27,7 +28,7 @@ export const offersApi = baseApi.injectEndpoints({
     }),
     withdrawOffer: build.mutation({
       query: (id) => ({ url: `/offers/${id}/withdraw`, method: 'POST' }),
-      invalidatesTags: ['Offers', 'MyOffers'],
+      invalidatesTags: ['Offers', 'MyOffers', 'Conversations'],
     }),
   }),
 })

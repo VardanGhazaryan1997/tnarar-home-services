@@ -626,6 +626,9 @@
     "rejectReasonHint": "The specialist sees it.",
     "yours": "Your offers",
     "withdraw": "Withdraw",
+    "withdrawTitle": "Withdraw this offer?",
+    "withdrawText": "The customer won't be able to accept it any more. You can send a new offer afterwards.",
+    "withdrawConfirm": "Withdraw offer",
     "errors": {
       "summaryShort": "Write at least {{min}} characters.",
       "priceRequired": "Enter the price.",
@@ -633,7 +636,9 @@
       "materialsAmount": "The materials part must be above 0 and less than the price."
     },
     "newTitle": "Send an offer",
+    "changeTitle": "Change your offer",
     "backToRequest": "Back to the request",
+    "backToChat": "Back to the chat",
     "kindLabel": "Offer type",
     "kindChoice": {
       "Work": "Offer for the work",
@@ -658,6 +663,8 @@
     "stagesTotal": "Payments add up to {{total}} of {{price}}",
     "addStage": "Add a payment",
     "send": "Send offer",
+    "sendChanged": "Send changed offer",
+    "replaceNotice": "When you send this offer, it replaces your waiting one: the customer will see only the new offer.",
     "sent": "Your offer has been sent to the customer.",
     "mineTitle": "Sent offers",
     "mineSubtitle": "Your offers and what customers decided.",
@@ -951,6 +958,10 @@
       "waiting": "Waiting for the customer",
       "partnerAccepted": "The customer accepted · order created",
       "partnerRejected": "The customer declined this offer.",
+      "none": "You haven't sent an offer yet. Make one here and you'll come back to this chat.",
+      "make": "Make an offer",
+      "change": "Change offer",
+      "makeNew": "Send a new offer",
       "events": {
         "sent": "Offer sent · {{price}}",
         "accepted": "Offer accepted",

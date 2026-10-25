@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button/Button'
 import { TextField } from '@/components/ui/Field/Field'
 import Modal from '@/components/ui/Modal/Modal'
 import { formatMoney } from '@/shared/format'
-import { useAcceptOfferMutation, useRejectOfferMutation } from './offersApi'
+import { useAcceptOfferMutation, useRejectOfferMutation, useWithdrawOfferMutation } from './offersApi'
 
 /**
  * Confirms accepting an offer, which creates an order and can't be undone. `offer`: { id, kind, price } (null:
@@ -97,6 +97,38 @@ export function RejectOfferModal({ offer, onClose, onRejected }) {
         value={reason}
         onChange={(event) => setReason(event.target.value)}
       />
+      {state.error && <Alert tone="danger" title={errorMessage(t, state.error)} />}
+    </Modal>
+  )
+}
+
+/** The partner takes back their waiting offer (the customer can no longer accept it). `onWithdrawn(offer)` runs once it's done. */
+export function WithdrawOfferModal({ offer, onClose, onWithdrawn }) {
+  const { t } = useTranslation()
+  const [withdraw, state] = useWithdrawOfferMutation()
+
+  const confirm = async () => {
+    const result = await withdraw(offer.id)
+    if (result.data) onWithdrawn(result.data)
+  }
+
+  return (
+    <Modal
+      open={Boolean(offer)}
+      title={t('offers.withdrawTitle')}
+      onClose={onClose}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>
+            {t('common.back')}
+          </Button>
+          <Button variant="danger" loading={state.isLoading} onClick={confirm}>
+            {t('offers.withdrawConfirm')}
+          </Button>
+        </>
+      }
+    >
+      <p>{t('offers.withdrawText')}</p>
       {state.error && <Alert tone="danger" title={errorMessage(t, state.error)} />}
     </Modal>
   )

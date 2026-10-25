@@ -3,12 +3,13 @@ import { errorMessage } from '@/api/errors'
 import Alert from '@/components/ui/Alert/Alert'
 import Button from '@/components/ui/Button/Button'
 import Card from '@/components/ui/Card/Card'
+import Icon from '@/components/ui/Icon/Icon'
 import { useLocalizedPath } from '@/i18n/hooks'
 import OfferCard from './OfferCard'
 import { useGetRequestOffersQuery, useWithdrawOfferMutation } from './offersApi'
 import styles from './offers.module.scss'
 
-/** On a received request: the partner's own offers, with withdrawing a waiting one. Nothing until they offer. */
+/** On a received request: the partner's own offers, with changing or withdrawing a waiting one. Nothing until they offer. */
 export default function MyOffersOnRequest({ requestId }) {
   const { t } = useTranslation()
   const path = useLocalizedPath()
@@ -28,9 +29,14 @@ export default function MyOffersOnRequest({ requestId }) {
             showPartner={false}
             actions={
               (offer.status === 'Sent' && (
-                <Button variant="secondary" loading={withdrawing.isLoading && withdrawing.originalArgs === offer.id} onClick={() => withdraw(offer.id)}>
-                  {t('offers.withdraw')}
-                </Button>
+                <>
+                  <Button to={path(`/inbox/${requestId}/offer?from=${offer.id}`)} variant="secondary" icon={<Icon name="edit" />}>
+                    {t('chat.offer.change')}
+                  </Button>
+                  <Button variant="secondary" loading={withdrawing.isLoading && withdrawing.originalArgs === offer.id} onClick={() => withdraw(offer.id)}>
+                    {t('offers.withdraw')}
+                  </Button>
+                </>
               )) ||
               (offer.orderId && (
                 <Button to={path(`/orders/${offer.orderId}`)} variant="secondary">

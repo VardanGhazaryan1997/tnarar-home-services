@@ -27,7 +27,7 @@ const chatOffer = (overrides = {}) => ({
 
 /** The chat API with one conversation; `answers` change what accepting and rejecting return. */
 function chatApi(detail) {
-  const calls = { accepted: [], rejected: [] }
+  const calls = { accepted: [], rejected: [], withdrawn: [] }
   let current = detail
   server.use(
     http.get('*/api/v1/conversations', () => HttpResponse.json(page([current]))),
@@ -43,6 +43,11 @@ function chatApi(detail) {
       calls.rejected.push({ id: params.id, ...(await request.json()) })
       current = { ...current, offers: current.offers.map((o) => ({ ...o, status: 'Rejected', decidedAt: '2026-10-05T12:00:00Z' })) }
       return HttpResponse.json(fullOffer({ id: params.id, status: 'Rejected' }))
+    }),
+    http.post('*/api/v1/offers/:id/withdraw', ({ params }) => {
+      calls.withdrawn.push(params.id)
+      current = { ...current, offers: current.offers.map((o) => ({ ...o, status: 'Withdrawn', decidedAt: '2026-10-05T12:00:00Z' })) }
+      return HttpResponse.json(fullOffer({ id: params.id, status: 'Withdrawn' }))
     }),
   )
   return calls
@@ -135,6 +140,52 @@ describe('Offer in the chat', () => {
     expect(offer).toHaveTextContent(en.chat.offer.waiting)
     expect(within(offer).queryByRole('button', { name: en.offers.accept })).not.toBeInTheDocument()
     expect(within(offer).getByRole('link', { name: en.chat.offer.details })).toHaveAttribute('href', '/en/inbox/req-1')
+  })
+
+  it('lets the specialist make an offer from the chat when they have none yet', async () => {
+    signedInAs(PARTNER_USER)
+    chatApi(conversation({ myRole: 'Partner', otherParty: { name: 'Ani', partnerId: null, slug: null } }))
+    renderRoute('/en/messages/conv-1')
+
+    const offer = await panel()
+    expect(offer).toHaveTextContent(en.chat.offer.none)
+    expect(within(offer).getByRole('link', { name: en.chat.offer.make })).toHaveAttribute('href', '/en/inbox/req-1/offer?chat=conv-1')
+  })
+
+  it('offers nothing to make once the specialist can no longer write', async () => {
+    signedInAs(PARTNER_USER)
+    chatApi(conversation({ myRole: 'Partner', canSend: false, otherParty: { name: 'Ani', partnerId: null, slug: null } }))
+    renderRoute('/en/messages/conv-1')
+    await screen.findByRole('list', { name: en.chat.messagesLabel })
+    expect(screen.queryByRole('region', { name: en.chat.offer.mine })).not.toBeInTheDocument()
+  })
+
+  it('lets the specialist change or withdraw a waiting offer, then send a new one', async () => {
+    const user = userEvent.setup()
+    signedInAs(PARTNER_USER)
+    const calls = chatApi(conversation({ myRole: 'Partner', otherParty: { name: 'Ani', partnerId: null, slug: null }, offers: [chatOffer()] }))
+    renderRoute('/en/messages/conv-1')
+
+    const offer = await panel()
+    expect(within(offer).getByRole('link', { name: en.chat.offer.change })).toHaveAttribute('href', '/en/inbox/req-1/offer?chat=conv-1&from=off-1')
+
+    await user.click(within(offer).getByRole('button', { name: en.offers.withdraw }))
+    const dialog = await screen.findByRole('dialog', { name: en.offers.withdrawTitle })
+    await user.click(within(dialog).getByRole('button', { name: en.offers.withdrawConfirm }))
+
+    await waitFor(() => expect(within(offer).getByText(en.chat.offer.withdrawn)).toBeInTheDocument())
+    expect(calls.withdrawn).toEqual(['off-1'])
+    expect(within(offer).queryByRole('link', { name: en.chat.offer.change })).not.toBeInTheDocument()
+    expect(within(offer).getByRole('link', { name: en.chat.offer.makeNew })).toHaveAttribute('href', '/en/inbox/req-1/offer?chat=conv-1&from=off-1')
+  })
+
+  it('starts the work offer from scratch after an accepted visit', async () => {
+    signedInAs(PARTNER_USER)
+    chatApi(conversation({ myRole: 'Partner', otherParty: { name: 'Ani', partnerId: null, slug: null }, offers: [chatOffer({ kind: 'Visit', price: 0, status: 'Accepted', orderId: 'ord-1' })] }))
+    renderRoute('/en/messages/conv-1')
+
+    const offer = await panel()
+    expect(within(offer).getByRole('link', { name: en.chat.offer.makeNew })).toHaveAttribute('href', '/en/inbox/req-1/offer?chat=conv-1')
   })
 
   it('links to the offer on the request page and opens its details on demand', async () => {

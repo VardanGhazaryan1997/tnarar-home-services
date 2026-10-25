@@ -49,7 +49,8 @@ public sealed class RequestsController : ControllerBase
         DateTimeOffset? VisitAt,
         IReadOnlyList<OfferStageTerms>? Stages,
         int? ValidDays,
-        int? MaterialsAmount = null);
+        int? MaterialsAmount = null,
+        Guid? ReplacesOfferId = null);
 
     /// <summary>
     /// Creates a request. <c>Direct</c> needs <c>partnerId</c> (422 "request.partner_unavailable" if that partner can't
@@ -135,7 +136,9 @@ public sealed class RequestsController : ControllerBase
     /// <summary>
     /// The signed-in partner sends an offer on a request they received. <c>Work</c>: summary, lines, price, dates and
     /// payment stages adding up to the price. <c>Visit</c>: summary, <c>visitAt</c> and a fee (0 = free).
-    /// 422 "offer.already_sent" while an offer of the same kind waits.
+    /// 422 "offer.already_sent" while an offer of the same kind waits, unless <c>replacesOfferId</c> names it: then that
+    /// offer is withdrawn in the same step ("Change offer"; 404 "offer.not_found" if it isn't theirs on this request,
+    /// 422 "offer.not_open" if the customer already decided on it).
     /// </summary>
     [HttpPost("{id:guid}/offers")]
     public async Task<ActionResult<OfferDto>> SendOfferAsync(
@@ -159,7 +162,8 @@ public sealed class RequestsController : ControllerBase
                     body.VisitAt,
                     body.Stages,
                     body.ValidDays,
-                    body.MaterialsAmount),
+                    body.MaterialsAmount,
+                    body.ReplacesOfferId),
                 cancellationToken));
 
     /// <summary>

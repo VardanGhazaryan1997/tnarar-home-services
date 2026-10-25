@@ -110,6 +110,58 @@ public class SendOfferTests
     }
 
     [Fact]
+    public async Task Changing_an_offer_withdraws_the_waiting_one_and_sends_the_new_one_in_one_step()
+    {
+        var aram = _data.Requests.GivenPartner("Aram");
+        var request = _data.Requests.GivenRequest(partners: [aram]);
+        var first = await _data.SendAsync(aram, _data.Work(request.Id));
+        _data.Requests.Clock.Now = OfferTestData.Now.AddHours(1);
+
+        var changed = await _data.SendAsync(aram, _data.Work(request.Id, 90_000) with { ReplacesOfferId = first.Id });
+
+        changed.Status.ShouldBe("Sent");
+        changed.Price.ShouldBe(90_000);
+        var old = _data.StoredOffer(first.Id);
+        old.Status.ShouldBe(OfferStatus.Withdrawn);
+        old.DecidedAt.ShouldBe(OfferTestData.Now.AddHours(1));
+        (await _data.OffersAsync(request.Id)).ShouldHaveSingleItem().Id.ShouldBe(changed.Id);
+    }
+
+    [Fact]
+    public async Task Only_your_own_undecided_offer_on_the_request_can_be_changed()
+    {
+        var aram = _data.Requests.GivenPartner("Aram");
+        var gor = _data.Requests.GivenPartner("Gor");
+        var request = _data.Requests.GivenRequest(partners: [aram, gor]);
+        var other = _data.Requests.GivenRequest(partners: [aram]);
+        var gors = await _data.SendAsync(gor, _data.Work(request.Id));
+        var elsewhere = await _data.SendAsync(aram, _data.Work(other.Id));
+        var visit = await _data.SendAsync(aram, _data.Visit(request.Id));
+        await _data.RejectAsync(visit.Id);
+
+        (await Should.ThrowAsync<NotFoundException>(() => _data.SendAsync(aram, _data.Work(request.Id) with { ReplacesOfferId = gors.Id })))
+            .Code.ShouldBe("offer.not_found");
+        (await Should.ThrowAsync<NotFoundException>(() => _data.SendAsync(aram, _data.Work(request.Id) with { ReplacesOfferId = elsewhere.Id })))
+            .Code.ShouldBe("offer.not_found");
+        (await Should.ThrowAsync<DomainException>(() => _data.SendAsync(aram, _data.Work(request.Id) with { ReplacesOfferId = visit.Id })))
+            .Code.ShouldBe("offer.not_open");
+        _data.StoredOffer(gors.Id).Status.ShouldBe(OfferStatus.Sent);
+    }
+
+    [Fact]
+    public async Task Changing_an_offer_that_just_expired_simply_sends_the_new_one()
+    {
+        var aram = _data.Requests.GivenPartner("Aram");
+        var request = _data.Requests.GivenRequest(partners: [aram]);
+        var first = await _data.SendAsync(aram, _data.Visit(request.Id));
+        _data.Requests.Clock.Now = OfferTestData.Now.AddDays(8);
+
+        await _data.SendAsync(aram, _data.Work(request.Id) with { StartDate = null, ReplacesOfferId = first.Id });
+
+        _data.StoredOffer(first.Id).Status.ShouldBe(OfferStatus.Expired);
+    }
+
+    [Fact]
     public async Task An_expired_offer_can_be_replaced()
     {
         var aram = _data.Requests.GivenPartner("Aram");

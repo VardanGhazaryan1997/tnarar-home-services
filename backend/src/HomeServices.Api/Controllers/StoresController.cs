@@ -43,7 +43,7 @@ public sealed class StoresController : ControllerBase
     /// is 1–50 (400 <c>limit.invalid</c> otherwise, 24 when not given). Declared before <c>materials/{slug}</c> so "on-sale" is not read as a material.
     /// </summary>
     [HttpGet("materials/on-sale")]
-    public Task<IReadOnlyList<PublicSaleDto>> GetOnSale(
+    public Task<IReadOnlyList<PublicSaleDto>> OnSale(
         [FromQuery] string? region,
         [FromQuery] int? limit,
         [FromServices] IQueryHandler<GetOnSale, IReadOnlyList<PublicSaleDto>> handler,

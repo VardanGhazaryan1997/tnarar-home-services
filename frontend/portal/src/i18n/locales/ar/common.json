@@ -1678,6 +1678,14 @@
       "Standard": "عادي",
       "Premium": "ممتاز"
     },
+    "filters": {
+      "brand": "العلامة التجارية",
+      "allBrands": "كل العلامات التجارية",
+      "sort": "الترتيب",
+      "sortUnit": "حسب سعر الوحدة",
+      "sortPack": "حسب سعر العبوة",
+      "sortUpdated": "الأحدث تحديثاً"
+    },
     "detail": {
       "documentTitle": "{{name}}: الأسعار في أرمينيا — Tnarar",
       "description": "أين تشتري {{name}} في أرمينيا وكم يكلف لكل {{unit}} في المتاجر المختلفة.",

@@ -10,14 +10,15 @@ import Segmented from '@/components/ui/Segmented/Segmented'
 import { useRegions } from '@/features/catalog/catalogApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { GradePrices } from './MaterialPricesPage'
-import { GRADES, cheapestInStock } from './materialPrices'
+import { GRADES, SORTS, brandsOf, cheapestInStock, filterOffers, sortOffers } from './materialPrices'
 import OfferCard from './OfferCard'
 import { useMaterialOffers } from './storesApi'
 import styles from './MaterialPrices.module.scss'
 
 /**
  * One material (E2): its usual price per unit for each grade, then every store's offer for it, in stock first and
- * cheapest per unit first. Grade, region and "in stock only" are kept in the address (?grade=&region=&inStock=1).
+ * cheapest per unit first. Grade, region and "in stock only" are kept in the address (?grade=&region=&inStock=1),
+ * and so are the brand and the order (?brand=&sort=unit|pack|updated), which only work on the offers already loaded.
  */
 export default function MaterialPage() {
   const { t, i18n } = useTranslation()
@@ -29,6 +30,7 @@ export default function MaterialPage() {
   const grade = GRADES.includes(params.get('grade')) ? params.get('grade') : ''
   const region = params.get('region') ?? ''
   const inStock = params.get('inStock') === '1'
+  const sort = SORTS.includes(params.get('sort')) ? params.get('sort') : 'unit'
   const query = useMaterialOffers({ slug, region, grade, inStock })
 
   const change = (key, value) => {
@@ -51,7 +53,10 @@ export default function MaterialPage() {
     <QueryState query={query} notFound={notFound}>
       {(material) => {
         const unit = t(`estimator.materials.units.${material.unit}`)
-        const lowest = cheapestInStock(material.offers)
+        const brands = brandsOf(material.offers)
+        const brand = brands.includes(params.get('brand')) ? params.get('brand') : ''
+        const shown = sortOffers(filterOffers(material.offers, { brand }), sort)
+        const lowest = cheapestInStock(shown)
         return (
           <div className={styles['material-prices']}>
             <title>{t('materialPrices.detail.documentTitle', { name: material.name })}</title>
@@ -83,14 +88,29 @@ export default function MaterialPage() {
                 onChange={(event) => change('region', event.target.value)}
                 options={(regions.data ?? []).map((item) => ({ value: item.slug, label: item.name }))}
               />
+              {brands.length > 0 && (
+                <SelectField
+                  label={t('materialPrices.filters.brand')}
+                  placeholder={t('materialPrices.filters.allBrands')}
+                  value={brand}
+                  onChange={(event) => change('brand', event.target.value)}
+                  options={brands.map((value) => ({ value, label: value }))}
+                />
+              )}
+              <SelectField
+                label={t('materialPrices.filters.sort')}
+                value={sort}
+                onChange={(event) => change('sort', event.target.value === 'unit' ? '' : event.target.value)}
+                options={SORTS.map((value) => ({ value, label: t(`materialPrices.filters.sort${value[0].toUpperCase()}${value.slice(1)}`) }))}
+              />
               <CheckboxField label={t('materialPrices.detail.inStockOnly')} checked={inStock} onChange={(event) => change('inStock', event.target.checked ? '1' : '')} />
             </div>
-            <h2 className={styles['material-prices__section']}>{t('materialPrices.detail.offers', { n: material.offers.length })}</h2>
-            {material.offers.length === 0 ? (
+            <h2 className={styles['material-prices__section']}>{t('materialPrices.detail.offers', { n: shown.length })}</h2>
+            {shown.length === 0 ? (
               <EmptyState icon="search" title={t('materialPrices.detail.noOffers')} description={t('materialPrices.detail.noOffersText')} />
             ) : (
               <ul className={styles['material-prices__list']}>
-                {material.offers.map((offer) => (
+                {shown.map((offer) => (
                   <li key={offer.product.id}>
                     <OfferCard offer={offer} unit={material.unit} lowest={offer.product.id === lowest} />
                   </li>

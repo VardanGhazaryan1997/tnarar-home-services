@@ -1678,6 +1678,14 @@
       "Standard": "Стандарт",
       "Premium": "Премиум"
     },
+    "filters": {
+      "brand": "Бренд",
+      "allBrands": "Все бренды",
+      "sort": "Сортировка",
+      "sortUnit": "По цене за единицу",
+      "sortPack": "По цене упаковки",
+      "sortUpdated": "Недавно проверенные цены"
+    },
     "detail": {
       "documentTitle": "{{name}}: цены в Армении — Tnarar",
       "description": "Где купить {{name}} в Армении и сколько он стоит за {{unit}} в разных магазинах.",

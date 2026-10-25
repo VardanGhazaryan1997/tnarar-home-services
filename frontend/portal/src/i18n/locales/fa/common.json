@@ -1678,6 +1678,14 @@
       "Standard": "استاندارد",
       "Premium": "ممتاز"
     },
+    "filters": {
+      "brand": "برند",
+      "allBrands": "همه برندها",
+      "sort": "مرتب‌سازی",
+      "sortUnit": "بر اساس قیمت واحد",
+      "sortPack": "بر اساس قیمت بسته",
+      "sortUpdated": "تازه‌ترین بررسی قیمت"
+    },
     "detail": {
       "documentTitle": "{{name}}: قیمت در ارمنستان — Tnarar",
       "description": "کجا {{name}} را در ارمنستان بخریم و در فروشگاه‌های مختلف برای هر {{unit}} چقدر است.",

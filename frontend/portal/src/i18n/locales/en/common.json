@@ -1678,6 +1678,14 @@
       "Standard": "Standard",
       "Premium": "Premium"
     },
+    "filters": {
+      "brand": "Brand",
+      "allBrands": "All brands",
+      "sort": "Sort by",
+      "sortUnit": "Price per unit",
+      "sortPack": "Pack price",
+      "sortUpdated": "Recently checked"
+    },
     "detail": {
       "documentTitle": "{{name}}: prices in Armenia — Tnarar",
       "description": "Where to buy {{name}} in Armenia and how much it costs per {{unit}} in different stores.",

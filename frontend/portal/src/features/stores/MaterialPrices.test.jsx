@@ -153,6 +153,41 @@ describe('Material comparison', () => {
     await waitFor(() => expect(asked.at(-1)).toEqual({ region: 'ararat' }))
   }, SLOW)
 
+  it('narrows the offers to one brand and reorders them by pack price, keeping both in the address', async () => {
+    server.use(
+      http.get('*/api/v1/materials/finishing-putty', () =>
+        HttpResponse.json(
+          materialDetail({
+            offers: [
+              { store: offerStore(), product: offerProduct({ id: 'x1', name: 'Alpha putty', brand: 'Alpha', unitPrice: 100, price: 4000, currentPrice: 4000 }) },
+              { store: offerStore({ slug: 'demo-home', name: 'Demo Home' }), product: offerProduct({ id: 'x2', name: 'Beta putty', brand: 'Beta', unitPrice: 120, price: 1000, currentPrice: 1000 }) },
+              { store: offerStore({ slug: 'demo-three', name: 'Demo Three' }), product: offerProduct({ id: 'x3', name: 'Alpha small', brand: 'Alpha', unitPrice: 150, price: 2000, currentPrice: 2000 }) },
+            ],
+          }),
+        ),
+      ),
+    )
+    const user = userEvent.setup()
+    const { router } = renderRoute('/en/material-prices/finishing-putty')
+    await screen.findByRole('article', { name: 'Alpha putty — Demo Market' })
+    const names = () => screen.getAllByRole('article').map((item) => item.getAttribute('aria-label'))
+    expect(names()).toEqual(['Alpha putty — Demo Market', 'Beta putty — Demo Home', 'Alpha small — Demo Three'])
+
+    await user.selectOptions(screen.getByLabelText(m.filters.brand), 'Alpha')
+    expect(names()).toEqual(['Alpha putty — Demo Market', 'Alpha small — Demo Three'])
+    expect(router.state.location.search).toBe('?brand=Alpha')
+    expect(screen.getByText(d.offers.replace('{{n}}', '2'))).toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText(m.filters.sort), 'pack')
+    expect(names()).toEqual(['Alpha small — Demo Three', 'Alpha putty — Demo Market'])
+    expect(router.state.location.search).toBe('?brand=Alpha&sort=pack')
+
+    await user.selectOptions(screen.getByLabelText(m.filters.brand), '')
+    await user.selectOptions(screen.getByLabelText(m.filters.sort), 'unit')
+    expect(names()).toEqual(['Alpha putty — Demo Market', 'Beta putty — Demo Home', 'Alpha small — Demo Three'])
+    expect(router.state.location.search).toBe('')
+  }, SLOW)
+
   it('reads the filters from the address and ignores an unknown grade', async () => {
     const asked = []
     server.use(

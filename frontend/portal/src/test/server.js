@@ -16,6 +16,7 @@ export const handlers = [
   http.get('*/api/v1/cities', () => HttpResponse.json(CITIES)),
   http.get('*/api/v1/regions', () => HttpResponse.json(REGIONS)),
   http.post('*/api/v1/materials/where-to-buy', () => HttpResponse.json({ cheapest: [], stores: [] })),
+  http.get('*/api/v1/materials/on-sale', () => HttpResponse.json([])),
   http.get('*/api/v1/materials', () => HttpResponse.json(MATERIAL_ROWS)),
   http.get('*/api/v1/materials/:slug', () => HttpResponse.json(materialDetail())),
   http.get('*/api/v1/stores/:slug', () => HttpResponse.json(storeDetail())),

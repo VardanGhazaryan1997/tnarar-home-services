@@ -35,7 +35,7 @@ public class PublicStoresEndpointTests(ApiFactory factory)
         return client;
     }
 
-    private async Task<(Guid StoreId, Guid ProductId)> GivenStoreWithPuttyAsync(HttpClient staff, string slug, int price, bool active, bool inStock, Guid cityId)
+    private async Task<(Guid StoreId, Guid ProductId)> GivenStoreWithPuttyAsync(HttpClient staff, string slug, int price, bool active, bool inStock, Guid cityId, int? salePrice = null)
     {
         var created = await staff.PostAsJsonAsync("/api/v1/admin/stores", new { slug, name = $"Store {slug}", sortOrder = 1, isActive = active });
         created.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -45,7 +45,7 @@ public class PublicStoresEndpointTests(ApiFactory factory)
 
         var materials = (await staff.GetFromJsonAsync<List<AdminMaterialDto>>("/api/v1/admin/stores/materials", Json))!;
         var putty = materials.Single(m => m.Slug == "finishing-putty");
-        var product = await staff.PostAsJsonAsync($"/api/v1/admin/stores/{store.Id}/products", new { name = $"Putty {slug}", packSize = 25, packLabel = "25 kg bag", price, inStock, materialId = putty.Id, grade = "Standard" });
+        var product = await staff.PostAsJsonAsync($"/api/v1/admin/stores/{store.Id}/products", new { name = $"Putty {slug}", packSize = 25, packLabel = "25 kg bag", price, salePrice, saleEndsOn = salePrice is null ? (DateOnly?)null : DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10), inStock, materialId = putty.Id, grade = "Standard" });
         product.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (store.Id, (await product.Content.ReadFromJsonAsync<AdminStoreProductDto>(Json))!.Id);
     }
@@ -156,5 +156,29 @@ public class PublicStoresEndpointTests(ApiFactory factory)
             "/api/v1/materials/where-to-buy",
             new { grade = "Standard", materials = new[] { new { materialId = putty.Id, quantity = 0 } } });
         bad.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task On_sale_lists_running_sales_and_is_not_taken_for_a_material()
+    {
+        var staff = StaffClient();
+        var tag = Guid.NewGuid().ToString("N")[..8];
+        var cityId = await FirstCityAsync();
+        await GivenStoreWithPuttyAsync(staff, $"sale-{tag}", price: 10000, active: true, inStock: true, cityId, salePrice: 500);
+        await GivenStoreWithPuttyAsync(staff, $"plain-{tag}", price: 10000, active: true, inStock: true, cityId);
+        var customer = Customer(factory.CreateClient());
+
+        var response = await customer.GetAsync("/api/v1/materials/on-sale?limit=50");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var sales = (await response.Content.ReadFromJsonAsync<List<PublicSaleDto>>(Json))!;
+        var ours = sales.Where(s => s.Store.Slug.EndsWith(tag, StringComparison.Ordinal)).ToList();
+        ours.Select(s => s.Store.Slug).ToArray().ShouldBe(new[] { $"sale-{tag}" });
+        (ours[0].MaterialSlug, ours[0].Product.SalePrice, ours[0].Product.CurrentPrice).ShouldBe(("finishing-putty", 500, 500));
+
+        (await customer.GetAsync("/api/v1/materials/on-sale")).StatusCode.ShouldBe(HttpStatusCode.OK);
+        var bad = await customer.GetAsync("/api/v1/materials/on-sale?limit=0");
+        bad.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await bad.Content.ReadAsStringAsync()).ShouldContain("limit.invalid");
     }
 }

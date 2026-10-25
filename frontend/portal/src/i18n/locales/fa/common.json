@@ -1678,6 +1678,12 @@
       "Standard": "استاندارد",
       "Premium": "ممتاز"
     },
+    "sales": {
+      "title": "تخفیف‌های فعلی",
+      "until": "تا {{date}}",
+      "discount": "−{{percent}}٪",
+      "showAll": "نمایش همه تخفیف‌ها ({{n}})"
+    },
     "filters": {
       "brand": "برند",
       "allBrands": "همه برندها",

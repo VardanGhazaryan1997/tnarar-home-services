@@ -1,3 +1,4 @@
+using FluentValidation;
 using HomeServices.Application.Abstractions;
 using HomeServices.Application.Errors;
 using HomeServices.Application.Files;
@@ -30,6 +31,17 @@ public sealed record GetPublicMaterials(string? Search = null, string? Region = 
 /// </summary>
 public sealed record GetPublicMaterial(string Slug, string? Region = null, MaterialGrade? Grade = null, bool InStockOnly = false)
     : IQuery<PublicMaterialDetailDto>;
+
+/// <summary>
+/// Products on sale today (a sale that has not ended, in stock, a current price, an active store and material), biggest
+/// discount first and then the sale that ends soonest. <paramref name="Region"/> keeps only stores with a branch there;
+/// <paramref name="Limit"/> is 1–50.
+/// </summary>
+public sealed record GetOnSale(string? Region = null, int Limit = GetOnSale.DefaultLimit) : IQuery<IReadOnlyList<PublicSaleDto>>
+{
+    public const int DefaultLimit = 24;
+    public const int MaxLimit = 50;
+}
 
 /// <summary>A branch as customers see it: the town and district in the request language.</summary>
 public sealed record PublicBranchDto(string Name, string City, string? District, string Address, string? Phone, string? OpeningHours);
@@ -101,6 +113,9 @@ public sealed record PublicMaterialDetailDto(
     PublicMaterialPricesDto Prices,
     int StoreCount,
     IReadOnlyList<PublicOfferDto> Offers);
+
+/// <summary>One product on sale with the material it is sold under and the store that sells it.</summary>
+public sealed record PublicSaleDto(string MaterialSlug, string MaterialName, MaterialUnit Unit, PublicOfferStoreDto Store, PublicProductDto Product);
 
 /// <summary>Loading and mapping shared by the public store queries.</summary>
 internal static class PublicStoreData
@@ -377,5 +392,65 @@ public sealed class GetPublicMaterialHandler(
             PublicStoreData.Prices(material),
             storeIds.Count,
             result);
+    }
+}
+
+public sealed class GetOnSaleValidator : AbstractValidator<GetOnSale>
+{
+    public GetOnSaleValidator()
+    {
+        RuleFor(x => x.Limit).InclusiveBetween(1, GetOnSale.MaxLimit).WithErrorCode("limit.invalid");
+    }
+}
+
+public sealed class GetOnSaleHandler(
+    IAppDbContext db, FileDtoFactory files, ICurrentLanguage language, IOptions<StorePricingSettings> settings, TimeProvider clock)
+    : IQueryHandler<GetOnSale, IReadOnlyList<PublicSaleDto>>
+{
+    public async Task<IReadOnlyList<PublicSaleDto>> HandleAsync(GetOnSale query, CancellationToken cancellationToken)
+    {
+        var now = clock.GetUtcNow();
+        var today = settings.Value.Today(now);
+        var cityIds = await PublicStoreData.RegionCityIdsAsync(db, query.Region, cancellationToken);
+
+        var onSale = await PublicStoreData.VisibleProducts(db, now - settings.Value.FreshFor, cityIds)
+            .Where(p => p.InStock && p.SalePrice != null && p.SaleEndsOn >= today
+                && db.Materials.Any(m => m.Id == p.MaterialId && m.IsActive))
+            .ToListAsync(cancellationToken);
+
+        var products = onSale
+            .OrderByDescending(p => (p.Price - p.SalePrice!.Value) / (double)p.Price)
+            .ThenBy(p => p.SaleEndsOn)
+            .ThenBy(p => p.Id)
+            .Take(query.Limit)
+            .ToList();
+
+        var materialIds = products.Select(p => p.MaterialId).Distinct().ToList();
+        var materials = await db.Materials.AsNoTracking().Where(m => materialIds.Contains(m.Id)).ToDictionaryAsync(m => m.Id, cancellationToken);
+        var storeIds = products.Select(p => p.StoreId).Distinct().ToList();
+        var stores = await db.Stores.AsNoTracking().Where(s => storeIds.Contains(s.Id)).ToDictionaryAsync(s => s.Id, cancellationToken);
+        var branches = await PublicStoreData.BranchesAsync(db, language, storeIds, cityIds, cancellationToken);
+        var pictures = await StoreData.PictureLinksAsync(
+            db, files, products.Select(p => p.PhotoFileId).Concat(stores.Values.Select(s => s.LogoFileId)), cancellationToken);
+        var before = await StorePriceHistory.PriceBeforeAsync(db, settings.Value, now, products, cancellationToken);
+
+        return products
+            .Select(p =>
+            {
+                var material = materials[p.MaterialId!.Value];
+                var store = stores[p.StoreId];
+                return new PublicSaleDto(
+                    material.Slug,
+                    material.Name.Get(language.Code, language.DefaultCode),
+                    material.Unit,
+                    new PublicOfferStoreDto(
+                        store.Slug,
+                        store.Name,
+                        store.LogoFileId is { } logo && pictures.TryGetValue(logo, out var logoLink) ? logoLink.Thumbnail : null,
+                        store.Website,
+                        branches.GetValueOrDefault(store.Id) ?? []),
+                    PublicStoreData.Product(p, today, pictures, before));
+            })
+            .ToList();
     }
 }

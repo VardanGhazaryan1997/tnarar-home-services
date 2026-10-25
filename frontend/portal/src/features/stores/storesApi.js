@@ -17,6 +17,8 @@ export const storesApi = baseApi.injectEndpoints({
         params: withoutEmpty({ region, grade, inStock: inStock ? 'true' : undefined }),
       }),
     }),
+    /** `{ region }` (a region slug), optional: products on sale today, biggest discount first. */
+    getOnSale: build.query({ query: ({ region }) => ({ url: '/materials/on-sale', params: withoutEmpty({ region }) }) }),
     getStore: build.query({ query: ({ slug }) => `/stores/${encodeURIComponent(slug)}` }),
     /**
      * `{ grade, materials: [{ materialId, quantity }], region? }` → `{ cheapest, stores }`: the cheapest store offer per
@@ -39,3 +41,4 @@ export const useMaterialPrices = (params) => storesApi.useGetMaterialPricesQuery
 export const useMaterialOffers = (params) => storesApi.useGetMaterialOffersQuery({ ...params, lng: useLanguage() })
 export const useStore = (slug) => storesApi.useGetStoreQuery({ slug, lng: useLanguage() })
 export const useWhereToBuy = (body, options) => storesApi.useGetWhereToBuyQuery(body, options)
+export const useOnSale = (params) => storesApi.useGetOnSaleQuery({ ...params, lng: useLanguage() })

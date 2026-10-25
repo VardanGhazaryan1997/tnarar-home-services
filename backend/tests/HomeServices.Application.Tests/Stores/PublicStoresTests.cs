@@ -327,4 +327,56 @@ public class PublicStoresTests
         product.LinkTo(_putty.Id, MaterialGrade.Standard);
         return product;
     }
+
+    private Task<IReadOnlyList<PublicSaleDto>> OnSaleAsync(string? region = null, int limit = 24) =>
+        new GetOnSaleHandler(_db, Files, _language, _settings, _clock).HandleAsync(new GetOnSale(region, limit), CancellationToken.None);
+
+    [Fact]
+    public async Task On_sale_lists_running_sales_by_discount_and_leaves_out_ended_or_out_of_stock_ones()
+    {
+        // price = unit × 25: 200 → 5000 per pack.
+        var small = Add(_alpha, _putty, MaterialGrade.Standard, 200, sale: 4500, saleEnds: Today.AddDays(10), name: "10% off");
+        var big = Add(_beta, _paint, MaterialGrade.Standard, 200, sale: 2500, saleEnds: Today.AddDays(5), name: "50% off");
+        var lastDay = Add(_alpha, _paint, MaterialGrade.Premium, 200, sale: 2500, saleEnds: Today, name: "50% off, ends today");
+        Add(_alpha, _putty, MaterialGrade.Budget, 200, sale: 1000, saleEnds: Today.AddDays(-1), name: "ended");
+        Add(_alpha, _putty, MaterialGrade.Premium, 200, inStock: false, sale: 1000, saleEnds: Today.AddDays(3), name: "out of stock");
+        Add(_alpha, _putty, MaterialGrade.Standard, 210, name: "no sale");
+        Add(_hidden, _putty, MaterialGrade.Standard, 200, sale: 1000, saleEnds: Today.AddDays(3), name: "hidden store");
+        Add(_alpha, _putty, MaterialGrade.Standard, 200, sale: 1000, saleEnds: Today.AddDays(3), updatedAt: Now.AddDays(-120), name: "stale price");
+
+        var sales = await OnSaleAsync();
+
+        sales.Select(s => s.Product.Name).ToArray().ShouldBe(new[] { "50% off, ends today", "50% off", "10% off" });
+        sales.Select(s => s.Product.Id).ToArray().ShouldBe(new[] { lastDay.Id, big.Id, small.Id });
+        var first = sales[0];
+        (first.MaterialSlug, first.MaterialName, first.Unit, first.Store.Slug).ShouldBe(("paint", "Paint", MaterialUnit.Liter, "alpha"));
+        (first.Product.Price, first.Product.SalePrice, first.Product.CurrentPrice, first.Product.SaleEndsOn).ShouldBe((5000, 2500, 2500, Today));
+    }
+
+    [Fact]
+    public async Task On_sale_can_be_limited_to_a_region_and_a_count()
+    {
+        Add(_alpha, _putty, MaterialGrade.Standard, 200, sale: 4000, saleEnds: Today.AddDays(3), name: "alpha sale");
+        Add(_beta, _paint, MaterialGrade.Standard, 200, sale: 2000, saleEnds: Today.AddDays(3), name: "beta sale");
+
+        (await OnSaleAsync("yerevan")).Select(s => s.Product.Name).ToArray().ShouldBe(new[] { "alpha sale" });
+        (await OnSaleAsync("nowhere")).ShouldBeEmpty();
+        var gyumri = await OnSaleAsync("shirak");
+        gyumri.Count.ShouldBe(2);
+        gyumri.SelectMany(s => s.Store.Branches).ShouldAllBe(b => b.City == "Gyumri");
+        (await OnSaleAsync(limit: 1)).Select(s => s.Product.Name).ToArray().ShouldBe(new[] { "beta sale" });
+    }
+
+    [Fact]
+    public async Task On_sale_asks_for_a_limit_of_1_to_50()
+    {
+        var validator = new GetOnSaleValidator();
+
+        (await validator.ValidateAsync(new GetOnSale())).IsValid.ShouldBeTrue();
+        (await validator.ValidateAsync(new GetOnSale(Limit: 50))).IsValid.ShouldBeTrue();
+        foreach (var limit in new[] { 0, -1, 51 })
+        {
+            (await validator.ValidateAsync(new GetOnSale(Limit: limit))).Errors.Select(e => e.ErrorCode).ToArray().ShouldBe(new[] { "limit.invalid" });
+        }
+    }
 }

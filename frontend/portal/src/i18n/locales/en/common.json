@@ -1678,6 +1678,12 @@
       "Standard": "Standard",
       "Premium": "Premium"
     },
+    "sales": {
+      "title": "On sale now",
+      "until": "Until {{date}}",
+      "discount": "−{{percent}}%",
+      "showAll": "Show all {{n}} sales"
+    },
     "filters": {
       "brand": "Brand",
       "allBrands": "All brands",

@@ -39,6 +39,18 @@ public sealed class StoresController : ControllerBase
         handler.HandleAsync(new GetPublicMaterials(search, region), cancellationToken);
 
     /// <summary>
+    /// Products on sale today, biggest discount first. <paramref name="region"/> is a region slug; <paramref name="limit"/>
+    /// is 1–50 (400 <c>limit.invalid</c> otherwise, 24 when not given). Declared before <c>materials/{slug}</c> so "on-sale" is not read as a material.
+    /// </summary>
+    [HttpGet("materials/on-sale")]
+    public Task<IReadOnlyList<PublicSaleDto>> GetOnSale(
+        [FromQuery] string? region,
+        [FromQuery] int? limit,
+        [FromServices] IQueryHandler<GetOnSale, IReadOnlyList<PublicSaleDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new GetOnSale(region, limit ?? GetOnSale.DefaultLimit), cancellationToken);
+
+    /// <summary>
     /// One material with every store offer, in-stock first and then cheapest per unit. <paramref name="grade"/> is
     /// Budget, Standard or Premium; <paramref name="inStock"/> keeps only offers in stock (404 <c>material.not_found</c>).
     /// </summary>

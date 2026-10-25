@@ -12,7 +12,8 @@ import { useRegions } from '@/features/catalog/catalogApi'
 import { useLocalizedPath } from '@/i18n/hooks'
 import { formatUnitPrice } from '@/shared/format'
 import { GRADES, filterMaterials } from './materialPrices'
-import { useMaterialPrices } from './storesApi'
+import SaleCard from './SaleCard'
+import { useMaterialPrices, useOnSale } from './storesApi'
 import styles from './MaterialPrices.module.scss'
 
 /** The three usual prices of a material, per unit: budget, standard and premium, each marked when the stores set it. */
@@ -33,6 +34,36 @@ export function GradePrices({ prices, unit, lng }) {
         </div>
       ))}
     </dl>
+  )
+}
+
+const SALES_SHOWN = 8
+
+/** "On sale now": the biggest discounts, eight at first and the rest on request. Nothing at all while loading, on an error or without sales. */
+function OnSale({ region }) {
+  const { t } = useTranslation()
+  const [all, setAll] = useState(false)
+  const { data } = useOnSale({ region })
+  if (!data?.length) return null
+  const shown = all ? data : data.slice(0, SALES_SHOWN)
+  return (
+    <section className={styles['material-prices__sales']} aria-labelledby="on-sale-title">
+      <h2 id="on-sale-title" className={styles['material-prices__section']}>
+        {t('materialPrices.sales.title')}
+      </h2>
+      <ul className={styles['material-prices__list']}>
+        {shown.map((sale) => (
+          <li key={sale.product.id}>
+            <SaleCard sale={sale} region={region} />
+          </li>
+        ))}
+      </ul>
+      {!all && data.length > SALES_SHOWN && (
+        <Button variant="secondary" onClick={() => setAll(true)}>
+          {t('materialPrices.sales.showAll', { n: data.length })}
+        </Button>
+      )}
+    </section>
   )
 }
 
@@ -83,6 +114,7 @@ export default function MaterialPricesPage() {
           options={(regions.data ?? []).map((item) => ({ value: item.slug, label: item.name }))}
         />
       </div>
+      <OnSale region={region} />
       <QueryState query={query}>
         {() =>
           materials.length === 0 ? (

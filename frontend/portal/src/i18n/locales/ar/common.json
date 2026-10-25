@@ -1678,6 +1678,12 @@
       "Standard": "عادي",
       "Premium": "ممتاز"
     },
+    "sales": {
+      "title": "عروض الآن",
+      "until": "حتى {{date}}",
+      "discount": "−{{percent}}%",
+      "showAll": "عرض كل العروض ({{n}})"
+    },
     "filters": {
       "brand": "العلامة التجارية",
       "allBrands": "كل العلامات التجارية",

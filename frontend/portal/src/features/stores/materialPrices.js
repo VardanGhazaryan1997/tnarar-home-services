@@ -43,3 +43,9 @@ export function sortOffers(offers = [], sort = 'unit') {
   if (sort === 'updated') return [...offers].sort((a, b) => new Date(b.product.priceUpdatedAt) - new Date(a.product.priceUpdatedAt))
   return offers
 }
+
+/** How many percent a sale takes off the usual pack price, rounded (0 without a sale); products are `{ price, salePrice }`. */
+export function discountPercent({ price, salePrice }) {
+  if (salePrice == null || !price) return 0
+  return Math.round(((price - salePrice) / price) * 100)
+}

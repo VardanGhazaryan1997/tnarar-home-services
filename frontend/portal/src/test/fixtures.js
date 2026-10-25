@@ -529,3 +529,12 @@ export const storeDetail = (overrides = {}) => ({
   ],
   ...overrides,
 })
+
+export const saleItem = (overrides = {}) => ({
+  materialSlug: 'finishing-putty',
+  materialName: 'Finishing putty',
+  unit: 'Kilogram',
+  store: offerStore(),
+  product: offerProduct({ id: 'sale-1', name: 'Putty on sale', price: 5000, salePrice: 4000, saleEndsOn: '2026-11-01', currentPrice: 4000, unitPrice: 160 }),
+  ...overrides,
+})

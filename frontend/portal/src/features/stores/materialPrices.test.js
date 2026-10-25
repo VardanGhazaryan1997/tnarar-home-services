@@ -1,4 +1,4 @@
-import { branchPlaces, brandsOf, cheapestInStock, filterMaterials, filterOffers, sortOffers } from './materialPrices'
+import { branchPlaces, brandsOf, cheapestInStock, discountPercent, filterMaterials, filterOffers, sortOffers } from './materialPrices'
 
 describe('filterMaterials', () => {
   const materials = [
@@ -64,5 +64,16 @@ describe('brandsOf, filterOffers and sortOffers', () => {
     expect(ids(sortOffers(offers, 'updated'))).toEqual(['b', 'c', 'd', 'a'])
     expect(sortOffers(offers, 'unit')).toBe(offers)
     expect(ids(offers)).toEqual(['a', 'b', 'c', 'd'])
+  })
+})
+
+describe('discountPercent', () => {
+  it('is how many percent the sale price is below the usual price, rounded', () => {
+    expect(discountPercent({ price: 5000, salePrice: 4000 })).toBe(20)
+    expect(discountPercent({ price: 3000, salePrice: 2000 })).toBe(33)
+  })
+
+  it('is 0 without a sale', () => {
+    expect(discountPercent({ price: 5000, salePrice: null })).toBe(0)
   })
 })

@@ -26,6 +26,13 @@
     }
   }
 
+  &__sales {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+    align-items: flex-start;
+  }
+
   &__list {
     display: flex;
     flex-direction: column;
@@ -245,5 +252,29 @@
       flex-direction: column;
       gap: space(1);
     }
+  }
+}
+
+.sale {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: space(3);
+  padding: space(3);
+
+  @include surface;
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__material {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__product {
+    font-weight: $font-weight-medium;
   }
 }

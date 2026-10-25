@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import en from '@/i18n/locales/en/common.json'
-import { materialDetail, materialRow, offerProduct, offerStore, storeDetail } from '@/test/fixtures'
+import { materialDetail, materialRow, offerProduct, offerStore, saleItem, storeDetail } from '@/test/fixtures'
 import { renderRoute } from '@/test/renderWithProviders'
 import { server } from '@/test/server'
 
@@ -11,6 +11,7 @@ const m = en.materialPrices
 const d = m.detail
 const o = m.offer
 const s = en.storePage
+const sl = m.sales
 
 describe('Building material prices', () => {
   it('lists materials with the usual price per grade, the store count and the lowest price', async () => {
@@ -315,5 +316,72 @@ describe('Store page', () => {
     server.use(http.get('*/api/v1/stores/nope', () => HttpResponse.json({ status: 404, code: 'store.not_found' }, { status: 404 })))
     renderRoute('/en/stores/nope')
     expect(await screen.findByText(s.notFound)).toBeInTheDocument()
+  }, SLOW)
+})
+
+describe('On sale now', () => {
+  const sales = (count) =>
+    Array.from({ length: count }, (_, index) =>
+      saleItem({ product: { ...saleItem().product, id: `sale-${index}`, name: `Sale product ${index + 1}` } }),
+    )
+
+  it('shows the products on sale above the list, linking to the comparison and the store', async () => {
+    server.use(
+      http.get('*/api/v1/materials/on-sale', () =>
+        HttpResponse.json([
+          saleItem(),
+          saleItem({ materialSlug: 'primer', materialName: 'Primer', product: { ...saleItem().product, id: 'sale-2', name: 'Primer 5 L', price: 3000, salePrice: 2000, currentPrice: 2000 } }),
+        ]),
+      ),
+    )
+    renderRoute('/en/material-prices')
+
+    const card = await screen.findByRole('article', { name: 'Putty on sale — Demo Market' })
+    expect(screen.getByRole('heading', { level: 2, name: sl.title })).toBeInTheDocument()
+    expect(within(card).getByRole('link', { name: 'Finishing putty' })).toHaveAttribute('href', '/en/material-prices/finishing-putty')
+    expect(within(card).getByRole('link', { name: 'Demo Market' })).toHaveAttribute('href', '/en/stores/demo-market')
+    expect(within(card).getByText('4,000 ֏')).toBeInTheDocument()
+    expect(within(card).getByText('5,000 ֏')).toBeInTheDocument()
+    expect(within(card).getByText(sl.discount.replace('{{percent}}', '20'))).toBeInTheDocument()
+    expect(within(card).getByText(/Until/)).toBeInTheDocument()
+    const second = screen.getByRole('article', { name: 'Primer 5 L — Demo Market' })
+    expect(within(second).getByText(sl.discount.replace('{{percent}}', '33'))).toBeInTheDocument()
+  }, SLOW)
+
+  it('is not shown when nothing is on sale', async () => {
+    renderRoute('/en/material-prices')
+
+    await screen.findByRole('heading', { level: 1, name: m.title })
+    await screen.findByRole('article', { name: 'Finishing putty' })
+    expect(screen.queryByRole('heading', { name: sl.title })).not.toBeInTheDocument()
+  }, SLOW)
+
+  it('asks for the chosen region and carries it to the comparison', async () => {
+    const asked = []
+    server.use(
+      http.get('*/api/v1/materials/on-sale', ({ request }) => {
+        asked.push(Object.fromEntries(new URL(request.url).searchParams))
+        return HttpResponse.json([saleItem()])
+      }),
+    )
+    renderRoute('/en/material-prices?region=ararat')
+
+    const card = await screen.findByRole('article', { name: 'Putty on sale — Demo Market' })
+    expect(asked[0]).toEqual({ region: 'ararat' })
+    expect(within(card).getByRole('link', { name: 'Finishing putty' })).toHaveAttribute('href', '/en/material-prices/finishing-putty?region=ararat')
+  }, SLOW)
+
+  it('shows eight sales and the rest on request', async () => {
+    server.use(http.get('*/api/v1/materials/on-sale', () => HttpResponse.json(sales(10))))
+    const user = userEvent.setup()
+    renderRoute('/en/material-prices')
+
+    await screen.findByRole('article', { name: 'Sale product 1 — Demo Market' })
+    expect(screen.getAllByRole('article', { name: /Sale product/ })).toHaveLength(8)
+
+    await user.click(screen.getByRole('button', { name: sl.showAll.replace('{{n}}', '10') }))
+
+    expect(screen.getAllByRole('article', { name: /Sale product/ })).toHaveLength(10)
+    expect(screen.queryByRole('button', { name: /sales/ })).not.toBeInTheDocument()
   }, SLOW)
 })

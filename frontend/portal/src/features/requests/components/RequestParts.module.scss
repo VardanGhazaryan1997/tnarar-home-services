@@ -147,10 +147,13 @@
   list-style: none;
 
   &__link {
+    @include reset-button;
     @include focus-ring;
 
     display: block;
+    width: 100%;
     overflow: hidden;
+    cursor: zoom-in;
     aspect-ratio: 1;
     border-radius: $radius;
   }
@@ -168,6 +171,22 @@
     height: 100%;
     color: $color-white;
     background: $color-night;
+  }
+
+  &__large {
+    display: block;
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    background: $color-night;
+    border-radius: $radius;
+  }
+
+  &__nav {
+    display: flex;
+    gap: space(2);
+    justify-content: space-between;
+    width: 100%;
   }
 }
 

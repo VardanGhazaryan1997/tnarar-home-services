@@ -105,10 +105,27 @@ describe('My request page', () => {
     expect(screen.getByText('Yerevan, Kentron')).toBeInTheDocument()
     expect(screen.getByText('10,000 ֏ – 30,000 ֏')).toBeInTheDocument()
     expect(screen.getByText('Oct 7, 2026, evenings')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'leak.jpg' })).toHaveAttribute('src', 'https://files/leak-t.jpg')
-    expect(screen.getByRole('img', { name: 'leak.mp4' })).toBeInTheDocument()
+    expect(within(screen.getByRole('button', { name: 'leak.jpg' })).getByRole('presentation')).toHaveAttribute('src', 'https://files/leak-t.jpg')
+    expect(screen.getByRole('button', { name: 'leak.mp4' })).toBeInTheDocument()
     expect(screen.getByText('Aram Plumbing')).toBeInTheDocument()
     expect(await screen.findByText(en.offers.none)).toBeInTheDocument()
+  })
+
+  it('opens a photo large in a dialog and steps through the files', async () => {
+    const user = userEvent.setup()
+    signedInAs(CUSTOMER)
+    detailApi()
+    renderRoute('/en/requests/req-1')
+
+    await user.click(await screen.findByRole('button', { name: 'leak.jpg' }))
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByRole('img', { name: 'leak.jpg' })).toBeInTheDocument()
+
+    await user.keyboard('{ArrowRight}')
+    expect(dialog.querySelector('video')).toBeInTheDocument()
+
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('cancels with an optional reason', async () => {

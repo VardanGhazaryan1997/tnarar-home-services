@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import Button from '@/components/ui/Button/Button'
 import Icon from '@/components/ui/Icon/Icon'
+import Modal from '@/components/ui/Modal/Modal'
 import Tag from '@/components/ui/Tag/Tag'
 import LiveNote from '@/features/live/LiveNote'
 import { LIVE_KINDS, useLiveChange } from '@/features/live/useLiveChange'
@@ -105,26 +108,67 @@ export function RequestFacts({ request, showBudget = false }) {
   )
 }
 
-/** The request's photos (thumbnails linking to the full image) and videos. */
+/** The request's photos and videos: thumbnails that open large in a dialog, with previous / next (and arrow keys). */
 export function MediaGallery({ files }) {
   const { t } = useTranslation()
-  if (!files.length) return null
+  const [open, setOpen] = useState(null)
+  const count = files.length
+  const current = open === null ? null : files[open]
+  const step = (delta) => setOpen((index) => (index + delta + count) % count)
+
+  useEffect(() => {
+    if (open === null || count < 2) return undefined
+    const onKey = (event) => {
+      if (event.key === 'ArrowLeft') setOpen((index) => (index - 1 + count) % count)
+      if (event.key === 'ArrowRight') setOpen((index) => (index + 1) % count)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open, count])
+
+  if (!count) return null
 
   return (
-    <ul className={styles['media-gallery']} aria-label={t('requests.photos')}>
-      {files.map((file) => (
-        <li key={file.id} className={styles['media-gallery__item']}>
-          <a href={file.url} target="_blank" rel="noreferrer" className={styles['media-gallery__link']}>
-            {file.kind === 'Video' ? (
-              <span className={styles['media-gallery__video']}>
-                <Icon name="camera" size={28} label={file.fileName} />
-              </span>
-            ) : (
-              <img src={file.thumbnailUrl ?? file.url} alt={file.fileName} className={styles['media-gallery__image']} loading="lazy" />
-            )}
-          </a>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className={styles['media-gallery']} aria-label={t('requests.photos')}>
+        {files.map((file, index) => (
+          <li key={file.id} className={styles['media-gallery__item']}>
+            <button type="button" className={styles['media-gallery__link']} onClick={() => setOpen(index)} aria-label={file.fileName}>
+              {file.kind === 'Video' ? (
+                <span className={styles['media-gallery__video']}>
+                  <Icon name="camera" size={28} />
+                </span>
+              ) : (
+                <img src={file.thumbnailUrl ?? file.url} alt="" className={styles['media-gallery__image']} loading="lazy" />
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <Modal
+        open={current !== null}
+        title={current ? `${open + 1} / ${count}` : ''}
+        onClose={() => setOpen(null)}
+        footer={
+          count > 1 && (
+            <div className={styles['media-gallery__nav']}>
+              <Button variant="secondary" icon={<Icon name="chevronLeft" />} onClick={() => step(-1)}>
+                {t('public.profile.previous')}
+              </Button>
+              <Button variant="secondary" onClick={() => step(1)}>
+                {t('public.profile.next')}
+              </Button>
+            </div>
+          )
+        }
+      >
+        {current &&
+          (current.kind === 'Video' ? (
+            <video key={current.id} src={current.url} controls className={styles['media-gallery__large']} />
+          ) : (
+            <img key={current.id} src={current.url} alt={current.fileName} className={styles['media-gallery__large']} />
+          ))}
+      </Modal>
+    </>
   )
 }

@@ -6,6 +6,7 @@ import hy from '@/i18n/locales/hy/common.json'
 import { problem, signedInAs, staffMember } from '@/test/auth'
 import { renderRoute } from '@/test/renderWithProviders'
 import { server } from '@/test/server'
+import { store } from '@/test/stores'
 import { userRow, usersPage } from '@/test/users'
 
 const t = (key, options) => i18n.t(key, options)
@@ -59,6 +60,44 @@ describe('Dashboard', () => {
     expect(screen.getByText(hy.dashboard.counters.pendingPartners)).toBeInTheDocument()
     expect(screen.queryByText(hy.dashboard.counters.users)).not.toBeInTheDocument()
     expect(screen.queryByText(hy.dashboard.recentActivity)).not.toBeInTheDocument()
+  })
+
+  it('shows out-of-date store prices to staff who manage prices, most stale stores first', async () => {
+    const user = userEvent.setup()
+    signedInAs(staffMember(['materials.pricing']))
+    const asked = []
+    server.use(
+      http.get('*/api/v1/admin/stores', ({ request }) => {
+        asked.push(new URL(request.url).searchParams.get('isActive'))
+        return HttpResponse.json([
+          store({ id: 'store-a', name: 'Alpha', staleCount: 3 }),
+          store({ id: 'store-b', name: 'Beta', staleCount: 9 }),
+          store({ id: 'store-c', name: 'Gamma', staleCount: 0 }),
+        ])
+      }),
+    )
+    const { router } = await openDashboard()
+
+    await waitFor(() => expect(within(counter(hy.dashboard.counters.stalePrices)).getByText('12')).toBeInTheDocument())
+    expect(asked[0]).toBe('true')
+    const card = screen.getByText(hy.dashboard.stalePrices.title).closest('.ant-card')
+    const links = within(card).getAllByRole('link').filter((link) => link.getAttribute('href').startsWith('/stores/'))
+    expect(links.map((link) => link.textContent)).toEqual([t('dashboard.stalePrices.row', { name: 'Beta', count: 9 }), t('dashboard.stalePrices.row', { name: 'Alpha', count: 3 })])
+    await user.click(links[0])
+    await waitFor(() => expect(`${router.state.location.pathname}${router.state.location.search}`).toBe('/stores/store-b?tab=products&show=stale'))
+  })
+
+  it('hides store prices from staff who do not manage them, and the list when all prices are fresh', async () => {
+    signedInAs(staffMember(['users.view']))
+    const { unmount } = await openDashboard()
+    expect(screen.queryByText(hy.dashboard.counters.stalePrices)).not.toBeInTheDocument()
+    unmount()
+
+    signedInAs(staffMember(['materials.pricing']))
+    server.use(http.get('*/api/v1/admin/stores', () => HttpResponse.json([store({ staleCount: 0 })])))
+    await openDashboard()
+    await waitFor(() => expect(within(counter(hy.dashboard.counters.stalePrices)).getByText('0')).toBeInTheDocument())
+    expect(screen.queryByText(hy.dashboard.stalePrices.title)).not.toBeInTheDocument()
   })
 
   it('welcomes staff without any counters', async () => {

@@ -10,6 +10,7 @@ import { hasPermission } from '@/features/auth/permissions'
 import { useGetPagesQuery } from '@/features/content/contentApi'
 import { useGetPartnersQuery } from '@/features/partners/partnersApi'
 import { useGetStaffQuery } from '@/features/staff/staffApi'
+import { useGetStoresQuery } from '@/features/stores/storesApi'
 import { useGetNamespacesQuery } from '@/features/translations/translationsApi'
 import { useGetUsersQuery } from '@/features/users/usersApi'
 import { formatDate } from '@/i18n/format'
@@ -40,6 +41,35 @@ function Counter({ title, query, count, to, highlight }) {
 }
 
 const total = (page) => page.totalCount
+
+/** How many stale prices to list stores for on the dashboard. */
+const STALE_STORES = 5
+
+/** Active stores with out-of-date prices, most first (R8). */
+const staleStores = (stores = []) =>
+  stores
+    .filter((store) => store.isActive && store.staleCount > 0)
+    .sort((a, b) => b.staleCount - a.staleCount || a.name.localeCompare(b.name))
+    .slice(0, STALE_STORES)
+
+/** "Demo Market: 12 prices", each linking to the store's out-of-date products. Nothing when every price is fresh. */
+function StalePrices({ stores }) {
+  const { t } = useTranslation()
+  const list = staleStores(stores)
+  if (list.length === 0) return null
+
+  return (
+    <Card title={t('dashboard.stalePrices.title')} extra={<Link to="/stores">{t('dashboard.open')}</Link>}>
+      <Flex vertical gap={8}>
+        {list.map((store) => (
+          <Link key={store.id} to={`/stores/${store.id}?tab=products&show=stale`}>
+            {t('dashboard.stalePrices.row', { name: store.name, count: store.staleCount })}
+          </Link>
+        ))}
+      </Flex>
+    </Card>
+  )
+}
 
 function RecentActivity() {
   const { t, i18n } = useTranslation()
@@ -82,6 +112,7 @@ export default function DashboardPage() {
   const invitedStaff = useGetStaffQuery({ status: 'Invited', pageSize: 1 }, { skip: !can('staff.view') })
   const pages = useGetPagesQuery(undefined, { skip: !can('content.manage') })
   const namespaces = useGetNamespacesQuery(undefined, { skip: !can('translations.manage') })
+  const stores = useGetStoresQuery({ isActive: true }, { skip: !can('materials.pricing') })
 
   const counters = [
     can('partners.view') && { key: 'pendingPartners', query: pendingPartners, count: total, to: '/partners', highlight: true },
@@ -94,6 +125,13 @@ export default function DashboardPage() {
       query: namespaces,
       count: (list) => list.reduce((sum, ns) => sum + ns.languages.reduce((inner, language) => inner + language.missing, 0), 0),
       to: '/translations/texts',
+      highlight: true,
+    },
+    can('materials.pricing') && {
+      key: 'stalePrices',
+      query: stores,
+      count: (list) => list.filter((store) => store.isActive).reduce((sum, store) => sum + store.staleCount, 0),
+      to: '/stores',
       highlight: true,
     },
   ].filter(Boolean)
@@ -113,6 +151,7 @@ export default function DashboardPage() {
       ) : (
         <Typography.Paragraph>{t('dashboard.welcome')}</Typography.Paragraph>
       )}
+      {can('materials.pricing') && <StalePrices stores={stores.data} />}
       {can('audit.view') && <RecentActivity />}
     </Flex>
   )

@@ -34,7 +34,12 @@
       "blockedUsers": "Արգելափակված օգտատերեր",
       "invitedStaff": "Չընդունված հրավերներ",
       "draftPages": "Էջերի սևագրեր",
-      "missingTexts": "Բացակայող թարգմանություններ"
+      "missingTexts": "Բացակայող թարգմանություններ",
+      "stalePrices": "Խանութների հնացած գներ"
+    },
+    "stalePrices": {
+      "title": "Հնացած գներով խանութներ",
+      "row": "{{name}}՝ {{count}} գին"
     }
   },
   "notFound": {

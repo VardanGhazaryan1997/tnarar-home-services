@@ -34,7 +34,12 @@
       "blockedUsers": "Blocked users",
       "invitedStaff": "Staff invitations not accepted",
       "draftPages": "Draft pages",
-      "missingTexts": "Missing translations"
+      "missingTexts": "Missing translations",
+      "stalePrices": "Out-of-date store prices"
+    },
+    "stalePrices": {
+      "title": "Stores with out-of-date prices",
+      "row": "{{name}}: {{count}} prices"
     }
   },
   "notFound": {

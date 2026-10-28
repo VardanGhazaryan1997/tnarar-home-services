@@ -168,6 +168,22 @@ public sealed class AdminStoresController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>The prices to save at once: each product's price, sale and stock, and whether an unchanged price was checked.</summary>
+    public sealed record ProductPricesRequest(IReadOnlyList<StoreProductPriceInput> Items);
+
+    /// <summary>
+    /// Quick price editing: saves up to 100 products' prices at once, all or nothing (400 <c>items.count_invalid</c>,
+    /// <c>items.duplicate</c>; 404 <c>store_product.not_found</c> when one isn't this store's; 422
+    /// <c>store_product.invalid</c> / <c>store_product.sale_invalid</c> naming the product). Returns the saved products.
+    /// </summary>
+    [HttpPut("{id:guid}/products/prices")]
+    public Task<IReadOnlyList<AdminStoreProductDto>> SaveProductPrices(
+        Guid id,
+        ProductPricesRequest request,
+        [FromServices] ICommandHandler<SaveStoreProductPrices, IReadOnlyList<AdminStoreProductDto>> handler,
+        CancellationToken cancellationToken) =>
+        handler.HandleAsync(new SaveStoreProductPrices(id, request.Items), cancellationToken);
+
     /// <summary>The store's price is still right: sets "price updated" to now without changing anything else.</summary>
     [HttpPost("{id:guid}/products/{productId:guid}/confirm")]
     public Task<AdminStoreProductDto> ConfirmProductPrice(

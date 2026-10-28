@@ -126,6 +126,71 @@ describe('Store page: branches', () => {
   }, SLOW)
 })
 
+describe('Store page: quick price editing', () => {
+  const q = s.quickEdit
+
+  it('edits several prices and saves only the changed or checked rows', async () => {
+    const requests = capture('put', 'store-demo/products/prices', (body) => HttpResponse.json(body.items.map((item) => ({ ...PRODUCTS[0], id: item.productId }))))
+    const user = userEvent.setup()
+    renderRoute('/stores/store-demo?tab=products')
+    await screen.findByText('Putty 25 kg')
+
+    await user.click(screen.getByRole('switch', { name: q.toggle }))
+    const putty = screen.getByLabelText(`${p.price}: Putty 25 kg`)
+    await user.clear(putty)
+    await user.type(putty, '4800')
+    await user.click(screen.getByRole('switch', { name: `${p.inStock}: Paint 10 L` }))
+    expect(screen.getByRole('region', { name: q.changes.replace('{{count}}', '2') })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: q.save }))
+    await waitFor(() => expect(requests).toHaveLength(1))
+    expect(requests[0].body).toEqual({
+      items: [
+        { productId: 'product-putty', price: 4800, salePrice: null, saleEndsOn: null, inStock: true, confirm: false },
+        { productId: 'product-paint', price: 9000, salePrice: 7500, saleEndsOn: '2026-11-01', inStock: true, confirm: false },
+      ],
+    })
+    expect(await screen.findByText(q.saved.replace('{{count}}', '2'))).toBeInTheDocument()
+    expect(screen.queryByRole('switch', { name: q.toggle })).not.toBeChecked()
+  }, HEAVY)
+
+  it('marks an unchanged price as checked, and shows a bad sale on its row without sending', async () => {
+    const requests = capture('put', 'store-demo/products/prices', (body) => HttpResponse.json(body.items.map(() => PRODUCTS[0])))
+    const user = userEvent.setup()
+    renderRoute('/stores/store-demo?tab=products')
+    await screen.findByText('Putty 25 kg')
+    await user.click(screen.getByRole('switch', { name: q.toggle }))
+
+    const sale = screen.getByLabelText(`${p.salePrice}: Putty 25 kg`)
+    await user.type(sale, '6000')
+    expect(await screen.findByText(p.saleNeedsBoth)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: q.save }))
+    expect(await screen.findByText(q.fixRows)).toBeInTheDocument()
+    expect(requests).toHaveLength(0)
+
+    await user.click(screen.getByRole('button', { name: q.discard }))
+    await user.click(screen.getByRole('checkbox', { name: `${q.checked}: Paint 10 L` }))
+    await user.click(screen.getByRole('button', { name: q.save }))
+    await waitFor(() => expect(requests).toHaveLength(1))
+    expect(requests[0].body.items).toEqual([{ productId: 'product-paint', price: 9000, salePrice: 7500, saleEndsOn: '2026-11-01', inStock: false, confirm: true }])
+  }, HEAVY)
+
+  it('asks before leaving the page with unsaved changes', async () => {
+    const user = userEvent.setup()
+    const { router } = renderRoute('/stores/store-demo?tab=products')
+    await screen.findByText('Putty 25 kg')
+    await user.click(screen.getByRole('switch', { name: q.toggle }))
+    await user.click(screen.getByRole('switch', { name: `${p.inStock}: Putty 25 kg` }))
+
+    await user.click(screen.getByRole('combobox', { name: p.show }))
+    await user.click(await screen.findByTitle(p.shown.stale))
+    expect((await screen.findAllByText(q.leaveConfirm.replace('{{count}}', '1'))).length).toBeGreaterThan(0)
+    expect(router.state.location.search).not.toContain('show=stale')
+    await user.click(screen.getByRole('button', { name: q.leave }))
+    await waitFor(() => expect(router.state.location.search).toContain('show=stale'))
+  }, HEAVY)
+})
+
 describe('Store page: products', () => {
   it('lists products with their prices, sale and link', async () => {
     renderRoute('/stores/store-demo?tab=products')

@@ -497,4 +497,12 @@
 
     display: block;
   }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(3);
+    align-items: center;
+    margin-block-start: space(2);
+  }
 }

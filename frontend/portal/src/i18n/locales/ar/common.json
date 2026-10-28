@@ -704,7 +704,11 @@
     },
     "materialsAmountHint": "اختياري: كم من السعر للمواد، ليتمكن العميل من المقارنة بعدل.",
     "materialsAmountHintEstimate": "اختياري: كم من السعر للمواد. حسب تقدير العميل المواد المذكورة في الطلب.",
-    "materialsPart": "مشمولة: {{amount}} (العمل {{labour}})"
+    "materialsPart": "مشمولة: {{amount}} (العمل {{labour}})",
+    "storePrices": {
+      "cheapest": "الأرخص اليوم في المتاجر: {{amount}} لـ {{covered}} من {{count}} مواد",
+      "use": "استخدم هذا المبلغ"
+    }
   },
   "orders": {
     "title": "أوامر العمل",
@@ -1748,7 +1752,24 @@
     "hasAll": "لديه كل المواد ({{count}})",
     "hasSome": "لديه {{covered}} من {{count}} مواد",
     "note": "المجاميع للمواد المتوفرة في المتجر، مقرّبة إلى عبوات كاملة، بالجودة التي اخترتها.",
-    "compare": "قارن أسعار كل المواد"
+    "compare": "قارن أسعار كل المواد",
+    "list": {
+      "open": "قائمة المشتريات",
+      "title": "قائمة المشتريات: {{grade}}",
+      "mode": "طريقة الشراء",
+      "cheapest": "الأرخص لكل مادة",
+      "oneStore": "الكل من متجر واحد",
+      "store": "المتجر",
+      "missing": "غير متوفر في المتاجر",
+      "missingItem": "{{name}} ({{quantity}} {{unit}})",
+      "item": "{{name}} — {{packs}} × {{pack}} — {{cost}}",
+      "storeTotal": "مجموع المتجر: {{amount}}",
+      "total": "المجموع: {{amount}}",
+      "print": "طباعة",
+      "copy": "نسخ",
+      "copied": "تم النسخ. الصقه حيث تحتاج.",
+      "whatsapp": "إرسال عبر واتساب"
+    }
   },
   "live": {
     "customer": {

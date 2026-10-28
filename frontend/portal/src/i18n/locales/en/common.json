@@ -704,7 +704,11 @@
     },
     "materialsAmountHint": "Optional: how much of the price is materials, so the customer can compare offers fairly.",
     "materialsAmountHintEstimate": "Optional: how much of the price is materials. The customer's estimate counted the materials listed on the request.",
-    "materialsPart": "Included: {{amount}} (labour {{labour}})"
+    "materialsPart": "Included: {{amount}} (labour {{labour}})",
+    "storePrices": {
+      "cheapest": "Today's cheapest in stores: {{amount}} for {{covered}} of {{count}} materials",
+      "use": "Use this amount"
+    }
   },
   "orders": {
     "title": "Orders",
@@ -1748,7 +1752,24 @@
     "hasAll": "has all {{count}} materials",
     "hasSome": "has {{covered}} of {{count}} materials",
     "note": "Totals are for the materials a store has in stock, rounded up to whole packs, at the grade you chose.",
-    "compare": "Compare all material prices"
+    "compare": "Compare all material prices",
+    "list": {
+      "open": "Shopping list",
+      "title": "Shopping list: {{grade}}",
+      "mode": "How to buy",
+      "cheapest": "Cheapest per material",
+      "oneStore": "All at one store",
+      "store": "Store",
+      "missing": "Not found in stores",
+      "missingItem": "{{name}} ({{quantity}} {{unit}})",
+      "item": "{{name}} — {{packs}} × {{pack}} — {{cost}}",
+      "storeTotal": "Store total: {{amount}}",
+      "total": "Total: {{amount}}",
+      "print": "Print",
+      "copy": "Copy",
+      "copied": "Copied. Paste it wherever you need it.",
+      "whatsapp": "Send on WhatsApp"
+    }
   },
   "live": {
     "customer": {

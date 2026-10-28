@@ -242,6 +242,14 @@
     @include text-muted;
   }
 
+  // R6: today's cheapest store prices for the request's materials, with a button to use them.
+  &__store-prices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2) space(3);
+    align-items: center;
+  }
+
   &__actions {
     display: flex;
     flex-wrap: wrap;

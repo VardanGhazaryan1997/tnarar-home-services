@@ -64,6 +64,11 @@ export const storesApi = baseApi
         query: ({ storeId, productId }) => ({ url: `${BASE}/${storeId}/products/${productId}/confirm`, method: 'POST' }),
         invalidatesTags: ['StoreProducts', 'Stores', 'Materials', 'MaterialOffers'],
       }),
+      /** Quick editing (R7): saves the price, sale and stock of several products at once, all or nothing. */
+      saveStoreProductPrices: build.mutation({
+        query: ({ storeId, items }) => ({ url: `${BASE}/${storeId}/products/prices`, method: 'PUT', body: { items } }),
+        invalidatesTags: ['StoreProducts', 'Stores', 'Materials', 'MaterialOffers'],
+      }),
       /** Every product linked to a material across stores. */
       getMaterialStoreProducts: build.query({
         query: (materialId) => `/admin/catalog/materials/${materialId}/store-products`,
@@ -85,5 +90,6 @@ export const {
   useUpdateStoreProductMutation,
   useDeleteStoreProductMutation,
   useConfirmStoreProductPriceMutation,
+  useSaveStoreProductPricesMutation,
   useGetMaterialStoreProductsQuery,
 } = storesApi

@@ -60,3 +60,19 @@ select,
 textarea {
   font: inherit;
 }
+
+// Printing a shopping list (R5, features/estimator/ShoppingList.jsx): only the list, without the page or its dialog.
+.shopping-list-sheet {
+  display: none;
+}
+
+@media print {
+  body.shopping-list-printing > * {
+    display: none;
+  }
+
+  body.shopping-list-printing > .shopping-list-sheet {
+    display: block;
+    color: #000;
+  }
+}

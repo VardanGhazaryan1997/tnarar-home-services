@@ -1,0 +1,83 @@
+@use 'styles/mixins' as *;
+
+// The shopping list in its dialog, and a plain copy of it for printing.
+.shopping-list {
+  display: flex;
+  flex-direction: column;
+  gap: space(3);
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: space(3);
+  }
+
+  &__store {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+  }
+
+  &__store-name {
+    font-weight: $font-weight-semibold;
+    color: $color-night;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: space(1);
+    padding-inline-start: space(4);
+    margin: 0;
+  }
+
+  &__item {
+    overflow-wrap: anywhere;
+  }
+
+  &__store-total {
+    @include text-small;
+    @include text-muted;
+  }
+
+  &__total {
+    padding-block-start: space(2);
+    font-weight: $font-weight-bold;
+    color: $color-night;
+    border-block-start: 1px solid $color-border;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: space(2);
+    align-items: center;
+  }
+
+  &__whatsapp {
+    @include focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 space(3);
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-white;
+    text-decoration: none;
+    background: $color-success;
+    border-radius: $radius;
+  }
+
+  &__sheet-title {
+    @include heading-3;
+
+    margin-block-end: space(3);
+  }
+
+  &__copied {
+    @include text-small;
+
+    color: $color-success;
+  }
+}

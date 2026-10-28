@@ -1772,6 +1772,18 @@
       "help": "Products linked to this material, with the price per unit that goes into its market price.",
       "store": "Store",
       "empty": "No store sells this material yet"
+    },
+    "quickEdit": {
+      "toggle": "Quick edit",
+      "changes": "Unsaved changes: {{count}}",
+      "save": "Save all",
+      "discard": "Discard",
+      "saved": "Saved prices: {{count}}",
+      "leaveConfirm": "Discard {{count}} unsaved changes?",
+      "leave": "Discard and continue",
+      "checked": "Price checked",
+      "fixRows": "Fix the highlighted rows first.",
+      "priceInvalid": "The price must be 1–10,000,000 ֏"
     }
   }
 }

@@ -10,6 +10,7 @@ import Card from '@/components/ui/Card/Card'
 import { CheckboxField, SelectField, TextField } from '@/components/ui/Field/Field'
 import Icon from '@/components/ui/Icon/Icon'
 import Segmented from '@/components/ui/Segmented/Segmented'
+import useWhereToBuyFor from '@/features/estimator/useWhereToBuyFor'
 import { useGetMyPricesQuery } from '@/features/partner/prices/pricesApi'
 import { placeText } from '@/features/requests/place'
 import { useGetInboxRequestQuery } from '@/features/requests/requestsApi'
@@ -86,6 +87,10 @@ export default function OfferBuilderPage() {
   const extraPriced = lines.reduce((sum, line) => sum + (line.included ? (toInt(line.price) ?? 0) : 0), 0)
   // The part of the price that is materials, when included and given (E1); line prices are labour.
   const materialsAmount = kind === 'Work' && form.materialsIncluded ? toInt(form.materialsAmount) : null
+  // R6: today's cheapest store prices for the request's materials (public prices only), for a work offer.
+  const stores = useWhereToBuyFor(kind === 'Work' ? request.data : null)
+  const storeCheapest = stores?.cheapest ?? []
+  const storeSum = storeCheapest.reduce((sum, offer) => sum + offer.cost, 0)
   const price = byLine ? total(rows) + extraPriced + (materialsAmount ?? 0) : (toInt(form.price) ?? 0)
   const stagesTotal = stages.reduce((sum, stage) => sum + (toInt(stage.amount) ?? 0), 0)
   const apiErrors = fieldErrors(t, sending.error)
@@ -242,6 +247,20 @@ export default function OfferBuilderPage() {
                         onChange={set('materialsAmount')}
                         error={errorFor('materialsAmount')}
                       />
+                    )}
+                    {form.materialsIncluded && storeCheapest.length > 0 && (
+                      <div className={styles['offer-builder__store-prices']}>
+                        <p className={styles['offer-builder__context']}>
+                          {t('offers.storePrices.cheapest', {
+                            amount: formatMoney(storeSum, i18n.language),
+                            covered: storeCheapest.length,
+                            count: data.materials?.length ?? storeCheapest.length,
+                          })}
+                        </p>
+                        <Button variant="secondary" size="sm" onClick={() => setForm((current) => ({ ...current, materialsAmount: String(storeSum) }))}>
+                          {t('offers.storePrices.use')}
+                        </Button>
+                      </div>
                     )}
                     <TextField
                       label={t('offers.fields.materialsNote')}

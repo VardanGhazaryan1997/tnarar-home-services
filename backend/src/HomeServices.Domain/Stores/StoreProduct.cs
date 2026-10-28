@@ -102,12 +102,44 @@ public sealed class StoreProduct : AuditableEntity, IAudited
             || cleanBrand is { Length: > MaxBrandLength }
             || cleanCode is { Length: > MaxCodeLength }
             || cleanLabel is { Length: > MaxPackLabelLength }
-            || packSize is <= 0m or > MaxPackSize
-            || price is < 1 or > Material.PriceLimit)
+            || packSize is <= 0m or > MaxPackSize)
         {
-            throw new DomainException(
-                "store_product.invalid",
-                $"A product needs a name (up to {MaxNameLength}), a pack size above 0 and a price of 1–{Material.PriceLimit} AMD; brand is up to {MaxBrandLength}, code up to {MaxCodeLength} and pack label up to {MaxPackLabelLength} characters.");
+            throw Invalid();
+        }
+
+        SetPrice(price, salePrice, saleEndsOn, now);
+        Name = cleanName;
+        Brand = cleanBrand;
+        Code = cleanCode;
+        PackSize = packSize;
+        PackLabel = cleanLabel;
+        InStock = inStock;
+        PhotoFileId = photoFileId;
+    }
+
+    /// <summary>
+    /// Changes only the price, the sale and whether it is in stock (quick editing, R7), with the same rules as
+    /// <see cref="Update"/>: the price counts as checked <paramref name="now"/> when the price or sale changed.
+    /// </summary>
+    public void ChangePrice(int price, int? salePrice, DateOnly? saleEndsOn, bool inStock, DateTimeOffset now)
+    {
+        SetPrice(price, salePrice, saleEndsOn, now);
+        InStock = inStock;
+    }
+
+    /// <summary>True when these would change the price or the sale (what price history records).</summary>
+    public bool PriceDiffers(int price, int? salePrice, DateOnly? saleEndsOn) => price != Price || salePrice != SalePrice || saleEndsOn != SaleEndsOn;
+
+    private static DomainException Invalid() => new(
+        "store_product.invalid",
+        $"A product needs a name (up to {MaxNameLength}), a pack size above 0 and a price of 1–{Material.PriceLimit} AMD; brand is up to {MaxBrandLength}, code up to {MaxCodeLength} and pack label up to {MaxPackLabelLength} characters.");
+
+    // Checks the price and the sale, then sets them; nothing changes when a check fails.
+    private void SetPrice(int price, int? salePrice, DateOnly? saleEndsOn, DateTimeOffset now)
+    {
+        if (price is < 1 or > Material.PriceLimit)
+        {
+            throw Invalid();
         }
 
         if ((salePrice is null) != (saleEndsOn is null) || (salePrice is { } sale && (sale < 1 || sale >= price)))
@@ -115,21 +147,14 @@ public sealed class StoreProduct : AuditableEntity, IAudited
             throw new DomainException("store_product.sale_invalid", "A sale needs both a price below the usual price and the last day it applies.");
         }
 
-        if (price != Price || salePrice != SalePrice || saleEndsOn != SaleEndsOn)
+        if (PriceDiffers(price, salePrice, saleEndsOn))
         {
             PriceUpdatedAt = now;
         }
 
-        Name = cleanName;
-        Brand = cleanBrand;
-        Code = cleanCode;
-        PackSize = packSize;
-        PackLabel = cleanLabel;
         Price = price;
         SalePrice = salePrice;
         SaleEndsOn = saleEndsOn;
-        InStock = inStock;
-        PhotoFileId = photoFileId;
     }
 
     /// <summary>Sets or clears the product picture (a file already stored).</summary>

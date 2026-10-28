@@ -27,7 +27,11 @@ public sealed record WhereToBuyDto(IReadOnlyList<CheapestOfferDto> Cheapest, IRe
 public sealed record CheapestOfferDto(
     Guid MaterialId, string MaterialSlug, string StoreName, string StoreSlug, string ProductName, string? PackLabel, decimal PackSize, int Packs, int Cost);
 
-public sealed record StoreTotalDto(string StoreName, string StoreSlug, int Total, int Covered, int Missing);
+/// <summary>
+/// A store's total for the materials it has. <see cref="Items"/>: what it would sell for each of them (its cheapest
+/// product in the grade, whole packs), in the order of the request; they add up to <see cref="Total"/>.
+/// </summary>
+public sealed record StoreTotalDto(string StoreName, string StoreSlug, int Total, int Covered, int Missing, IReadOnlyList<CheapestOfferDto>? Items = null);
 
 public sealed class WhereToBuyValidator : AbstractValidator<WhereToBuy>
 {
@@ -97,16 +101,7 @@ public sealed class WhereToBuyHandler(IAppDbContext db, IOptions<StorePricingSet
             .GroupBy(o => o.MaterialId)
             .Select(g => g.OrderBy(o => o.Cost).ThenBy(o => stores[o.Product.StoreId].Name, StringComparer.Ordinal).First())
             .OrderBy(o => order[o.MaterialId])
-            .Select(o => new CheapestOfferDto(
-                o.MaterialId,
-                slugs.GetValueOrDefault(o.MaterialId, string.Empty),
-                stores[o.Product.StoreId].Name,
-                stores[o.Product.StoreId].Slug,
-                o.Product.Name,
-                o.Product.PackLabel,
-                o.Product.PackSize,
-                o.Packs,
-                o.Cost))
+            .Select(ToDto)
             .ToList();
 
         var totals = offers
@@ -116,13 +111,25 @@ public sealed class WhereToBuyHandler(IAppDbContext db, IOptions<StorePricingSet
                 stores[g.Key].Slug,
                 (int)Math.Min(g.Sum(o => (long)o.Cost), int.MaxValue),
                 g.Count(),
-                needs.Count - g.Count()))
+                needs.Count - g.Count(),
+                g.OrderBy(o => order[o.MaterialId]).Select(ToDto).ToList()))
             .OrderByDescending(t => t.Covered)
             .ThenBy(t => t.Total)
             .ThenBy(t => t.StoreName, StringComparer.Ordinal)
             .ToList();
 
         return new WhereToBuyDto(cheapest, totals);
+
+        CheapestOfferDto ToDto(Offer o) => new(
+            o.MaterialId,
+            slugs.GetValueOrDefault(o.MaterialId, string.Empty),
+            stores[o.Product.StoreId].Name,
+            stores[o.Product.StoreId].Slug,
+            o.Product.Name,
+            o.Product.PackLabel,
+            o.Product.PackSize,
+            o.Packs,
+            o.Cost);
     }
 
     private sealed record Offer(Guid MaterialId, StoreProduct Product, int Packs, int Cost);

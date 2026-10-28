@@ -27,8 +27,22 @@ const OFFERS = {
     { materialId: 'm-putty', materialSlug: 'finishing-putty', storeName: 'Demo Stroy', storeSlug: 'demo-stroy', productName: 'Putty', packLabel: '25 kg bag', packSize: 25, packs: 3, cost: 7500 },
   ],
   stores: [
-    { storeName: 'Demo Stroy', storeSlug: 'demo-stroy', total: 7500, covered: 1, missing: 1 },
-    { storeName: 'Demo Home Center', storeSlug: 'demo-home-center', total: 9100, covered: 1, missing: 1 },
+    {
+      storeName: 'Demo Stroy',
+      storeSlug: 'demo-stroy',
+      total: 7500,
+      covered: 1,
+      missing: 1,
+      items: [{ materialId: 'm-putty', materialSlug: 'finishing-putty', storeName: 'Demo Stroy', storeSlug: 'demo-stroy', productName: 'Putty', packLabel: '25 kg bag', packSize: 25, packs: 3, cost: 7500 }],
+    },
+    {
+      storeName: 'Demo Home Center',
+      storeSlug: 'demo-home-center',
+      total: 9100,
+      covered: 1,
+      missing: 1,
+      items: [{ materialId: 'm-paint', materialSlug: 'interior-paint', storeName: 'Demo Home Center', storeSlug: 'demo-home-center', productName: 'Paint 10 l', packLabel: null, packSize: 10, packs: 1, cost: 9100 }],
+    },
   ],
 }
 
@@ -83,6 +97,42 @@ describe('Where to buy', () => {
     expect(within(box).getByText(/9[\s,.]?100 ֏/)).toBeInTheDocument()
     expect(within(box).getByRole('link', { name: en.whereToBuy.compare })).toHaveAttribute('href', '/en/material-prices')
     expect(requests).toHaveLength(1) // the list and the box share one request
+  }, SLOW)
+
+  it('makes a shopping list to copy or send, per cheapest store or all at one store', async () => {
+    const user = userEvent.setup()
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    server.use(
+      http.get('*/api/v1/estimates/shared/tok-1234567890', () =>
+        HttpResponse.json({ title: 'Our flat', cityId: null, oldBuilding: false, updatedAt: '2026-10-01T10:00:00Z', rooms: [], measurement: MEASUREMENT, materials: 'Standard' }),
+      ),
+      http.post('*/api/v1/materials/where-to-buy', () => HttpResponse.json(OFFERS)),
+    )
+    renderRoute('/en/estimates/shared/tok-1234567890')
+
+    const box = await screen.findByRole('region', { name: en.whereToBuy.title })
+    await user.click(within(box).getByRole('button', { name: en.whereToBuy.list.open }))
+    const dialog = await screen.findByRole('dialog', { name: 'Shopping list: Standard materials' })
+    expect(within(dialog).getByRole('region', { name: 'Demo Stroy' })).toHaveTextContent(/Finishing putty — 3 × 25 kg bag — 7[\s,.]?500 ֏/)
+    expect(within(dialog).getByRole('region', { name: en.whereToBuy.list.missing })).toHaveTextContent('Interior paint (9.5 l)')
+
+    await user.click(within(dialog).getByRole('button', { name: en.whereToBuy.list.copy }))
+    expect(writeText).toHaveBeenCalledTimes(1)
+    expect(writeText.mock.calls[0][0]).toMatch(/^Shopping list: Standard materials\n\nDemo Stroy\n• Finishing putty/)
+    expect(within(dialog).getByRole('status')).toHaveTextContent(en.whereToBuy.list.copied)
+
+    await user.click(within(dialog).getByRole('radio', { name: en.whereToBuy.list.oneStore }))
+    await user.selectOptions(within(dialog).getByLabelText(en.whereToBuy.list.store), 'demo-home-center')
+    expect(within(dialog).getByRole('region', { name: 'Demo Home Center' })).toHaveTextContent(/Interior paint — 1 × 10 l — 9[\s,.]?100 ֏/)
+    expect(within(dialog).getByRole('region', { name: en.whereToBuy.list.missing })).toHaveTextContent('Finishing putty (60 kg)')
+    const whatsapp = within(dialog).getByRole('link', { name: en.whereToBuy.list.whatsapp })
+    expect(whatsapp.getAttribute('href')).toContain(`https://wa.me/?text=${encodeURIComponent('Shopping list: Standard materials\n\nDemo Home Center')}`)
+    expect(document.body).toHaveClass('shopping-list-printing')
+
+    await user.click(within(dialog).getByRole('button', { name: en.common.close }))
+    expect(document.body).not.toHaveClass('shopping-list-printing')
+    delete navigator.clipboard
   }, SLOW)
 
   it('shows nothing extra when no store sells the materials, or the request fails', async () => {

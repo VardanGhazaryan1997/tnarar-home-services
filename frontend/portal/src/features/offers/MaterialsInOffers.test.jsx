@@ -54,6 +54,39 @@ describe('Materials in requests and offers', () => {
     expect(sent[0]).toMatchObject({ price: 67000, materialsIncluded: true, materialsAmount: 39000 })
   }, SLOW)
 
+  it('offers today’s cheapest store prices for the materials and fills them in on request', async () => {
+    signedInAs(PARTNER_USER)
+    const asked = []
+    server.use(
+      http.get('*/api/v1/requests/inbox/:id', () =>
+        HttpResponse.json(inboxRequest({ materialGrade: 'Standard', materials: [...MATERIALS, { materialId: 'm-grout', name: 'Grout', unit: 'Kilogram', quantity: 2, estimateCost: null }] })),
+      ),
+      http.get('*/api/v1/requests/:id/offers', () => HttpResponse.json([])),
+      http.post('*/api/v1/materials/where-to-buy', async ({ request }) => {
+        asked.push(await request.json())
+        return HttpResponse.json({
+          cheapest: [{ materialId: 'm-tiles', materialSlug: 'floor-tiles', storeName: 'Demo Stroy', storeSlug: 'demo-stroy', productName: 'Tiles', packLabel: '1.44 m² box', packSize: 1.44, packs: 4, cost: 38900 }],
+          stores: [],
+        })
+      }),
+    )
+    const user = userEvent.setup()
+    renderRoute('/en/inbox/req-1/offer')
+
+    await user.type(await screen.findByLabelText(en.offers.fields.summary), 'Tiling the bathroom floor, tiles included.')
+    await user.type(screen.getByLabelText(en.offers.fields.price), '80000')
+    expect(screen.queryByText(/Today's cheapest in stores/)).not.toBeInTheDocument()
+    await user.click(screen.getByLabelText(en.offers.fields.materialsIncluded))
+
+    expect(await screen.findByText(/Today's cheapest in stores: 38[\s,.]?900 ֏ for 1 of 2 materials/)).toBeInTheDocument()
+    expect(asked).toEqual([{ grade: 'Standard', materials: [{ materialId: 'm-tiles', quantity: 4.4 }, { materialId: 'm-grout', quantity: 2 }] }])
+    await user.click(screen.getByRole('button', { name: en.offers.storePrices.use }))
+    expect(screen.getByLabelText(new RegExp(en.offers.fields.materialsAmount.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toHaveValue(38900)
+
+    await user.click(screen.getByRole('radio', { name: en.offers.kindChoice.Visit }))
+    expect(screen.queryByText(/Today's cheapest in stores/)).not.toBeInTheDocument()
+  }, SLOW)
+
   it('compares the materials of the offers with the estimate for the customer', async () => {
     signedInAs(CUSTOMER)
     server.use(

@@ -367,6 +367,7 @@ Staff keep stores, their branches and their products in the Back Office; custome
 | `GET stores/{id}/products?search=&materialId=&linked=&stale=&page=&pageSize=` | The store's products by name, paged, with the material's name and unit, `currentPrice` (the sale price until `saleEndsOn`, inclusive), `unitPrice` (per unit of the material; null while not linked) and `isStale` |
 | `POST stores/{id}/products`, `PUT stores/{id}/products/{productId}`, `DELETE …` | `name`, `brand`, `code` (the store's own, unique in the store: 409 `store_product.code_taken`), `packSize` (in the material's unit, e.g. 25 for a 25 kg bag), `packLabel`, `price` (AMD per pack), `salePrice` + `saleEndsOn` (both or neither; the sale price is below the price), `inStock`, `photoFileId`, `isActive`, and the link: `materialId` + `grade` (Budget, Standard, Premium; required with a material) |
 | `POST stores/{id}/products/{productId}/confirm` | The store's price is still right: sets `priceUpdatedAt` to now |
+| `PUT stores/{id}/products/prices` | Quick editing: `{ items: [{ productId, price, salePrice, saleEndsOn, inStock, confirm }] }` (1–100 products of the store) saves all or nothing and returns the saved products; `confirm` marks an unchanged price as checked. 400 `items.count_invalid`, `items.duplicate`; 404 `store_product.not_found`; 422 `store_product.invalid` / `store_product.sale_invalid` with the product's name |
 | `GET catalog/materials/{id}/store-products` | Every product linked to the material across stores, by grade and then per-unit price |
 
 - `priceUpdatedAt` is set when a product is created and whenever its price, sale price or sale end date changes (or staff confirm it). Sales end at the end of `saleEndsOn` in local time (`StorePricing:UtcOffsetHours`, 4).
@@ -396,7 +397,7 @@ Customers see stores and compare prices without signing in (`api/v1`). Names are
 
 ### Where to buy
 
-`POST /api/v1/materials/where-to-buy` (public) takes `{ grade, region?, materials: [{ materialId, quantity }] }` (up to 100 materials, quantities as an estimate counted them) and returns `cheapest`, the cheapest offer for each material a store sells in that grade (packs rounded up, cost = packs × current price; a sale price counts until its end date), and `stores`, each store's total for the materials it has with `covered` and `missing` counts, most covered first, then cheapest. Only active, in-stock, fresh products of active stores count; with `region` only stores with a branch there.
+`POST /api/v1/materials/where-to-buy` (public) takes `{ grade, region?, materials: [{ materialId, quantity }] }` (up to 100 materials, quantities as an estimate counted them) and returns `cheapest`, the cheapest offer for each material a store sells in that grade (packs rounded up, cost = packs × current price; a sale price counts until its end date), and `stores`, each store's total for the materials it has with `covered` and `missing` counts and its `items` (what it would sell for each material, adding up to its total; the Portal's shopping list uses them), most covered first, then cheapest. Only active, in-stock, fresh products of active stores count; with `region` only stores with a branch there.
 
 ## Code coverage
 

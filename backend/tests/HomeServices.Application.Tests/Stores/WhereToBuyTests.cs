@@ -118,6 +118,23 @@ public class WhereToBuyTests
     }
 
     [Fact]
+    public async Task Each_store_lists_what_it_would_sell_in_the_request_order_adding_up_to_its_total()
+    {
+        Add(_alpha, _putty, 25m, 2500, name: "Alpha putty dear");
+        Add(_alpha, _putty, 25m, 2400, name: "Alpha putty");
+        Add(_alpha, _paint, 10m, 8000, name: "Alpha paint");
+        Add(_beta, _putty, 25m, 1000, name: "Beta putty");
+
+        var result = await AskAsync(MaterialGrade.Standard, null, new WhereToBuyNeed(_paint.Id, 10m), new WhereToBuyNeed(_putty.Id, 50m));
+
+        var alpha = result.Stores.Single(s => s.StoreSlug == "alpha");
+        alpha.Items.ShouldNotBeNull().Select(i => (i.MaterialSlug, i.ProductName, i.Packs, i.Cost)).ToArray()
+            .ShouldBe(new[] { ("paint", "Alpha paint", 1, 8000), ("putty", "Alpha putty", 2, 4800) });
+        alpha.Items.Sum(i => i.Cost).ShouldBe(alpha.Total);
+        result.Stores.Single(s => s.StoreSlug == "beta").Items.ShouldNotBeNull().ShouldHaveSingleItem().ProductName.ShouldBe("Beta putty");
+    }
+
+    [Fact]
     public async Task Offers_of_another_grade_out_of_stock_stale_or_inactive_do_not_count()
     {
         Add(_alpha, _putty, 25m, 100, grade: MaterialGrade.Premium);

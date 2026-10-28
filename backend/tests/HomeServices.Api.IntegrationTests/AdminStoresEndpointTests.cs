@@ -61,6 +61,24 @@ public class AdminStoresEndpointTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Staff_save_many_prices_at_once()
+    {
+        var client = StaffClient(Permissions.MaterialsPricing);
+        var store = (await (await client.PostAsJsonAsync(Admin, StoreBody($"quick-{Guid.NewGuid():N}"))).Content.ReadFromJsonAsync<AdminStoreDto>(Json))!;
+        var putty = (await client.GetFromJsonAsync<List<AdminMaterialDto>>($"{Admin}/materials", Json))!.Single(m => m.Slug == "finishing-putty");
+        var product = (await (await client.PostAsJsonAsync($"{Admin}/{store.Id}/products", ProductBody(putty.Id, "Q-1"))).Content.ReadFromJsonAsync<AdminStoreProductDto>(Json))!;
+        var body = new { items = new[] { new { productId = product.Id, price = 4200, salePrice = (int?)null, saleEndsOn = (DateOnly?)null, inStock = false } } };
+
+        (await StaffClient(Permissions.CatalogManage).PutAsJsonAsync($"{Admin}/{store.Id}/products/prices", body)).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        var saved = await client.PutAsJsonAsync($"{Admin}/{store.Id}/products/prices", body);
+        saved.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await saved.Content.ReadFromJsonAsync<List<AdminStoreProductDto>>(Json))!.Single().ShouldSatisfyAllConditions(
+            p => p.Price.ShouldBe(4200),
+            p => p.InStock.ShouldBeFalse());
+        (await client.PutAsJsonAsync($"{Admin}/{store.Id}/products/prices", new { items = Array.Empty<object>() })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task Staff_keep_a_store_its_branches_and_its_products()
     {
         var client = StaffClient(Permissions.MaterialsPricing, Permissions.CatalogManage);

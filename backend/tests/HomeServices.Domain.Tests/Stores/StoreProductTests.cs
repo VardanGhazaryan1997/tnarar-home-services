@@ -22,6 +22,34 @@ public class StoreProductTests
     }
 
     [Fact]
+    public void Changing_only_the_price_keeps_everything_else_and_counts_as_checked_when_it_changed()
+    {
+        var product = Putty();
+        var later = Now.AddDays(3);
+
+        product.ChangePrice(5000, null, null, false, later);
+        (product.InStock, product.PriceUpdatedAt).ShouldBe((false, Now));
+
+        product.ChangePrice(4500, 4000, Today.AddDays(7), true, later);
+        (product.Price, product.SalePrice, product.SaleEndsOn, product.InStock, product.PriceUpdatedAt)
+            .ShouldBe((4500, (int?)4000, (DateOnly?)Today.AddDays(7), true, later));
+        (product.Name, product.PackSize).ShouldBe(("Putty Finish", 25m));
+    }
+
+    [Theory]
+    [InlineData(0, null, false, "store_product.invalid")]
+    [InlineData(Material.PriceLimit + 1, null, false, "store_product.invalid")]
+    [InlineData(5000, 5000, true, "store_product.sale_invalid")]
+    [InlineData(5000, 4000, false, "store_product.sale_invalid")]
+    public void Quick_price_changes_follow_the_same_rules(int price, int? sale, bool withEnd, string code)
+    {
+        var product = Putty();
+
+        Should.Throw<DomainException>(() => product.ChangePrice(price, sale, withEnd ? Today : null, false, Now.AddDays(1))).Code.ShouldBe(code);
+        (product.Price, product.SalePrice, product.InStock, product.PriceUpdatedAt).ShouldBe((5000, (int?)null, true, Now));
+    }
+
+    [Fact]
     public void Blank_optional_fields_become_empty()
     {
         var product = StoreProduct.Create(Guid.NewGuid(), "Putty", " ", "", 1m, "", 100, null, null, true, null, Now);
